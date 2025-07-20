@@ -6,15 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const brandLogo = document.querySelector('.brand .logo');
     
     if (mainHeader && brandLogo) {
-        // Add subtle hover animation to the header
-        mainHeader.addEventListener('mouseenter', function() {
-            brandLogo.style.transform = 'translateY(-3px) rotate(5deg)';
-        });
-        
-        mainHeader.addEventListener('mouseleave', function() {
-            brandLogo.style.transform = 'translateY(0) rotate(0deg)';
-        });
-        
         // Set active nav item based on current URL
         const currentPath = window.location.pathname;
         const navItems = document.querySelectorAll('.nav-button');
