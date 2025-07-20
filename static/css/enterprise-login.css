@@ -1,30 +1,65 @@
-/* ADFS and Enterprise Login Styles */
+/* ADFS and Enterprise Login Styles - Enhanced with red color scheme */
 
+/* Enterprise login container */
 .enterprise-login {
     display: flex;
     flex-direction: column;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
 }
 
+/* Decorative elements */
+.decorative-shape {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    z-index: -1;
+    filter: blur(40px);
+    opacity: 0.5;
+}
+
+.shape-1 {
+    background-color: var(--primary-color);
+    top: -30px;
+    right: -30px;
+}
+
+.shape-2 {
+    background-color: #ff6b6b;
+    bottom: -20px;
+    left: -20px;
+}
+
+/* Main enterprise login button */
 .enterprise-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.9rem;
-    border-radius: 6px;
+    padding: 1rem;
+    border-radius: 8px;
     text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    background-color: #0078d4; /* Microsoft blue color */
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: linear-gradient(135deg, var(--primary-color), #ff375f);
     color: white;
+    box-shadow: 0 10px 20px rgba(229, 9, 20, 0.3);
+    margin-bottom: 1rem;
 }
 
 .enterprise-btn.adfs {
     position: relative;
     overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0, 120, 212, 0.3);
+    height: 60px;
+    border: 2px solid transparent;
+    background-size: 150% auto;
+    background-position: left center;
 }
 
+/* Shine effect animation */
 .enterprise-btn.adfs::before {
     content: '';
     position: absolute;
@@ -35,10 +70,11 @@
     background: linear-gradient(
         90deg, 
         rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.4) 50%,
         rgba(255, 255, 255, 0) 100%
     );
-    transition: left 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+    transition: left 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+    z-index: 1;
 }
 
 .enterprise-btn.adfs:hover::before {
@@ -46,35 +82,96 @@
 }
 
 .enterprise-btn.adfs:hover {
-    background-color: #106ebe;
+    background-position: right center;
+    transform: translateY(-5px);
+    box-shadow: 0 15px 25px rgba(229, 9, 20, 0.4);
+}
+
+.enterprise-btn.adfs:active {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 120, 212, 0.4);
+    box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
 }
 
 .enterprise-btn.adfs i {
-    margin-right: 0.8rem;
-    font-size: 1.2rem;
+    margin-right: 1rem;
+    font-size: 1.4rem;
+    position: relative;
+    z-index: 2;
 }
 
+.enterprise-btn.adfs span {
+    position: relative;
+    z-index: 2;
+}
+
+/* Enterprise info styling */
 .enterprise-info {
-    margin-top: 0.8rem;
+    margin-top: 1.2rem;
     color: var(--light-text-color);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     text-align: center;
     padding: 0 1rem;
-    line-height: 1.4;
+    line-height: 1.5;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 6px;
+    padding: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border-left: 3px solid var(--primary-color);
 }
 
 .enterprise-info i {
-    color: #0078d4;
-    margin-right: 0.3rem;
+    color: var(--primary-color);
+    margin-right: 0.5rem;
 }
 
-/* Make button and info more prominent */
-.auth-divider {
-    margin-bottom: 1.2rem;
+/* Logo section */
+.logo-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.logo-badge {
+    display: flex;
+    align-items: center;
+    background-color: #f8f8f8;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin: 0 8px;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.logo-badge:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.logo-badge img {
+    height: 20px;
+    width: auto;
+}
+
+/* Additional elements */
+.auth-links {
+    margin-top: 2rem;
+    text-align: center;
+    padding: 1rem 0;
+    border-top: 1px dashed rgba(229, 9, 20, 0.2);
+}
+
+.auth-links p {
+    font-size: 0.9rem;
+    color: var(--light-text-color);
 }
 
 .auth-links a {
     color: var(--primary-color);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.auth-links a:hover {
+    text-decoration: none;
+    color: var(--secondary-color);
 }

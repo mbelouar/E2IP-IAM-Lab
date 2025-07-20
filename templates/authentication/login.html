@@ -5,23 +5,47 @@
 {% block content %}
 <div class="auth-container">
     <div class="auth-header">
-        <i class="fas fa-lock auth-icon"></i>
+        <div class="auth-logo-container">
+            <i class="fas fa-shield-alt auth-icon"></i>
+        </div>
         <h2>Enterprise Authentication</h2>
-        <p class="auth-subtitle">Sign in with your organization credentials</p>
+        <p class="auth-subtitle">Access your organization's resources securely</p>
     </div>
     
     <div class="enterprise-login">
+        <!-- Decorative shapes for visual interest -->
+        <div class="decorative-shape shape-1"></div>
+        <div class="decorative-shape shape-2"></div>
+        
         <a href="{% url 'adfs_login' %}" class="enterprise-btn adfs">
-            <i class="fas fa-building"></i> Sign in with Enterprise Account (ADFS)
+            <i class="fas fa-building"></i>
+            <span>Sign in with Enterprise Account (ADFS)</span>
         </a>
+        
         <p class="enterprise-info">
             <i class="fas fa-info-circle"></i> 
-            Use your organization's Active Directory credentials to access this application.
+            Use your organization's Active Directory credentials to access this application securely. Single Sign-On enables seamless authentication across company services.
         </p>
     </div>
     
     <div class="auth-links">
-        <p>Need help? Contact <a href="mailto:support@example.com">IT support</a></p>
+        <p>Need technical assistance? Contact <a href="mailto:support@example.com"><i class="fas fa-envelope"></i> IT support</a></p>
+        <p style="margin-top: 8px; font-size: 0.8rem;">© {% now "Y" %} SecureAuth Enterprise Solutions</p>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add a subtle animation to the login button
+        const loginBtn = document.querySelector('.enterprise-btn.adfs');
+        
+        if (loginBtn) {
+            setTimeout(() => {
+                loginBtn.classList.add('animated');
+            }, 500);
+        }
+    });
+</script>
 {% endblock %}

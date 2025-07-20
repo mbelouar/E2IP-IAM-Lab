@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 300);
             });
             
-            // Auto-dismiss after 5 seconds with animation
+            // Auto dismiss messages after 5 seconds
             setTimeout(() => {
                 message.style.opacity = '0';
                 message.style.transform = 'translateY(-20px)';
@@ -32,6 +32,64 @@ document.addEventListener('DOMContentLoaded', function() {
                     message.style.display = 'none';
                 }, 300);
             }, 5000);
+        });
+    }
+    
+    // Enhanced ADFS Login Page animations
+    const authContainer = document.querySelector('.auth-container');
+    const enterpriseBtn = document.querySelector('.enterprise-btn.adfs');
+    const logoBadges = document.querySelectorAll('.logo-badge');
+    
+    // Function to add animation with delay
+    function animateWithDelay(element, className, delay) {
+        if (element) {
+            setTimeout(() => {
+                element.classList.add(className);
+            }, delay);
+        }
+    }
+    
+    // Check if we're on the login page
+    if (authContainer && enterpriseBtn) {
+        // Add entrance animations to elements
+        authContainer.style.opacity = '0';
+        authContainer.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            authContainer.style.transition = 'all 0.6s ease';
+            authContainer.style.opacity = '1';
+            authContainer.style.transform = 'translateY(0)';
+        }, 300);
+        
+        // Animate the ADFS button with a delay
+        setTimeout(() => {
+            enterpriseBtn.classList.add('animated');
+        }, 1000);
+        
+        // Animate the logo badges sequentially
+        if (logoBadges.length > 0) {
+            logoBadges.forEach((badge, index) => {
+                badge.style.opacity = '0';
+                badge.style.transform = 'translateY(15px)';
+                
+                setTimeout(() => {
+                    badge.style.transition = 'all 0.5s ease';
+                    badge.style.opacity = '1';
+                    badge.style.transform = 'translateY(0)';
+                }, 1500 + (index * 200));
+            });
+        }
+        
+        // Add hover effect to auth container
+        authContainer.addEventListener('mousemove', function(e) {
+            const xPos = (e.clientX / window.innerWidth) - 0.5;
+            const yPos = (e.clientY / window.innerHeight) - 0.5;
+            
+            authContainer.style.transform = `perspective(1000px) rotateY(${xPos * 2}deg) rotateX(${yPos * -2}deg)`;
+        });
+        
+        authContainer.addEventListener('mouseleave', function() {
+            authContainer.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
         });
     }
     
