@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h2>Welcome, {{ user.username }}!</h2>
+    <div class="dashboard-content">
+        <div class="card">
+            <h3>Your Profile</h3>
+            <div class="profile-info">
+                <p><strong>Username:</strong> {{ user.username }}</p>
+                <p><strong>Last Login:</strong> {{ user.last_login }}</p>
+                <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>What's Next?</h3>
+            <ul class="action-list">
+                <li>Customize your profile</li>
+                <li>Explore the application</li>
+                <li>Connect with other users</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
