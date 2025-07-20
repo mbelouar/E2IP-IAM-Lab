@@ -22,6 +22,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Enhance enterprise login button interaction
+    const enterpriseBtn = document.querySelector('.enterprise-btn.adfs');
+    if (enterpriseBtn) {
+        // Add subtle pulse effect when hovering near the button
+        enterpriseBtn.addEventListener('mousemove', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left; // x position within the element
+            const y = e.clientY - rect.top;  // y position within the element
+            
+            // Calculate distance from center
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            // Apply subtle transform based on mouse position
+            const offsetX = (x - centerX) / 20;
+            const offsetY = (y - centerY) / 20;
+            
+            this.style.transform = `perspective(800px) translate3d(${offsetX}px, ${offsetY}px, 0) scale(1.01)`;
+        });
+        
+        // Reset transform on mouse leave
+        enterpriseBtn.addEventListener('mouseleave', function() {
+            this.style.transform = '';
+        });
+    }
+    
     // Handle message dismissal with improved UI
     const messages = document.querySelectorAll('.message');
     
@@ -68,6 +94,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 element.classList.add(className);
             }, delay);
         }
+    }
+    
+    // Add improved hover effect to enterprise button
+    if (enterpriseBtn) {
+        // Add subtle transform effect on mouse hover
+        enterpriseBtn.addEventListener('mousemove', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left; // x position within the element
+            const y = e.clientY - rect.top;  // y position within the element
+            
+            // Calculate distance from center
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            // Apply subtle transform based on mouse position
+            const offsetX = (x - centerX) / 20;
+            const offsetY = (y - centerY) / 20;
+            
+            this.style.transform = `perspective(800px) translate3d(${offsetX}px, ${offsetY}px, 0) scale(1.01)`;
+        });
+        
+        // Reset transform on mouse leave
+        enterpriseBtn.addEventListener('mouseleave', function() {
+            this.style.transform = '';
+        });
     }
     
     // Check if we're on the login page
