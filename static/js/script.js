@@ -1,6 +1,36 @@
 // Main JavaScript file for the authentication system
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Enhanced header interactions
+    const mainHeader = document.querySelector('.main-header');
+    const brandLogo = document.querySelector('.brand .logo');
+    
+    if (mainHeader && brandLogo) {
+        // Add subtle hover animation to the header
+        mainHeader.addEventListener('mouseenter', function() {
+            brandLogo.style.transform = 'translateY(-3px) rotate(5deg)';
+        });
+        
+        mainHeader.addEventListener('mouseleave', function() {
+            brandLogo.style.transform = 'translateY(0) rotate(0deg)';
+        });
+        
+        // Set active nav item based on current URL
+        const currentPath = window.location.pathname;
+        const navItems = document.querySelectorAll('.nav-button');
+        
+        navItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if (href === currentPath || 
+                (currentPath.includes('/login') && href.includes('/login')) ||
+                (currentPath === '/' && href === '/')) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    }
+    
     // Handle message dismissal with improved UI
     const messages = document.querySelectorAll('.message');
     
@@ -65,6 +95,29 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             enterpriseBtn.classList.add('animated');
         }, 1000);
+        
+        // Enhanced header animations
+        const authHeader = document.querySelector('.auth-header');
+        const companyName = document.querySelector('.company-name');
+        const decorationLines = document.querySelectorAll('.decoration-line');
+        
+        if (authHeader && companyName) {
+            // Add a subtle text shadow to company name
+            setTimeout(() => {
+                companyName.style.transition = 'text-shadow 0.5s ease';
+                companyName.style.textShadow = '0 0 10px rgba(229, 9, 20, 0.3)';
+                
+                // Animate decoration lines
+                if (decorationLines.length) {
+                    decorationLines.forEach((line, index) => {
+                        setTimeout(() => {
+                            line.style.transition = 'width 1s ease';
+                            line.style.width = '80px';
+                        }, 1200 + (index * 200));
+                    });
+                }
+            }, 800);
+        }
         
         // Animate the logo badges sequentially
         if (logoBadges.length > 0) {

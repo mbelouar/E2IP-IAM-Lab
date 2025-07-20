@@ -14,25 +14,30 @@
     <link rel="stylesheet" href="/static/css/simple-dashboard.css">
     <link rel="stylesheet" href="/static/css/enterprise-login.css">
     <link rel="stylesheet" href="/static/css/adfs-enhanced.css">
+    <link rel="stylesheet" href="/static/css/enhanced-header.css">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <div class="container">
-        <header>
+        <header class="main-header">
             <div class="brand">
-                <div class="logo">
-                    <i class="fas fa-shield-alt"></i>
+                <div class="logo-wrapper">
+                    <div class="logo">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="logo-shine"></div>
                 </div>
-                <h1>Secure<span>Auth</span></h1>
+                <h1><span class="secure-text">Secure</span><span class="auth-text">Auth</span></h1>
             </div>
-            <nav>
+            <nav class="main-nav">
+                <div class="nav-background"></div>
                 <ul>
                     {% if user.is_authenticated %}
-                        <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
-                        <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                        <li><a href="{% url 'home' %}" class="nav-button"><i class="fas fa-home"></i><span>Home</span></a></li>
+                        <li><a href="{% url 'logout' %}" class="nav-button"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
                     {% else %}
-                        <li><a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</a></li>
-                        <li><a href="{% url 'admin:index' %}"><i class="fas fa-shield-alt"></i> Admin</a></li>
+                        <li><a href="{% url 'login' %}" class="nav-button active"><i class="fas fa-sign-in-alt"></i><span>Login</span></a></li>
+                        <li><a href="{% url 'admin:index' %}" class="nav-button"><i class="fas fa-user-shield"></i><span>Admin</span></a></li>
                     {% endif %}
                 </ul>
             </nav>
