@@ -1,28 +1,25 @@
 # Django Authentication System with ADFS Integration
 
-A comprehensive authentication system built with Django, featuring login functionality and a preparation for ADFS (Active Directory Federation Services) Single Sign-On integration.
+A streamlined authentication system built with Django, focusing exclusively on ADFS (Active Directory Federation Services) Single Sign-On integration for enterprise authentication.
 
 ## Features
 
-- **User Authentication**
+- **Enterprise Authentication**
 
-  - Login functionality with Django's built-in authentication
-  - Preparation for ADFS Single Sign-On integration
+  - Dedicated ADFS Single Sign-On integration
   - Logout capability
   - Protected routes requiring authentication
 
 - **Modern UI/UX**
 
-  - Clean, responsive design
+  - Clean, responsive design with red and white color scheme
   - CSS animations and transitions
   - Interactive elements with JavaScript
-  - Form validation with visual feedback
-  - Password visibility toggle
   - Auto-dismissing notifications
 
 - **Security Features**
   - CSRF protection
-  - Password hashing and validation
+  - Enterprise-grade authentication via ADFS
   - Django's built-in security features
 
 ## Project Structure
@@ -32,15 +29,18 @@ auth_project/               # Main Django project directory
 authentication/             # Django app for authentication features
 static/
   ├── css/                  # Stylesheet files
-  │   └── styles.css        # Main CSS file
+  │   ├── styles.css        # Main CSS file
+  │   ├── additional.css    # Additional styling
+  │   ├── auth-pages.css    # Authentication pages styling
+  │   ├── enterprise-login.css # ADFS login styling
+  │   └── simple-dashboard.css # Dashboard styling
   └── js/                   # JavaScript files
       └── script.js         # Main JS file
 templates/
   ├── base.html             # Base template with common elements
   └── authentication/       # Authentication-specific templates
       ├── home.html         # Dashboard/home page (protected)
-      ├── login.html        # Login page
-      └── register.html     # Registration page
+      └── login.html        # ADFS login page
 ```
 
 ## Getting Started
@@ -94,17 +94,17 @@ templates/
 
 ## Usage
 
-- **Login**: Visit http://127.0.0.1:8000/login/
+- **ADFS Login**: Visit http://127.0.0.1:8000/login/
 - **Dashboard**: After login, access http://127.0.0.1:8000/
 - **Admin Panel**: Visit http://127.0.0.1:8000/admin/
 
 ## ADFS Integration (Planned)
 
-This project includes preparations for integrating with Active Directory Federation Services (ADFS) for enterprise Single Sign-On capabilities:
+This project is now focused exclusively on integrating with Active Directory Federation Services (ADFS) for enterprise Single Sign-On capabilities:
 
 ### What is prepared:
 
-- Placeholder UI elements for ADFS login
+- Dedicated UI for ADFS login
 - Route structure for ADFS authentication flow
 - Configuration file with settings to be updated
 - View function placeholder for handling ADFS authentication
@@ -133,18 +133,17 @@ This project includes preparations for integrating with Active Directory Federat
 Some ideas for extending this project:
 
 1. Complete the ADFS integration using OAuth 2.0 or SAML protocols
-2. Implement password reset functionality
-3. Add Multi-Factor Authentication (MFA)
-4. Create user profiles with additional information
-5. Implement audit logging for authentication events
-6. Add role-based access control
+2. Implement Multi-Factor Authentication (MFA)
+3. Create user profiles with additional information
+4. Implement audit logging for authentication events
+5. Add role-based access control
 
 ## Technologies Used
 
 - **Backend**: Django 5.x, Python 3.x
 - **Frontend**: HTML5, CSS3, JavaScript
 - **Database**: SQLite (default)
-- **Authentication**: Django's authentication system
+- **Authentication**: Django's authentication system with ADFS integration
 
 ## License
 

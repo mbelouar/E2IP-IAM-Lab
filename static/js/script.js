@@ -174,16 +174,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Add terms agreement validation for registration
-    const termsCheckbox = document.getElementById('agree-terms');
-    const registerForm = document.querySelector('.auth-form form');
-    
-    if (termsCheckbox && registerForm) {
-        registerForm.addEventListener('submit', function(event) {
-            if (!termsCheckbox.checked) {
-                event.preventDefault();
-                alert('Please agree to the Terms of Service and Privacy Policy.');
-            }
-        });
-    }
+    // Registration validation code removed - no longer needed
 });
