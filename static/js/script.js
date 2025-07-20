@@ -19,6 +19,17 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 item.classList.remove('active');
             }
+            
+            // Add subtle interaction effect
+            item.addEventListener('mouseenter', function() {
+                const icon = this.querySelector('i');
+                if (icon) {
+                    icon.style.transform = 'translateY(-2px)';
+                    setTimeout(() => {
+                        if (icon) icon.style.transform = 'translateY(0)';
+                    }, 200);
+                }
+            });
         });
     }
     
@@ -326,6 +337,4 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.boxShadow = '';
         });
     });
-    
-    // Registration validation code removed - no longer needed
 });

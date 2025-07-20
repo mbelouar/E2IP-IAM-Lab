@@ -155,59 +155,70 @@
     display: flex;
     align-items: center;
     padding: 0.6rem 1.2rem;
-    border-radius: 30px;
+    border-radius: 8px; /* Changed from 30px to 8px for more modern look */
     background: transparent;
     color: var(--text-color);
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.3s ease-out;
     position: relative;
     overflow: hidden;
     text-decoration: none;
+    border: 1px solid rgba(229, 9, 20, 0.1); /* Added subtle border */
+    margin-left: 0.5rem; /* Added spacing between buttons */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03); /* Added subtle shadow */
+    font-weight: 500; /* Made font slightly bolder */
+    letter-spacing: 0.3px; /* Improved letter spacing */
 }
 
 .nav-button.active {
     background: linear-gradient(135deg, #e50914 0%, #b81d24 100%);
     color: white;
-    box-shadow: 0 5px 15px rgba(229, 9, 20, 0.3);
+    box-shadow: 0 4px 12px rgba(229, 9, 20, 0.25);
+    border-color: rgba(229, 9, 20, 0.2); /* Refined border for active state */
 }
 
 .nav-button:not(.active):hover {
-    background-color: rgba(229, 9, 20, 0.1);
-    transform: translateY(-2px);
+    background-color: rgba(229, 9, 20, 0.08);
+    transform: translateY(-1px); /* Reduced from -2px for more subtle effect */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06); /* Enhanced hover shadow */
+    border-color: rgba(229, 9, 20, 0.2); /* Border becomes more visible on hover */
 }
 
 .nav-button:active {
     transform: translateY(0);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1); /* Shadow when pressed */
 }
 
 .nav-button i {
-    font-size: 1rem;
+    font-size: 0.95rem; /* Slightly smaller icon */
     margin-right: 0.5rem;
+    opacity: 0.9; /* Slightly reduced opacity for better harmony */
 }
 
 .nav-button::before {
     content: '';
     position: absolute;
     top: 0;
-    left: -100%;
+    left: 0;
     width: 100%;
     height: 100%;
     background: linear-gradient(
-        90deg, 
+        135deg, 
         rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 0.3) 50%,
-        rgba(255, 255, 255, 0) 100%
+        rgba(255, 255, 255, 0.1) 80%
     );
-    transition: left 0.8s ease;
+    opacity: 0;
+    transition: opacity 0.3s ease;
     z-index: 1;
 }
 
 .nav-button:hover::before {
-    left: 100%;
+    opacity: 1;
 }
 
 .nav-button span {
     position: relative;
     z-index: 2;
+    font-size: 0.9rem; /* Slightly smaller text */
 }
 
 /* Responsive adjustments */
@@ -228,6 +239,8 @@
     
     .nav-button {
         padding: 0.5rem 1rem;
+        margin: 0.25rem;
+        font-size: 0.9rem;
     }
 }
 
