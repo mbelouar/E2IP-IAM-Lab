@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/static/css/additional.css">
     <link rel="stylesheet" href="/static/css/auth-pages.css">
     <link rel="stylesheet" href="/static/css/simple-dashboard.css">
+    <link rel="stylesheet" href="/static/css/enterprise-login.css">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -30,7 +31,7 @@
                         <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                     {% else %}
                         <li><a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</a></li>
-                        <li><a href="{% url 'register' %}"><i class="fas fa-user-plus"></i> Register</a></li>
+                        <li><a href="{% url 'admin:index' %}"><i class="fas fa-shield-alt"></i> Admin</a></li>
                     {% endif %}
                 </ul>
             </nav>

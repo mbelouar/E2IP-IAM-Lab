@@ -50,13 +50,18 @@
         <span>Or</span>
     </div>
     
-    <div class="social-login">
-        <a href="#" class="social-btn google"><i class="fab fa-google"></i> Sign in with Google</a>
-        <a href="#" class="social-btn github"><i class="fab fa-github"></i> Sign in with GitHub</a>
+    <div class="enterprise-login">
+        <a href="{% url 'adfs_login' %}" class="enterprise-btn adfs">
+            <i class="fas fa-building"></i> Sign in with Enterprise Account (ADFS)
+        </a>
+        <p class="enterprise-info">
+            <i class="fas fa-info-circle"></i> 
+            Use your organization's Active Directory credentials to access this application.
+        </p>
     </div>
     
     <div class="auth-links">
-        <p>Don't have an account? <a href="{% url 'register' %}">Register now</a></p>
+        <p>Need help? Contact <a href="mailto:support@example.com">IT support</a></p>
     </div>
 </div>
 {% endblock %}

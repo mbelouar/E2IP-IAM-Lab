@@ -1,13 +1,13 @@
-# Django Authentication System
+# Django Authentication System with ADFS Integration
 
-A comprehensive authentication system built with Django, featuring user registration, login, and a personalized dashboard.
+A comprehensive authentication system built with Django, featuring login functionality and a preparation for ADFS (Active Directory Federation Services) Single Sign-On integration.
 
 ## Features
 
 - **User Authentication**
 
   - Login functionality with Django's built-in authentication
-  - User registration with form validation
+  - Preparation for ADFS Single Sign-On integration
   - Logout capability
   - Protected routes requiring authentication
 
@@ -95,19 +95,48 @@ templates/
 ## Usage
 
 - **Login**: Visit http://127.0.0.1:8000/login/
-- **Register**: Visit http://127.0.0.1:8000/register/
 - **Dashboard**: After login, access http://127.0.0.1:8000/
 - **Admin Panel**: Visit http://127.0.0.1:8000/admin/
+
+## ADFS Integration (Planned)
+
+This project includes preparations for integrating with Active Directory Federation Services (ADFS) for enterprise Single Sign-On capabilities:
+
+### What is prepared:
+
+- Placeholder UI elements for ADFS login
+- Route structure for ADFS authentication flow
+- Configuration file with settings to be updated
+- View function placeholder for handling ADFS authentication
+
+### Implementation steps (to be completed):
+
+1. **ADFS Server Configuration:**
+
+   - Register the application as a Relying Party Trust in ADFS
+   - Configure claim rules for username, email, and other required user attributes
+   - Set up the proper redirect URIs
+
+2. **Application Configuration:**
+
+   - Update `adfs_settings.py` with your ADFS server information
+   - Implement token validation and user creation/authentication logic
+   - Set up proper error handling and logging
+
+3. **Testing and Security:**
+   - Test the authentication flow in a development environment
+   - Implement security best practices for token handling
+   - Validate SSL/TLS certificates
 
 ## Extending the Project
 
 Some ideas for extending this project:
 
-1. Add email verification for new user registrations
+1. Complete the ADFS integration using OAuth 2.0 or SAML protocols
 2. Implement password reset functionality
-3. Add social authentication (Google, Facebook, etc.)
+3. Add Multi-Factor Authentication (MFA)
 4. Create user profiles with additional information
-5. Implement two-factor authentication
+5. Implement audit logging for authentication events
 6. Add role-based access control
 
 ## Technologies Used
