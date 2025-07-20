@@ -60,6 +60,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # SAML2 authentication middleware
     'djangosaml2.middleware.SamlSessionMiddleware',
+    # Custom middleware
+    'core.middleware.SecurityHeadersMiddleware',
+    'core.middleware.SAMLAttributeMiddleware',
+    'core.middleware.SessionExpiryMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
