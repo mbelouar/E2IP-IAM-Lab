@@ -1,32 +1,62 @@
 {% extends 'base.html' %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Login | SecureAuth{% endblock %}
 
 {% block content %}
 <div class="auth-container">
-    <h2>Login</h2>
+    <div class="auth-header">
+        <i class="fas fa-lock auth-icon"></i>
+        <h2>Welcome Back</h2>
+        <p class="auth-subtitle">Sign in to continue to your account</p>
+    </div>
+    
     <div class="auth-form">
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
-                <label for="id_username">Username:</label>
+                <label for="id_username">
+                    <i class="fas fa-user input-icon"></i>
+                    Username
+                </label>
                 {{ form.username }}
                 {% if form.username.errors %}
                 <div class="error">{{ form.username.errors }}</div>
                 {% endif %}
             </div>
             <div class="form-group">
-                <label for="id_password">Password:</label>
+                <label for="id_password">
+                    <i class="fas fa-key input-icon"></i>
+                    Password
+                </label>
                 {{ form.password }}
                 {% if form.password.errors %}
                 <div class="error">{{ form.password.errors }}</div>
                 {% endif %}
             </div>
-            <button type="submit" class="btn-primary">Login</button>
+            <div class="form-options">
+                <div class="remember-me">
+                    <input type="checkbox" id="remember-me">
+                    <label for="remember-me">Remember me</label>
+                </div>
+                <a href="#" class="forgot-password">Forgot Password?</a>
+            </div>
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
         </form>
     </div>
+    
+    <div class="auth-divider">
+        <span>Or</span>
+    </div>
+    
+    <div class="social-login">
+        <a href="#" class="social-btn google"><i class="fab fa-google"></i> Sign in with Google</a>
+        <a href="#" class="social-btn github"><i class="fab fa-github"></i> Sign in with GitHub</a>
+    </div>
+    
     <div class="auth-links">
-        <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+        <p>Don't have an account? <a href="{% url 'register' %}">Register now</a></p>
     </div>
 </div>
 {% endblock %}

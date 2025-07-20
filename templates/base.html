@@ -3,22 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Authentication System{% endblock %}</title>
+    <title>{% block title %}Secure Authentication{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/additional.css">
+    <link rel="stylesheet" href="/static/css/auth-pages.css">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Authentication System</h1>
+            <div class="brand">
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h1>Secure<span>Auth</span></h1>
+            </div>
             <nav>
                 <ul>
                     {% if user.is_authenticated %}
-                        <li><a href="{% url 'home' %}">Home</a></li>
-                        <li><a href="{% url 'logout' %}">Logout</a></li>
+                        <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                     {% else %}
-                        <li><a href="{% url 'login' %}">Login</a></li>
-                        <li><a href="{% url 'register' %}">Register</a></li>
+                        <li><a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                        <li><a href="{% url 'register' %}"><i class="fas fa-user-plus"></i> Register</a></li>
                     {% endif %}
                 </ul>
             </nav>
@@ -28,7 +39,16 @@
             {% if messages %}
             <div class="messages">
                 {% for message in messages %}
-                <div class="message {{ message.tags }}">{{ message }}</div>
+                <div class="message {{ message.tags }}">
+                    {% if message.tags == 'success' %}
+                        <i class="fas fa-check-circle"></i>
+                    {% elif message.tags == 'error' %}
+                        <i class="fas fa-exclamation-circle"></i>
+                    {% elif message.tags == 'info' %}
+                        <i class="fas fa-info-circle"></i>
+                    {% endif %}
+                    <span>{{ message }}</span>
+                </div>
                 {% endfor %}
             </div>
             {% endif %}
@@ -38,7 +58,15 @@
         </main>
         
         <footer>
-            <p>&copy; 2025 Authentication System</p>
+            <div class="footer-content">
+                <p>&copy; 2025 SecureAuth | All rights reserved</p>
+                <div class="social-icons">
+                    <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
         </footer>
     </div>
 

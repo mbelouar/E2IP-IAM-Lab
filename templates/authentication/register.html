@@ -1,47 +1,80 @@
 {% extends 'base.html' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Create Account | SecureAuth{% endblock %}
 
 {% block content %}
 <div class="auth-container">
-    <h2>Register</h2>
+    <div class="auth-header">
+        <i class="fas fa-user-plus auth-icon"></i>
+        <h2>Create Account</h2>
+        <p class="auth-subtitle">Join our secure authentication system</p>
+    </div>
+    
     <div class="auth-form">
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
-                <label for="id_username">Username:</label>
+                <label for="id_username">
+                    <i class="fas fa-user input-icon"></i>
+                    Username
+                </label>
                 {{ form.username }}
                 {% if form.username.errors %}
                 <div class="error">{{ form.username.errors }}</div>
                 {% endif %}
             </div>
             <div class="form-group">
-                <label for="id_password1">Password:</label>
+                <label for="id_password1">
+                    <i class="fas fa-lock input-icon"></i>
+                    Password
+                </label>
                 {{ form.password1 }}
                 {% if form.password1.errors %}
                 <div class="error">{{ form.password1.errors }}</div>
                 {% endif %}
             </div>
             <div class="form-group">
-                <label for="id_password2">Confirm Password:</label>
+                <label for="id_password2">
+                    <i class="fas fa-lock input-icon"></i>
+                    Confirm Password
+                </label>
                 {{ form.password2 }}
                 {% if form.password2.errors %}
                 <div class="error">{{ form.password2.errors }}</div>
                 {% endif %}
             </div>
             <div class="help-text">
+                <div class="help-text-header">
+                    <i class="fas fa-info-circle"></i> Password Requirements
+                </div>
                 <ul>
-                    <li>Your password can't be too similar to your other personal information.</li>
-                    <li>Your password must contain at least 8 characters.</li>
-                    <li>Your password can't be a commonly used password.</li>
-                    <li>Your password can't be entirely numeric.</li>
+                    <li><i class="fas fa-check-circle requirement"></i> Must be at least 8 characters long</li>
+                    <li><i class="fas fa-check-circle requirement"></i> Cannot be entirely numeric</li>
+                    <li><i class="fas fa-check-circle requirement"></i> Cannot be a commonly used password</li>
+                    <li><i class="fas fa-check-circle requirement"></i> Cannot be similar to your personal information</li>
                 </ul>
             </div>
-            <button type="submit" class="btn-primary">Register</button>
+            <div class="terms-checkbox">
+                <input type="checkbox" id="agree-terms" required>
+                <label for="agree-terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+            </div>
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
         </form>
     </div>
+    
+    <div class="auth-divider">
+        <span>Or</span>
+    </div>
+    
+    <div class="social-login">
+        <a href="#" class="social-btn google"><i class="fab fa-google"></i> Register with Google</a>
+        <a href="#" class="social-btn github"><i class="fab fa-github"></i> Register with GitHub</a>
+    </div>
+    
     <div class="auth-links">
-        <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+        <p>Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
     </div>
 </div>
 {% endblock %}

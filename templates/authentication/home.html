@@ -1,27 +1,104 @@
 {% extends 'base.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Dashboard | SecureAuth{% endblock %}
 
 {% block content %}
 <div class="dashboard">
-    <h2>Welcome, {{ user.username }}!</h2>
+    <div class="dashboard-header">
+        <div class="welcome-section">
+            <h2>Welcome, <span class="username-highlight">{{ user.username }}</span>!</h2>
+            <p class="last-login">Last login: {{ user.last_login|date:"F d, Y - h:i A" }}</p>
+        </div>
+        <div class="quick-actions">
+            <a href="#" class="action-button"><i class="fas fa-cog"></i> Settings</a>
+            <a href="{% url 'logout' %}" class="action-button logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+
     <div class="dashboard-content">
-        <div class="card">
-            <h3>Your Profile</h3>
+        <div class="card profile-card">
+            <div class="card-header">
+                <i class="fas fa-user-circle"></i>
+                <h3>Your Profile</h3>
+            </div>
             <div class="profile-info">
-                <p><strong>Username:</strong> {{ user.username }}</p>
-                <p><strong>Last Login:</strong> {{ user.last_login }}</p>
-                <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
+                <div class="profile-avatar">
+                    <i class="fas fa-user-circle"></i>
+                    <div class="avatar-upload">
+                        <button class="upload-btn"><i class="fas fa-camera"></i> Change</button>
+                    </div>
+                </div>
+                <div class="profile-details">
+                    <p><i class="fas fa-user"></i> <strong>Username:</strong> {{ user.username }}</p>
+                    <p><i class="fas fa-clock"></i> <strong>Last Login:</strong> {{ user.last_login|date:"F d, Y - h:i A" }}</p>
+                    <p><i class="fas fa-calendar-plus"></i> <strong>Date Joined:</strong> {{ user.date_joined|date:"F d, Y" }}</p>
+                    <p><i class="fas fa-envelope"></i> <strong>Email:</strong> {{ user.email|default:"Not provided" }}</p>
+                    
+                    <button class="edit-profile-btn"><i class="fas fa-edit"></i> Edit Profile</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card security-card">
+            <div class="card-header">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Security Status</h3>
+            </div>
+            <div class="security-status">
+                <div class="security-score">
+                    <div class="score-circle">
+                        <span class="score">75%</span>
+                    </div>
+                    <p>Security Score</p>
+                </div>
+                <div class="security-recommendations">
+                    <ul class="action-list">
+                        <li class="completed"><i class="fas fa-check-circle"></i> Created strong password</li>
+                        <li class="pending"><i class="fas fa-exclamation-circle"></i> Set up two-factor authentication</li>
+                        <li class="pending"><i class="fas fa-exclamation-circle"></i> Verify email address</li>
+                        <li class="completed"><i class="fas fa-check-circle"></i> Account protected</li>
+                    </ul>
+                </div>
             </div>
         </div>
         
         <div class="card">
-            <h3>What's Next?</h3>
+            <div class="card-header">
+                <i class="fas fa-tasks"></i>
+                <h3>What's Next?</h3>
+            </div>
             <ul class="action-list">
-                <li>Customize your profile</li>
-                <li>Explore the application</li>
-                <li>Connect with other users</li>
+                <li><i class="fas fa-user-edit"></i> Complete your profile information</li>
+                <li><i class="fas fa-compass"></i> Explore the application features</li>
+                <li><i class="fas fa-users"></i> Connect with other users</li>
+                <li><i class="fas fa-bell"></i> Set up notification preferences</li>
             </ul>
+            <div class="card-footer">
+                <a href="#" class="view-all">View All Tasks <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+        
+        <div class="card activity-card">
+            <div class="card-header">
+                <i class="fas fa-chart-line"></i>
+                <h3>Recent Activity</h3>
+            </div>
+            <div class="activity-list">
+                <div class="activity-item">
+                    <div class="activity-icon login"><i class="fas fa-sign-in-alt"></i></div>
+                    <div class="activity-details">
+                        <p class="activity-title">Login</p>
+                        <p class="activity-time">{{ user.last_login|date:"F d, Y - h:i A" }}</p>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon account"><i class="fas fa-user-plus"></i></div>
+                    <div class="activity-details">
+                        <p class="activity-title">Account Created</p>
+                        <p class="activity-time">{{ user.date_joined|date:"F d, Y - h:i A" }}</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
