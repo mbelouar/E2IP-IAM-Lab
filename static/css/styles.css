@@ -114,7 +114,7 @@ nav a:hover::after {
 /* Main Content */
 main {
     flex-grow: 1;
-    padding: 2rem 0;
+    padding: 7rem 0;
 }
 
 /* Forms */

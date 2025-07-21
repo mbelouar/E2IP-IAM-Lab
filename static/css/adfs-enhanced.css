@@ -7,8 +7,8 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: 12px;
-    padding: 3rem 2rem;
-    max-width: 500px;
+    padding: 4rem 3rem;
+    max-width: 625px;
     width: 100%;
     margin: 2rem auto;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.08);
