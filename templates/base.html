@@ -3,128 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Secure Authentication{% endblock %}</title>
+    <title>{% block title %}SecureAuth - Enterprise Access Portal{% endblock %}</title>
+    <meta name="description" content="Secure employee access portal for SecureAuth enterprise systems">
+    <meta name="robots" content="noindex, nofollow">
     
-    <!-- Add favicon to prevent 404 errors -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔒</text></svg>">
+    <!-- Modern favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%230066cc'/><stop offset='100%' stop-color='%233385d6'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23grad)'/><path d='M50 25c-8.284 0-15 6.716-15 15v5h-5c-2.761 0-5 2.239-5 5v25c0 2.761 2.239 5 5 5h40c2.761 0 5-2.239 5-5V50c0-2.761-2.239-5-5-5h-5v-5c0-8.284-6.716-15-15-15zm0 6c5.523 0 10 4.477 10 10v5H40v-5c0-5.523 4.477-10 10-10z' fill='white'/></svg>"
     
-    <!-- Preload Font Awesome fonts to prevent FOUC -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
-    
+    <!-- Import Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="/static/css/styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/additional.css">
-    <link rel="stylesheet" href="/static/css/auth-pages.css">
-    <link rel="stylesheet" href="/static/css/simple-dashboard.css">
-    <link rel="stylesheet" href="/static/css/enterprise-login.css">
-    <link rel="stylesheet" href="/static/css/adfs-enhanced.css">
-    <link rel="stylesheet" href="/static/css/enhanced-header.css">
-    <link rel="stylesheet" href="/static/css/color-enhancements.css">
-    <link rel="stylesheet" href="/static/css/button-improvements.css">
+    
+    <!-- Modern interface styling -->
+    <link rel="stylesheet" href="/static/css/modern-interface.css">
     {% block extra_css %}{% endblock %}
     
-    <!-- Prevent layout shift and FOUC -->
-    <style>
-        /* Ensure the page doesn't render until critical fonts are loaded */
-        .font-loaded {
-            visibility: visible !important;
-        }
-        
-        /* Hide icons until fonts are loaded to prevent layout shift */
-        .fas, .fab, .fa {
-            visibility: hidden;
-        }
-        
-        /* Ensure body content doesn't shift during load */
-        body {
-            overflow-x: hidden;
-        }
-    </style>
 </head>
-<body class="font-loading">
-    <!-- Decorative floating particles -->
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="container">
-        <!-- <header class="main-header">
-            <div class="brand">
-                <div class="logo-wrapper">
-                    <div class="logo">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <div class="logo-shine"></div>
-                </div>
-                <h1><span class="secure-text">Secure</span><span class="auth-text">Auth</span></h1>
-            </div>
-            <nav class="main-nav">
-                <div class="nav-background"></div>
-                <ul>
-                    {% if user.is_authenticated %}
-                        <li><a href="{% url 'home' %}" class="nav-button"><i class="fas fa-home"></i><span>Home</span></a></li>
-                        <li><a href="{% url 'logout' %}" class="nav-button"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
-                    {% else %}
-                        <li><a href="{% url 'login' %}" class="nav-button active"><i class="fas fa-sign-in-alt"></i><span>Login</span></a></li>
-                        <li><a href="{% url 'admin:index' %}" class="nav-button"><i class="fas fa-user-shield"></i><span>Admin</span></a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </header>  -->
-        
-        <main>
-            {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                <div class="message {{ message.tags }}">
-                    {% if message.tags == 'success' %}
-                        <i class="fas fa-check-circle"></i>
-                    {% elif message.tags == 'error' %}
-                        <i class="fas fa-exclamation-circle"></i>
-                    {% elif message.tags == 'info' %}
-                        <i class="fas fa-info-circle"></i>
-                    {% endif %}
-                    <span>{{ message }}</span>
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-            
-            {% block content %}
-            {% endblock %}
-        </main>
-        
-        <footer>
-            <div class="footer-content">
-                <p>&copy; 2025 SecureAuth | All rights reserved</p>
-                <div class="social-icons">
-                    <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
-                    <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                    <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
-                </div>
-            </div>
-        </footer>
+<body id="app" {% block body_class %}{% endblock %}>
+    <!-- Enhanced Background -->
+    <div class="background-wrapper">
+        <div class="background-grid"></div>
+        <div class="background-overlay"></div>
+        <div class="circuit-lines"></div>
+        <div class="floating-elements">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+        </div>
     </div>
 
-    <!-- Font loading check script -->
-    <script>
-        // Check if FontAwesome is loaded
-        document.fonts.ready.then(function() {
-            document.body.classList.add('font-loaded');
-            document.body.classList.remove('font-loading');
-            // Make icons visible once fonts are loaded
-            document.querySelectorAll('.fas, .fab, .fa').forEach(function(icon) {
-                icon.style.visibility = 'visible';
-            });
-        });
-    </script>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="company-info">
+                <div class="company-name">SecureAuth</div>
+                <div class="company-tagline">Enterprise Security Platform</div>
+            </div>
+            <div class="system-status" title="All systems operational">
+                <div class="status-indicator"></div>
+                <span>All Systems Online</span>
+            </div>
+        </div>
+        <div class="utility-controls">
+            <!-- Theme Toggle -->
+            <button class="utility-btn" onclick="toggleTheme()" title="Toggle Dark Mode" aria-label="Toggle dark mode">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="themeIcon">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+            </button>
+            
+            <!-- Help -->
+            <button class="utility-btn" onclick="showHelp()" title="Get Help" aria-label="Get help">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        {% if messages %}
+        <div class="toast-container" id="toastContainer">
+            {% for message in messages %}
+            <div class="toast {{ message.tags }} show">
+                <div class="toast-header">
+                    <div class="toast-title">
+                        {% if message.tags == 'success' %}
+                            Success
+                        {% elif message.tags == 'error' %}
+                            Error
+                        {% elif message.tags == 'info' %}
+                            Information
+                        {% else %}
+                            Notification
+                        {% endif %}
+                    </div>
+                    <button class="toast-close" onclick="closeToast(this)">×</button>
+                </div>
+                <div class="toast-message">{{ message }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+        
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 SecureAuth. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link" onclick="showToast('Privacy Policy', 'Learn how we protect your personal information', 'info')">Privacy Policy</a>
+                <a href="#" class="footer-link" onclick="showToast('IT Support', 'Contact: support@secureauth.com or call ext. 4357', 'info')">IT Support</a>
+                <a href="#" class="footer-link" onclick="showToast('System Status', 'All systems operational - 99.9% uptime', 'success')">System Status</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Container for dynamic toasts -->
+    <div class="toast-container" id="dynamicToastContainer"></div>
+
     <script src="/static/js/script.js"></script>
+    <script src="/static/js/dashboard.js"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

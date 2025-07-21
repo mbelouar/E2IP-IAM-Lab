@@ -13,35 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
     showWelcomeMessage();
     animateBackground();
-    setupKeyboardShortcuts();
-    
-    // Enhanced login button interaction
-    const loginButton = document.getElementById('loginButton');
-    if (loginButton) {
-        // Add hover effect with subtle animation
-        loginButton.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-3px)';
-            this.style.boxShadow = '0 15px 35px rgba(0, 102, 204, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2)';
-        });
-        
-        loginButton.addEventListener('mouseleave', function() {
-            this.style.transform = '';
-            this.style.boxShadow = '';
-        });
-        
-        // Add loading state when clicked
-        loginButton.addEventListener('click', function(e) {
-            if (!this.classList.contains('loading')) {
-                this.classList.add('loading');
-                const buttonText = this.querySelector('.button-text');
-                if (buttonText) {
-                    buttonText.textContent = 'Authenticating...';
-                }
-                
-                // We don't prevent default here so the form submits normally
-            }
-        });
-    }
 });
 
 function initializeApp() {
@@ -57,35 +28,6 @@ function initializeApp() {
             showToast('Welcome Back', `Last login: ${new Date(AppState.lastLogin).toLocaleString()}`, 'info');
         }, 2000);
     }
-    
-    // Initialize dashboard if on dashboard page
-    if (document.querySelector('.dashboard-container')) {
-        initDashboard();
-    }
-}
-
-function initDashboard() {
-    // Add card hover effects
-    const cards = document.querySelectorAll('.dashboard-card');
-    cards.forEach(card => {
-        card.addEventListener('mouseenter', () => {
-            card.style.transform = 'translateY(-5px)';
-            card.style.boxShadow = '0 8px 30px rgba(0, 0, 0, 0.12)';
-        });
-        
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = '';
-            card.style.boxShadow = '';
-        });
-    });
-    
-    // Store current login time
-    localStorage.setItem('lastLogin', new Date().toString());
-    
-    // Check password age and show notification if needed
-    setTimeout(() => {
-        showToast('Security Reminder', 'For optimal security, change your password every 30 days', 'info');
-    }, 5000);
 }
 
 // Theme management
@@ -234,11 +176,6 @@ function handleLogin(event) {
 // Utility functions
 function showHelp() {
     showToast('Help & Support', 'Need assistance? Contact IT Support at support@secureauth.com or call extension 4357 for immediate help.', 'info');
-    
-    // Display keyboard shortcuts
-    setTimeout(() => {
-        showToast('Keyboard Shortcuts', 'Alt+T: Toggle theme, Alt+H: Help, Alt+L: Logout, Esc: Close notifications', 'info');
-    }, 1500);
 }
 
 function showWelcomeMessage() {
@@ -252,57 +189,20 @@ function showWelcomeMessage() {
     }, 1500);
 }
 
-// Setup keyboard shortcuts for accessibility
-function setupKeyboardShortcuts() {
-    document.addEventListener('keydown', function(event) {
-        // Alt+T: Toggle theme
-        if (event.altKey && event.key === 't') {
-            event.preventDefault();
-            toggleTheme();
-        }
-        
-        // Alt+H: Show help
-        if (event.altKey && event.key === 'h') {
-            event.preventDefault();
-            showHelp();
-        }
-        
-        // Alt+L: Logout (if on dashboard)
-        if (event.altKey && event.key === 'l') {
-            event.preventDefault();
-            const logoutButton = document.querySelector('.logout-button');
-            if (logoutButton) {
-                showToast('Logout', 'Logging out...', 'info');
-                setTimeout(() => {
-                    logoutButton.click();
-                }, 1000);
-            }
-        }
-        
-        // Escape key: Close all toasts
-        if (event.key === 'Escape') {
-            const toasts = document.querySelectorAll('.toast.show');
-            toasts.forEach(toast => {
-                toast.classList.remove('show');
-                setTimeout(() => {
-                    toast.remove();
-                }, 300);
-            });
-        }
-        
-        // Ctrl/Cmd + D for dark mode (legacy support)
-        if ((event.ctrlKey || event.metaKey) && event.key === 'd') {
-            event.preventDefault();
-            toggleTheme();
-        }
-        
-        // Ctrl/Cmd + K for help (legacy support)
-        if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
-            event.preventDefault();
-            showHelp();
-        }
-    });
-}
+// Keyboard shortcuts
+document.addEventListener('keydown', function(event) {
+    // Ctrl/Cmd + D for dark mode
+    if ((event.ctrlKey || event.metaKey) && event.key === 'd') {
+        event.preventDefault();
+        toggleTheme();
+    }
+    
+    // Ctrl/Cmd + K for help
+    if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+        event.preventDefault();
+        showHelp();
+    }
+});
 
 // Connection monitoring
 window.addEventListener('online', () => {

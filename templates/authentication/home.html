@@ -1,49 +1,565 @@
 {% extends 'base.html' %}
 
-{% block title %}Dashboard | SecureAuth{% endblock %}
+{% block title %}SecureAuth - Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .security-score-container {
+        margin-top: 1.5rem;
+        text-align: center;
+    }
+    
+    .security-score-label {
+        font-size: 0.9rem;
+        color: var(--text-tertiary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .dark-mode .security-score-label {
+        color: var(--dark-text-tertiary);
+    }
+    
+    .security-score-meter {
+        height: 8px;
+        background-color: var(--bg-tertiary);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+    }
+    
+    .dark-mode .security-score-meter {
+        background-color: var(--dark-bg-tertiary);
+    }
+    
+    .security-score-fill {
+        height: 100%;
+        background-color: var(--success);
+        border-radius: 4px;
+        width: 85%;
+        transition: width 1s ease-in-out;
+    }
+    
+    .security-score-value {
+        font-weight: 600;
+        color: var(--success);
+    }
+    
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding: 0 1rem;
+    }
+    
+    .dashboard-header h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        color: var(--text-primary);
+    }
+    
+    .dark-mode .dashboard-header h1 {
+        color: var(--dark-text-primary);
+    }
+    
+    .dashboard-actions-top {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .session-timer {
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        background-color: var(--bg-tertiary);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+    }
+    
+    .dark-mode .session-timer {
+        background-color: var(--dark-bg-tertiary);
+        color: var(--dark-text-secondary);
+    }
+    
+    .session-timer-icon {
+        margin-right: 0.5rem;
+    }
+    
+    .utility-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .utility-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background-color: var(--bg-tertiary);
+        border: none;
+        border-radius: 20px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.9rem;
+        transition: all var(--anim-speed-normal);
+    }
+    
+    .dark-mode .utility-button {
+        background-color: var(--dark-bg-tertiary);
+        color: var(--dark-text-secondary);
+    }
+    
+    .utility-button:hover {
+        background-color: var(--bg-secondary);
+        color: var(--primary-blue);
+    }
+    
+    .dark-mode .utility-button:hover {
+        background-color: var(--dark-bg-secondary);
+        color: var(--primary-blue-light);
+    }
+    
+    .notification-button {
+        position: relative;
+    }
+    
+    .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: var(--error);
+        color: white;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .activity-log {
+        margin-top: 1rem;
+        max-height: 200px;
+        overflow-y: auto;
+        border-radius: 8px;
+        background-color: var(--bg-tertiary);
+        padding: 0.5rem;
+    }
+    
+    .dark-mode .activity-log {
+        background-color: var(--dark-bg-tertiary);
+    }
+    
+    .activity-log-entry {
+        display: flex;
+        padding: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.9rem;
+    }
+    
+    .dark-mode .activity-log-entry {
+        border-color: var(--dark-border-color);
+    }
+    
+    .activity-log-entry:last-child {
+        border-bottom: none;
+    }
+    
+    .log-timestamp {
+        flex-shrink: 0;
+        width: 80px;
+        color: var(--text-tertiary);
+    }
+    
+    .dark-mode .log-timestamp {
+        color: var(--dark-text-tertiary);
+    }
+    
+    .log-action {
+        flex-grow: 1;
+        color: var(--text-secondary);
+    }
+    
+    .dark-mode .log-action {
+        color: var(--dark-text-secondary);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="simple-dashboard">
-    <div class="auth-success-card">
-        <div class="auth-success-icon">
-            <i class="fas fa-check-circle"></i>
+<div class="dashboard-header">
+    <h1>Dashboard</h1>
+    <div class="dashboard-actions-top">
+        <div class="session-timer">
+            <div class="session-timer-icon">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <span>Session expires in: <span id="sessionTimeRemaining">30:00</span></span>
         </div>
-        <h2>Authentication Successful</h2>
-        <div class="auth-success-message">
-            <p>You are now securely logged in to the system.</p>
+        <div class="utility-buttons">
+            <button class="utility-button" onclick="showToast('Refresh', 'Dashboard data refreshed', 'info')">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                <span>Refresh</span>
+            </button>
+            <button class="utility-button notification-button" onclick="showSecurityRecommendations()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                <span>Notifications</span>
+                <div id="notificationBadge" class="notification-badge">3</div>
+            </button>
         </div>
+    </div>
+</div>
+
+<div class="dashboard-container">
+    <!-- Success Card -->
+    <div class="dashboard-card success-card">
+        <div class="success-icon">
+            <svg width="80" height="80" fill="none" stroke="var(--success)" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </div>
+        <div class="welcome-section">
+            <h1>Welcome, {{ user.username }}</h1>
+            <p>You've successfully authenticated to the SecureAuth platform</p>
+            <div class="session-info">Session established at {{ user.last_login|date:"h:i A" }}</div>
+            
+            <div class="security-score-container">
+                <div class="security-score-label">Account Security Score</div>
+                <div class="security-score-meter">
+                    <div class="security-score-fill" id="securityScoreFill"></div>
+                </div>
+                <div class="security-score-value" id="securityScoreValue">85%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Information Card -->
+    <div class="dashboard-card user-profile-card">
+        <h2 class="card-title"><i class="fas fa-id-card"></i> User Profile</h2>
         
         <div class="user-info">
             <div class="user-info-item">
-                <i class="fas fa-user"></i>
-                <div class="info-content">
+                <div class="user-info-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                </div>
+                <div class="user-info-content">
                     <span class="info-label">Username</span>
                     <span class="info-value">{{ user.username }}</span>
                 </div>
             </div>
             
             <div class="user-info-item">
-                <i class="fas fa-clock"></i>
-                <div class="info-content">
+                <div class="user-info-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="user-info-content">
                     <span class="info-label">Last Login</span>
                     <span class="info-value">{{ user.last_login|date:"F d, Y - h:i A" }}</span>
                 </div>
             </div>
             
             <div class="user-info-item">
-                <i class="fas fa-calendar"></i>
-                <div class="info-content">
+                <div class="user-info-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <div class="user-info-content">
                     <span class="info-label">Account Created</span>
                     <span class="info-value">{{ user.date_joined|date:"F d, Y" }}</span>
                 </div>
             </div>
         </div>
+    </div>
+    
+    <!-- Security Stats Card -->
+    <div class="dashboard-card security-card">
+        <h2 class="card-title"><i class="fas fa-shield-alt"></i> Security Status</h2>
         
-        <div class="auth-actions">
-            <a href="{% url 'logout' %}" class="logout-button">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
+        <div class="security-stats">
+            <div class="security-stat-item">
+                <div class="stat-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-label">MFA Status</span>
+                    <span class="stat-value">Enabled</span>
+                </div>
+            </div>
+            
+            <div class="security-stat-item">
+                <div class="stat-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-label">Password Strength</span>
+                    <span class="stat-value">Strong</span>
+                </div>
+            </div>
+            
+            <div class="security-stat-item">
+                <div class="stat-icon warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-label">Last Password Change</span>
+                    <span class="stat-value">45 days ago</span>
+                </div>
+            </div>
         </div>
+    </div>
+    
+    <!-- Activity Log Card -->
+    <div class="dashboard-card activity-card">
+        <h2 class="card-title"><i class="fas fa-history"></i> Activity Log</h2>
+        
+        <div class="activity-log" id="activityLog">
+            <div class="activity-log-entry">
+                <div class="log-timestamp">{{ user.last_login|time:"h:i A" }}</div>
+                <div class="log-action">Successful login from {{ request.META.REMOTE_ADDR }}</div>
+            </div>
+            <div class="activity-log-entry">
+                <div class="log-timestamp">{{ user.last_login|time:"h:i A" }}</div>
+                <div class="log-action">Authentication verification completed</div>
+            </div>
+            <div class="activity-log-entry">
+                <div class="log-timestamp">{{ user.last_login|time:"h:i A" }}</div>
+                <div class="log-action">Session initiated</div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 1rem;">
+            <button class="utility-button" onclick="showActivityLog()">
+                <i class="fas fa-sync-alt"></i> Add Log Entry
+            </button>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="dashboard-actions">
+        <a href="#" class="action-button" onclick="showToast('Profile Update', 'Profile update functionality coming soon', 'info')">
+            <i class="fas fa-user-edit"></i> Edit Profile
+        </a>
+        <a href="#" class="action-button" onclick="showToast('Password Change', 'Password change functionality coming soon', 'info')">
+            <i class="fas fa-key"></i> Change Password
+        </a>
+        <a href="{% url 'logout' %}" class="action-button logout-button">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/dashboard.js"></script>
+<script>
+    // Initialize countdown timer
+    document.addEventListener('DOMContentLoaded', function() {
+        let timeRemaining = 30 * 60; // 30 minutes in seconds
+        const timerDisplay = document.getElementById('sessionTimeRemaining');
+        
+        // Update security score with animation
+        setTimeout(() => {
+            const securityScore = Math.floor(Math.random() * 30) + 70; // 70-100
+            const scoreElement = document.getElementById('securityScoreValue');
+            const scoreFill = document.getElementById('securityScoreFill');
+            
+            if (scoreElement && scoreFill) {
+                scoreElement.textContent = securityScore + '%';
+                scoreFill.style.width = securityScore + '%';
+                
+                // Set color based on score
+                if (securityScore >= 90) {
+                    scoreFill.style.backgroundColor = 'var(--success)';
+                    scoreElement.style.color = 'var(--success)';
+                } else if (securityScore >= 70) {
+                    scoreFill.style.backgroundColor = 'var(--primary-blue)';
+                    scoreElement.style.color = 'var(--primary-blue)';
+                } else {
+                    scoreFill.style.backgroundColor = 'var(--warning)';
+                    scoreElement.style.color = 'var(--warning)';
+                }
+            }
+        }, 1000);
+        
+        // Timer countdown
+        const timerInterval = setInterval(() => {
+            timeRemaining--;
+            
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            // Warning when 5 minutes remain
+            if (timeRemaining === 300) {
+                showToast('Session Expiring', 'Your session will expire in 5 minutes', 'warning');
+            }
+            
+            // Stop at 0
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                showToast('Session Expired', 'Your session has expired', 'error');
+                
+                // In a real application, redirect to login after delay
+                setTimeout(() => {
+                    window.location.href = '{% url "login" %}';
+                }, 3000);
+            }
+        }, 1000);
+    });
+</script>
+{% endblock %}
+<div class="dashboard-header">
+    <h1>Dashboard</h1>
+    <div class="dashboard-actions-top">
+        <div class="session-timer">
+            <div class="session-timer-icon">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <span>Session expires in: <span id="sessionTimeRemaining">30:00</span></span>
+        </div>
+        <div class="utility-buttons">
+            <button class="utility-button" onclick="showToast('Refresh', 'Dashboard data refreshed', 'info')">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                <span>Refresh</span>
+            </button>
+            <button class="utility-button notification-button">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                <span>Notifications</span>
+                <div id="notificationBadge" class="notification-badge">0</div>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-container">
+    <!-- Success Card -->
+    <div class="dashboard-card success-card">
+        <div class="success-icon">
+            <svg width="80" height="80" fill="none" stroke="var(--success)" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </div>
+        <div class="welcome-section">
+            <h1>Welcome, {{ user.username }}</h1>
+            <p>You've successfully authenticated to the SecureAuth platform</p>
+            <div class="session-info">Session established at {{ user.last_login|date:"h:i A" }}</div>
+        </div>
+    </div>
+
+    <!-- User Information Card -->
+    <div class="dashboard-card user-profile-card">
+        <h2 class="card-title"><i class="fas fa-id-card"></i> User Profile</h2>
+        
+        <div class="user-info">
+            <div class="user-info-item">
+                <div class="user-info-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                </div>
+                <div class="user-info-content">
+                    <span class="info-label">Username</span>
+                    <span class="info-value">{{ user.username }}</span>
+                </div>
+            </div>
+            
+            <div class="user-info-item">
+                <div class="user-info-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="user-info-content">
+                    <span class="info-label">Last Login</span>
+                    <span class="info-value">{{ user.last_login|date:"F d, Y - h:i A" }}</span>
+                </div>
+            </div>
+            
+            <div class="user-info-item">
+                <div class="user-info-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <div class="user-info-content">
+                    <span class="info-label">Account Created</span>
+                    <span class="info-value">{{ user.date_joined|date:"F d, Y" }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Security Stats Card -->
+    <div class="dashboard-card security-card">
+        <h2 class="card-title"><i class="fas fa-shield-alt"></i> Security Status</h2>
+        
+        <div class="security-stats">
+            <div class="security-stat-item">
+                <div class="stat-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-label">MFA Status</span>
+                    <span class="stat-value">Enabled</span>
+                </div>
+            </div>
+            
+            <div class="security-stat-item">
+                <div class="stat-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-label">Password Strength</span>
+                    <span class="stat-value">Strong</span>
+                </div>
+            </div>
+            
+            <div class="security-stat-item">
+                <div class="stat-icon warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-label">Last Password Change</span>
+                    <span class="stat-value">45 days ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="dashboard-actions">
+        <a href="#" class="action-button" onclick="showToast('Profile Update', 'Profile update functionality coming soon', 'info')">
+            <i class="fas fa-user-edit"></i> Edit Profile
+        </a>
+        <a href="#" class="action-button" onclick="showToast('Password Change', 'Password change functionality coming soon', 'info')">
+            <i class="fas fa-key"></i> Change Password
+        </a>
+        <a href="{% url 'logout' %}" class="action-button logout-button">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
     </div>
 </div>
 {% endblock %}
