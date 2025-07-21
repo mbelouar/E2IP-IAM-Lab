@@ -48,7 +48,7 @@
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
     padding: var(--space-3xl) var(--space-2xl) !important;
     width: 100% !important;
-    max-width: 460px !important;
+    max-width: 531px !important;
     position: relative !important;
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
     overflow: hidden !important;
@@ -407,7 +407,7 @@ body.dark-mode .security-detail {
     padding: var(--space-lg) !important;
     border-radius: var(--radius-lg) !important;
     font-size: 0.95rem !important;
-    color: var(--gray-700) !important;
+    color: #6e8cb7 !important;
     margin-bottom: var(--space-xl) !important;
     text-align: center !important;
     border-left: 3px solid var(--primary-blue-light) !important;

@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
     <link rel="stylesheet" href="{% static 'css/login-enhancements.css' %}">
     <link rel="stylesheet" href="{% static 'css/background-enhancements.css' %}">
+    <link rel="stylesheet" href="{% static 'css/header-enhancements.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -30,10 +31,18 @@
     <!-- Header -->
     <header class="header">
         <div class="header-left">
-            <div class="company-info">
-                <div class="company-name">SecureAuth</div>
-                <div class="company-tagline">Enterprise Access Portal</div>
-            </div>
+            <a href="#" class="header-logo">
+                <div class="header-logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <div class="company-info">
+                    <div class="company-name">SecureAuth</div>
+                    <div class="company-tagline">Enterprise Access Portal</div>
+                </div>
+            </a>
             <div class="system-status">
                 <div class="status-indicator"></div>
                 <span>All systems operational</span>
