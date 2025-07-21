@@ -1,107 +1,200 @@
-{% extends 'base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureAuth - Enterprise Access Portal</title>
+    <meta name="description" content="Secure employee access portal for SecureAuth enterprise systems">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%230066cc'/><stop offset='100%' stop-color='%233385d6'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23grad)'/><path d='M50 25c-8.284 0-15 6.716-15 15v5h-5c-2.761 0-5 2.239-5 5v25c0 2.761 2.239 5 5 5h40c2.761 0 5-2.239 5-5V50c0-2.761-2.239-5-5-5h-5v-5c0-8.284-6.716-15-15-15zm0 6c5.523 0 10 4.477 10 10v5H40v-5c0-5.523 4.477-10 10-10z' fill='white'/></svg>">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Enhanced Background -->
+    <div class="background-wrapper">
+        <div class="background-grid"></div>
+        <div class="background-overlay"></div>
+        <div class="circuit-lines"></div>
+        <div class="floating-elements">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+        </div>
+    </div>
 
-{% block title %}SecureAuth - Enterprise Access Portal{% endblock %}
-
-{% block content %}
-<div class="login-card">
-    <!-- Logo Section -->
-    <div class="logo-section">
-        <div class="logo-container">
-            <div class="logo" onclick="logoClick()" tabindex="0" role="button" aria-label="SecureAuth logo">
-                <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="rgba(255,255,255,0.9)"/>
-                            <stop offset="100%" stop-color="rgba(255,255,255,1)"/>
-                        </linearGradient>
-                    </defs>
-                    <!-- Shield outline -->
-                    <path d="M50 10 L20 25 L20 50 C20 70, 35 85, 50 90 C65 85, 80 70, 80 50 L80 25 Z" 
-                          fill="none" stroke="url(#logoGrad)" stroke-width="3"/>
-                    <!-- Lock body -->
-                    <rect x="35" y="45" width="30" height="25" rx="3" fill="url(#logoGrad)"/>
-                    <!-- Lock shackle -->
-                    <path d="M40 45 L40 35 C40 27, 45 22, 50 22 C55 22, 60 27, 60 35 L60 45" 
-                          fill="none" stroke="url(#logoGrad)" stroke-width="3"/>
-                    <!-- Keyhole -->
-                    <circle cx="50" cy="55" r="3" fill="rgba(0,102,204,0.8)"/>
-                    <rect x="48.5" y="58" width="3" height="6" fill="rgba(0,102,204,0.8)"/>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="company-info">
+                <div class="company-name">SecureAuth</div>
+                <div class="company-tagline">Enterprise Access Portal</div>
+            </div>
+            <div class="system-status">
+                <div class="status-indicator"></div>
+                <span>All systems operational</span>
+            </div>
+        </div>
+        <div class="utility-controls">
+            <button id="themeToggle" class="utility-btn" aria-label="Toggle dark mode">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
-            </div>
-        </div>
-        <div class="brand-name">SecureAuth</div>
-        <div class="brand-tagline">Enterprise Security Platform</div>
-    </div>
-
-    <!-- Welcome Section -->
-    <div class="welcome-section">
-        <h1>Welcome Back</h1>
-        <p>Access your secure workspace with enterprise-grade authentication</p>
-    </div>
-
-    <!-- Login Form -->
-    <form class="login-form" action="{% url 'adfs_login' %}" method="get">
-        <button type="submit" class="login-button" id="loginButton">
-            <div class="button-content">
-                <div class="loading-spinner"></div>
-                <span class="button-text">Login with SSO</span>
-                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </button>
+            <button id="helpBtn" class="utility-btn" aria-label="Get help">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
                 </svg>
-            </div>
-        </button>
-    </form>
-    
-    <!-- Security Features -->
-    <div class="security-features">
-        <div class="security-item" onclick="showSecurityInfo('sso')">
-            <svg class="security-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-            </svg>
-            <div class="security-content">
-                <div class="security-text">Enterprise SSO</div>
-            </div>
+            </button>
         </div>
-        <div class="security-item" onclick="showSecurityInfo('mfa')">
-            <svg class="security-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-            </svg>
-            <div class="security-content">
-                <div class="security-text">Multi-Factor Auth</div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="login-card">
+            <div class="logo-section">
+                <div class="logo-container">
+                    <div class="logo" onclick="logoClick()">
+                        <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h2 class="brand-name">SecureAuth</h2>
+                <p class="brand-tagline">Enterprise Authentication Solution</p>
+            </div>
+            
+            <div class="login-options">
+                <h3 class="auth-heading">Choose Login Method</h3>
+                <div class="auth-buttons">
+                    <button id="standardLoginBtn" class="auth-option-button" onclick="toggleLoginForm('standard')">
+                        <svg class="auth-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <span>Standard Login</span>
+                    </button>
+                    <button id="ssoLoginBtn" class="auth-option-button" onclick="toggleLoginForm('sso')">
+                        <svg class="auth-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        <span>Login with SSO</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="standardLoginForm" class="login-form" style="display: none;">
+                <div class="form-header">
+                    <h3>Standard Login</h3>
+                    <p class="form-description">Enter your company credentials</p>
+                </div>
+                <form method="post" action="{% url 'authentication:login' %}" onsubmit="return handleStandardLogin(event)">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <div class="input-container">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <input type="text" id="username" name="username" placeholder="Enter your username">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="password">Password</label>
+                            <a href="#" class="forgot-link">Forgot password?</a>
+                        </div>
+                        <div class="input-container">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <input type="password" id="password" name="password" placeholder="Enter your password">
+                            <button type="button" class="toggle-password" aria-label="Toggle password visibility">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="rememberMe" name="rememberMe">
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">Remember me</span>
+                        </label>
+                    </div>
+                    <button type="submit" class="login-button">
+                        <span class="button-content">Sign In</span>
+                        <div class="loading-spinner"></div>
+                    </button>
+                </form>
+            </div>
+
+            <div id="ssoLoginForm" class="login-form" style="display: none;">
+                <div class="form-header">
+                    <h3>Enterprise SSO</h3>
+                    <p class="form-description">Log in with your organizational identity</p>
+                </div>
+                <form method="get" action="{% url 'authentication:adfs_login' %}">
+                    {% csrf_token %}
+                    <p class="sso-info">You will be redirected to your organization's identity provider to complete the authentication process.</p>
+                    <button type="submit" class="login-button sso-button">
+                        <span class="button-content">Continue with SSO</span>
+                    </button>
+                </form>
+            </div>
+            
+            <div class="security-features">
+                <div class="security-item" onclick="showSecurityInfo('sso')">
+                    <div class="security-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <div class="security-content">
+                        <div class="security-text">Enterprise SSO</div>
+                    </div>
+                </div>
+                
+                <div class="security-item" onclick="showSecurityInfo('mfa')">
+                    <div class="security-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
+                    <div class="security-content">
+                        <div class="security-text">MultiFactor Auth</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
 
-{% block extra_js %}
-<script>
-function showSecurityInfo(type) {
-    const securityInfo = {
-        sso: {
-            title: 'Enterprise Single Sign-On',
-            message: 'Secure authentication through Active Directory Federation Services (ADFS) with enterprise-grade security protocols and seamless integration.'
-        },
-        mfa: {
-            title: 'Multi-Factor Authentication',
-            message: 'Additional security layer requiring multiple forms of verification including SMS, authenticator apps, or hardware tokens for enhanced protection.'
-        }
-    };
-    
-    const info = securityInfo[type];
-    if (info) {
-        showToast(info.title, info.message, 'info');
-    }
-}
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 SecureAuth. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Contact Support</a>
+            </div>
+        </div>
+    </footer>
 
-function logoClick() {
-    const logo = document.querySelector('.logo');
-    logo.style.transform = 'scale(1.1) rotate(360deg)';
-    showToast('SecureAuth', 'Enterprise Security Platform - Protecting your digital workspace with advanced authentication and authorization solutions.', 'info');
-    
-    setTimeout(() => {
-        logo.style.transform = '';
-    }, 600);
-}
-</script>
-{% endblock %}
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="{% static 'js/login.js' %}"></script>
+</body>
+</html>

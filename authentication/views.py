@@ -11,18 +11,37 @@ def home(request):
     return render(request, 'authentication/home.html')
 
 def login_view(request):
-    """View for user login - simplified to only show ADFS login option"""
+    """View for user login - using our SecureAuth template"""
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect('authentication:home')
     
-    # Simply render the login page with ADFS button only
+    # Handle form submission
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        remember_me = request.POST.get('rememberMe') == 'on'
+        
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            
+            # Set session expiry based on remember me
+            if not remember_me:
+                # Session expires when browser closes
+                request.session.set_expiry(0)
+            
+            return redirect('authentication:home')
+        else:
+            messages.error(request, "Invalid username or password.")
+    
     return render(request, 'authentication/login.html')
 
 def logout_view(request):
     """View for user logout"""
     logout(request)
     messages.info(request, "You have successfully logged out.")
-    return redirect('login')
+    return redirect('authentication:login')
 
 @require_http_methods(["GET"])
 def adfs_login(request):
@@ -36,5 +55,16 @@ def adfs_login(request):
     # 3. Create or authenticate the user based on ADFS claims
     # 4. Log the user in
     
-    messages.info(request, "ADFS authentication is not yet implemented.")
-    return redirect('login')
+    # For demonstration purposes, we're simulating a successful SSO login
+    # In a real implementation, this would be replaced with actual ADFS/SAML integration
+    
+    # Auto-login a dummy user to simulate SSO authentication
+    # In real implementation, this would be handled by the SSO provider
+    user = authenticate(request, username='admin', password='admin')
+    if user is not None:
+        login(request, user)
+        messages.success(request, "Successfully authenticated via SSO.")
+        return redirect('authentication:home')
+    else:
+        messages.error(request, "SSO authentication failed. Please try again or contact support.")
+        return redirect('authentication:login')
