@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Secure Authentication{% endblock %}</title>
+    
+    <!-- Add favicon to prevent 404 errors -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔒</text></svg>">
+    
+    <!-- Preload Font Awesome fonts to prevent FOUC -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,8 +26,26 @@
     <link rel="stylesheet" href="/static/css/color-enhancements.css">
     <link rel="stylesheet" href="/static/css/button-improvements.css">
     {% block extra_css %}{% endblock %}
+    
+    <!-- Prevent layout shift and FOUC -->
+    <style>
+        /* Ensure the page doesn't render until critical fonts are loaded */
+        .font-loaded {
+            visibility: visible !important;
+        }
+        
+        /* Hide icons until fonts are loaded to prevent layout shift */
+        .fas, .fab, .fa {
+            visibility: hidden;
+        }
+        
+        /* Ensure body content doesn't shift during load */
+        body {
+            overflow-x: hidden;
+        }
+    </style>
 </head>
-<body>
+<body class="font-loading">
     <!-- Decorative floating particles -->
     <div class="particle"></div>
     <div class="particle"></div>
@@ -49,7 +75,7 @@
                     {% endif %}
                 </ul>
             </nav>
-        </header>
+        </header> 
         
         <main>
             {% if messages %}
@@ -86,6 +112,18 @@
         </footer>
     </div>
 
+    <!-- Font loading check script -->
+    <script>
+        // Check if FontAwesome is loaded
+        document.fonts.ready.then(function() {
+            document.body.classList.add('font-loaded');
+            document.body.classList.remove('font-loading');
+            // Make icons visible once fonts are loaded
+            document.querySelectorAll('.fas, .fab, .fa').forEach(function(icon) {
+                icon.style.visibility = 'visible';
+            });
+        });
+    </script>
     <script src="/static/js/script.js"></script>
     {% block extra_js %}{% endblock %}
 </body>

@@ -1,6 +1,7 @@
 // Main JavaScript file for the authentication system
 
-document.addEventListener('DOMContentLoaded', function() {
+// Wait for window load instead of just DOM content to ensure all resources are loaded
+window.addEventListener('load', function() {
     // Enhanced header interactions
     const mainHeader = document.querySelector('.main-header');
     const brandLogo = document.querySelector('.brand .logo');
@@ -34,10 +35,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Enhance enterprise login button interaction
-    const enterpriseBtn = document.querySelector('.enterprise-btn.adfs');
-    if (enterpriseBtn) {
+    const enterpriseBtnPulse = document.querySelector('.enterprise-btn.adfs');
+    if (enterpriseBtnPulse) {
         // Add subtle pulse effect when hovering near the button
-        enterpriseBtn.addEventListener('mousemove', function(e) {
+        enterpriseBtnPulse.addEventListener('mousemove', function(e) {
             const rect = this.getBoundingClientRect();
             const x = e.clientX - rect.left; // x position within the element
             const y = e.clientY - rect.top;  // y position within the element
@@ -54,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Reset transform on mouse leave
-        enterpriseBtn.addEventListener('mouseleave', function() {
+        enterpriseBtnPulse.addEventListener('mouseleave', function() {
             this.style.transform = '';
         });
     }
