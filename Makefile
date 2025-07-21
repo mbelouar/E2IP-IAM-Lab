@@ -10,7 +10,7 @@ build:
 
 # Run the container
 run:
-	docker run -d --name $(CONTAINER_NAME) -p $(PORT):8000 $(IMAGE_NAME)
+	docker run -d --name $(CONTAINER_NAME) -p $(PORT):8000 -v $(shell pwd)/static:/app/static $(IMAGE_NAME)
 
 # Stop and remove the container
 stop:
@@ -24,9 +24,10 @@ rebuild: stop build run
 logs:
 	docker logs -f $(CONTAINER_NAME)
 
-# Remove image and container
+# Remove image, container, and volumes
 clean: stop
 	docker rmi $(IMAGE_NAME) || true
+	docker volume prune -f
 
 # Execute bash in container
 bash:
