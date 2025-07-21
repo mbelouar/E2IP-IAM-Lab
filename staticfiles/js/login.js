@@ -9,6 +9,9 @@ const AppState = {
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
     animateBackground();
+    
+    // Default to SSO login option
+    toggleLoginForm('sso');
 });
 
 function initializeApp() {
@@ -159,8 +162,28 @@ function closeToast(button) {
     }, 300);
 }
 
-// Login handling
-function handleLogin(event) {
+// Login form toggle
+function toggleLoginForm(loginType) {
+    const standardForm = document.getElementById('standardLoginForm');
+    const ssoForm = document.getElementById('ssoLoginForm');
+    const standardBtn = document.getElementById('standardLoginBtn');
+    const ssoBtn = document.getElementById('ssoLoginBtn');
+    
+    if (loginType === 'standard') {
+        standardForm.style.display = 'block';
+        ssoForm.style.display = 'none';
+        standardBtn.classList.add('active');
+        ssoBtn.classList.remove('active');
+    } else {
+        standardForm.style.display = 'none';
+        ssoForm.style.display = 'block';
+        standardBtn.classList.remove('active');
+        ssoBtn.classList.add('active');
+    }
+}
+
+// Login handling for standard login
+function handleStandardLogin(event) {
     // This is where we'll integrate with Django's authentication
     // For now, we'll just simulate a login with a loading state
     
@@ -168,8 +191,11 @@ function handleLogin(event) {
     const username = form.querySelector('#username').value;
     const password = form.querySelector('#password').value;
     
-    // Form will be submitted normally to Django view
-    // No need to prevent default
+    if (!username || !password) {
+        showToast('Error', 'Please enter both username and password', 'error');
+        event.preventDefault();
+        return false;
+    }
     
     // Show loading state
     const loginButton = form.querySelector('.login-button');
@@ -187,17 +213,13 @@ function showSecurityInfo(type) {
     let title, message;
     
     switch (type) {
-        case 'encryption':
-            title = 'End-to-End Encryption';
-            message = 'All data transmitted between your browser and our servers is encrypted using industry-standard TLS/SSL protocols.';
+        case 'sso':
+            title = 'Enterprise SSO';
+            message = 'Our Single Sign-On solution integrates with your organization\'s identity provider, enabling secure and convenient access to all enterprise applications with just one login.';
             break;
-        case 'compliance':
-            title = 'GDPR Compliance';
-            message = 'Our authentication system is fully compliant with GDPR regulations, ensuring your personal data is protected according to European standards.';
-            break;
-        case 'monitoring':
-            title = '24/7 Monitoring';
-            message = 'Our security team continuously monitors for suspicious activity and potential threats to keep your account secure.';
+        case 'mfa':
+            title = 'MultiFactor Authentication';
+            message = 'Add an extra layer of security to your account with MultiFactor Authentication, which requires multiple forms of verification before granting access.';
             break;
         default:
             title = 'Security Information';

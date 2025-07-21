@@ -303,21 +303,29 @@ body.dark-mode {
 
 /* Login Card */
 .login-card {
-    background: rgba(255, 255, 255, 0.98);
+    background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(24px);
     border-radius: var(--radius-2xl);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.2);
     padding: var(--space-3xl) var(--space-2xl);
     width: 100%;
     max-width: 460px;
     position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: cardEntrance 0.6s ease-out forwards;
+}
+
+.login-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.3);
 }
 
 body.dark-mode .login-card {
-    background: rgba(26, 32, 44, 0.98);
+    background: rgba(26, 32, 44, 0.85);
     border: 1px solid var(--dark-border);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .login-card::before {
@@ -331,9 +339,39 @@ body.dark-mode .login-card {
     animation: shimmer 3s ease-in-out infinite;
 }
 
+.login-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-2xl);
+    padding: 2px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent);
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
 @keyframes shimmer {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.7; }
+}
+
+@keyframes cardEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Logo Section */
@@ -410,6 +448,124 @@ body.dark-mode .login-card {
 
 body.dark-mode .brand-tagline {
     color: var(--dark-text-secondary);
+}
+
+/* Login Options */
+.login-options {
+    margin-bottom: var(--space-xl);
+}
+
+.auth-heading {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: var(--space-lg);
+    text-align: center;
+}
+
+body.dark-mode .auth-heading {
+    color: var(--dark-text-primary);
+}
+
+.auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.auth-option-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    background: var(--gray-100);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+}
+
+.auth-option-button:hover {
+    background: var(--gray-200);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.auth-option-button.active {
+    border-color: var(--primary-blue);
+    background: rgba(0, 102, 204, 0.05);
+}
+
+body.dark-mode .auth-option-button {
+    background: var(--dark-surface);
+    border-color: var(--dark-border);
+    color: var(--dark-text-primary);
+}
+
+body.dark-mode .auth-option-button:hover {
+    background: var(--dark-surface-elevated);
+}
+
+body.dark-mode .auth-option-button.active {
+    border-color: var(--primary-blue-light);
+    background: rgba(51, 133, 214, 0.1);
+}
+
+.auth-icon {
+    color: var(--primary-blue);
+}
+
+body.dark-mode .auth-icon {
+    color: var(--primary-blue-light);
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.form-header h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: var(--space-xs);
+}
+
+body.dark-mode .form-header h3 {
+    color: var(--dark-text-primary);
+}
+
+.form-description {
+    font-size: 0.95rem;
+    color: var(--gray-600);
+}
+
+body.dark-mode .form-description {
+    color: var(--dark-text-secondary);
+}
+
+.sso-info {
+    background: var(--gray-100);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    font-size: 0.95rem;
+    color: var(--gray-600);
+    margin-bottom: var(--space-xl);
+    text-align: center;
+}
+
+body.dark-mode .sso-info {
+    background: var(--dark-surface);
+    color: var(--dark-text-secondary);
+}
+
+.sso-button {
+    background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue));
 }
 
 /* Form Elements */
