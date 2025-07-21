@@ -29,28 +29,61 @@ auth_project/               # Main Django project directory
 authentication/             # Django app for authentication features
 static/
   ├── css/                  # Stylesheet files
-  │   ├── styles.css        # Main CSS file
-  │   ├── additional.css    # Additional styling
-  │   ├── auth-pages.css    # Authentication pages styling
-  │   ├── enterprise-login.css # ADFS login styling
-  │   └── simple-dashboard.css # Dashboard styling
+  │   ├── background-enhancements.css
+  │   ├── header-enhancements.css
+  │   ├── login-enhancements.css
+  │   └── login.css
   └── js/                   # JavaScript files
-      └── script.js         # Main JS file
+      ├── login-enhancements.js
+      └── login.js
 templates/
-  ├── base.html             # Base template with common elements
   └── authentication/       # Authentication-specific templates
       ├── home.html         # Dashboard/home page (protected)
       └── login.html        # ADFS login page
+Dockerfile                  # Docker configuration
+docker-compose.yaml         # Docker Compose configuration
+Makefile                    # Utility commands for Docker operations
+requirements.txt            # Python dependencies
 ```
 
 ## Getting Started
 
 ### Prerequisites
 
-- Python 3.x
-- Django 5.x
+- Docker and Docker Compose
+- Make (optional, for using the provided Makefile)
 
-### Installation
+### Docker Installation (Recommended)
+
+1. Clone the repository
+
+   ```
+   git clone <repository-url>
+   cd E2IP-IAM-Lab
+   ```
+
+2. Create a `.env` file with basic settings
+
+   ```
+   DEBUG=True
+   SECRET_KEY=your_secret_key_here
+   ```
+
+3. Build and run with Docker
+
+   ```
+   make rebuild
+   ```
+
+   Or with Docker Compose directly:
+
+   ```
+   docker-compose up --build
+   ```
+
+4. Access the application at http://localhost:8000/
+
+### Manual Installation (Alternative)
 
 1. Clone the repository
 
@@ -69,7 +102,7 @@ templates/
 3. Install dependencies
 
    ```
-   pip install django
+   pip install -r requirements.txt
    ```
 
 4. Run migrations
@@ -138,12 +171,45 @@ Some ideas for extending this project:
 4. Implement audit logging for authentication events
 5. Add role-based access control
 
+## Docker Development Environment
+
+The project is configured for Docker-based development with the following features:
+
+### Docker Setup
+
+- **Dockerfile**: Defines a Python 3.9 environment for running the Django application
+- **docker-compose.yaml**: Configures the service with proper volume mounts for development
+- **Makefile**: Provides convenient commands for Docker operations
+
+### Makefile Commands
+
+```
+make build        # Build the Docker image
+make run          # Run the container
+make stop         # Stop and remove the container
+make rebuild      # Stop, build, and run (clean restart)
+make logs         # Show container logs
+make clean        # Remove container, image, and volumes
+make bash         # Get a shell in the container
+```
+
+### Static Files Configuration
+
+Static files are configured for development mode using Django's built-in static file serving:
+
+- Static files are stored in the `static/` directory
+- The project uses `STATIC_URL = '/static/'` without `STATIC_ROOT`
+- Static files are mounted directly into the Docker container with a dedicated volume
+- Templates use the `{% static %}` template tag to reference static files
+
 ## Technologies Used
 
-- **Backend**: Django 5.x, Python 3.x
+- **Backend**: Django 4.2.x, Python 3.9
 - **Frontend**: HTML5, CSS3, JavaScript
 - **Database**: SQLite (default)
 - **Authentication**: Django's authentication system with ADFS integration
+- **Containerization**: Docker, Docker Compose
+- **Development Workflow**: Make
 
 ## License
 
