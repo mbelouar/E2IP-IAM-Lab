@@ -49,7 +49,7 @@ jobs:
 
   build-windows:
     needs: test
-    runs-on: windows-2019
+    runs-on: [self-hosted, Windows, X64]
     steps:
       - uses: actions/checkout@v3
 
