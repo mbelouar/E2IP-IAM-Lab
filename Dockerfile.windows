@@ -1,5 +1,5 @@
 # Use a Windows base image with Python installed, or install Python in the Dockerfile
-FROM mcr.microsoft.com/windows/servercore:ltsc2019
+FROM mcr.microsoft.com/dotnet/framework/runtime:4.8-windowsservercore-ltsc2019
 
 # Install Python 3.9 manually or via package manager (example below uses Chocolatey)
 SHELL ["powershell", "-Command"]
