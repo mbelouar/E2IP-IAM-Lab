@@ -49,7 +49,9 @@ jobs:
           file: Dockerfile.linux
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/secureauth:linux
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/secureauth:linux-amd64
+            ${{ secrets.DOCKER_USERNAME }}/secureauth:linux-arm64
 
   build-windows:
     needs: test
@@ -83,10 +85,19 @@ jobs:
 
       - name: Create and push manifest
         run: |
-          # Create the new manifest with specific platform references
+          # Create the new manifest with individual platform-specific images
           docker manifest create ${{ secrets.DOCKER_USERNAME }}/secureauth:latest \
-            --amend ${{ secrets.DOCKER_USERNAME }}/secureauth:linux \
-            --amend ${{ secrets.DOCKER_USERNAME }}/secureauth:windows
+            ${{ secrets.DOCKER_USERNAME }}/secureauth:linux-amd64 \
+            ${{ secrets.DOCKER_USERNAME }}/secureauth:linux-arm64 \
+            ${{ secrets.DOCKER_USERNAME }}/secureauth:windows
+            
+          # Annotate each image with its platform
+          docker manifest annotate ${{ secrets.DOCKER_USERNAME }}/secureauth:latest \
+            ${{ secrets.DOCKER_USERNAME }}/secureauth:linux-amd64 --os linux --arch amd64
+          docker manifest annotate ${{ secrets.DOCKER_USERNAME }}/secureauth:latest \
+            ${{ secrets.DOCKER_USERNAME }}/secureauth:linux-arm64 --os linux --arch arm64
+          docker manifest annotate ${{ secrets.DOCKER_USERNAME }}/secureauth:latest \
+            ${{ secrets.DOCKER_USERNAME }}/secureauth:windows --os windows --arch amd64
             
           # Push the manifest
           docker manifest push ${{ secrets.DOCKER_USERNAME }}/secureauth:latest
