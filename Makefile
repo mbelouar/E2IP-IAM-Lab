@@ -10,7 +10,7 @@ build:
 
 # Run the container
 run:
-	docker run -d --name $(CONTAINER_NAME) -p $(PORT):8000 -v $(shell pwd)/static:/app/static $(IMAGE_NAME)
+	docker run -d --name $(CONTAINER_NAME) -p $(PORT):8000 $(IMAGE_NAME)
 
 # Stop and remove the container
 stop:
