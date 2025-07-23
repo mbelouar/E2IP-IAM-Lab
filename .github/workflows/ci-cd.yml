@@ -83,14 +83,10 @@ jobs:
 
       - name: Create and push manifest
         run: |
+          # Create the new manifest with specific platform references
           docker manifest create ${{ secrets.DOCKER_USERNAME }}/secureauth:latest \
-            ${{ secrets.DOCKER_USERNAME }}/secureauth:linux \
-            ${{ secrets.DOCKER_USERNAME }}/secureauth:windows
-
-          # Annotate the manifest with platform details
-          docker manifest annotate ${{ secrets.DOCKER_USERNAME }}/secureauth:latest \
-            ${{ secrets.DOCKER_USERNAME }}/secureauth:linux --os linux
-          docker manifest annotate ${{ secrets.DOCKER_USERNAME }}/secureauth:latest \
-            ${{ secrets.DOCKER_USERNAME }}/secureauth:windows --os windows
-
+            --amend ${{ secrets.DOCKER_USERNAME }}/secureauth:linux \
+            --amend ${{ secrets.DOCKER_USERNAME }}/secureauth:windows
+            
+          # Push the manifest
           docker manifest push ${{ secrets.DOCKER_USERNAME }}/secureauth:latest
