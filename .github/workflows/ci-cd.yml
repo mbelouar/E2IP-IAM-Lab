@@ -66,9 +66,10 @@ jobs:
 
       - name: Push Windows image with retry
         run: |
-          # Try pushing with verbose output to see what's happening
+          # Try pushing with verbose output and explicit timeout
           docker push --disable-content-trust ${{ secrets.DOCKER_USERNAME }}/secureauth:windows
         shell: powershell
+        timeout-minutes: 20
 
   create-manifest:
     needs: [build-linux, build-windows]
