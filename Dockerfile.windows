@@ -17,7 +17,7 @@ RUN $ErrorActionPreference = 'Stop'; \
 RUN $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine'); \
     if (Test-Path -Path 'C:\Program Files\Python39\python.exe') { \
     Write-Host "Python found at C:\Program Files\Python39\python.exe"; \
-    $env:PATH += ";C:\Program Files\Python39;C:\Program Files\Python39\Scripts"; \
+    $env:PATH = "$env:PATH;C:\Program Files\Python39;C:\Program Files\Python39\Scripts"; \
     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine); \
     } else { \
     Write-Host "Looking for Python installation..."; \
