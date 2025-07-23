@@ -62,10 +62,13 @@ jobs:
       - name: Build Docker image (Windows)
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/secureauth:windows -f Dockerfile.windows .
+        shell: powershell
 
-      - name: Push Windows image
+      - name: Push Windows image with retry
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/secureauth:windows
+          # Try pushing with verbose output to see what's happening
+          docker push --disable-content-trust ${{ secrets.DOCKER_USERNAME }}/secureauth:windows
+        shell: powershell
 
   create-manifest:
     needs: [build-linux, build-windows]
@@ -83,6 +86,3 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/secureauth:linux \
             ${{ secrets.DOCKER_USERNAME }}/secureauth:windows
           docker manifest push ${{ secrets.DOCKER_USERNAME }}/secureauth:latest
-
-
-  

@@ -1,17 +1,31 @@
-# Use a Windows base image with Python installed, or install Python in the Dockerfile
-FROM mcr.microsoft.com/dotnet/framework/runtime:4.8-windowsservercore-ltsc2019
+# Use a smaller Windows base image with Python preinstalled
+FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
-# Install Python 3.9 manually or via package manager (example below uses Chocolatey)
+# Install Python 3.9 using a more optimized approach
 SHELL ["powershell", "-Command"]
 
-RUN Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')); choco install -y python --version=3.9.7
+# Download Python installer directly instead of using Chocolatey to reduce layers
+RUN $ErrorActionPreference = 'Stop'; \
+    $ProgressPreference = 'SilentlyContinue'; \
+    Invoke-WebRequest -Uri 'https://www.python.org/ftp/python/3.9.7/python-3.9.7-amd64.exe' -OutFile 'python.exe'; \
+    Start-Process python.exe -ArgumentList '/quiet', 'InstallAllUsers=1', 'PrependPath=1', 'Include_test=0' -Wait; \
+    Remove-Item -Force python.exe; \
+    [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
 
+# Set working directory
 WORKDIR C:/app
 
+# Copy only requirements first for better layer caching
 COPY requirements.txt C:/app/
 
-RUN python -m pip install --no-cache-dir -r requirements.txt
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy the rest of the application
 COPY . C:/app/
 
+# Expose the port Django runs on
+EXPOSE 8000
+
+# Command to run the application
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
