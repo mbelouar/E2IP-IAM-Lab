@@ -39,17 +39,22 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build Docker image (Linux)
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/secureauth:linux -f Dockerfile.linux .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      - name: Push Linux image
-        run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/secureauth:linux
+      - name: Build and push Linux image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile.linux
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/secureauth:linux
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/secureauth:linux-cache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/secureauth:linux-cache,mode=max
 
   build-windows:
     needs: test
-    runs-on: [self-hosted, Windows, X64]
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
 
@@ -62,14 +67,10 @@ jobs:
       - name: Build Docker image (Windows)
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/secureauth:windows -f Dockerfile.windows .
-        shell: powershell
 
-      - name: Push Windows image with retry
+      - name: Push Windows image
         run: |
-          # Try pushing with verbose output and explicit timeout
-          docker push --disable-content-trust ${{ secrets.DOCKER_USERNAME }}/secureauth:windows
-        shell: powershell
-        timeout-minutes: 20
+          docker push ${{ secrets.DOCKER_USERNAME }}/secureauth:windows
 
   create-manifest:
     needs: [build-linux, build-windows]

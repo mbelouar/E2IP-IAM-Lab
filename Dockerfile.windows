@@ -1,45 +1,17 @@
-# Use a smaller Windows base image with Python preinstalled
-FROM mcr.microsoft.com/windows/servercore:ltsc2019
+# Use a Windows base image with Python installed, or install Python in the Dockerfile
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
-# Install Python 3.9 using a more optimized approach
+# Install Python 3.9 manually or via package manager (example below uses Chocolatey)
 SHELL ["powershell", "-Command"]
 
-# Download Python installer directly and ensure pip is in PATH
-RUN $ErrorActionPreference = 'Stop'; \
-    $ProgressPreference = 'SilentlyContinue'; \
-    Invoke-WebRequest -Uri 'https://www.python.org/ftp/python/3.9.7/python-3.9.7-amd64.exe' -OutFile 'python.exe'; \
-    Start-Process python.exe -ArgumentList '/quiet', 'InstallAllUsers=1', 'PrependPath=1', 'Include_test=0' -Wait; \
-    Remove-Item -Force python.exe; \
-    $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine'); \
-    Write-Host "Python installed, PATH = $env:PATH";
+RUN Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')); choco install -y python --version=3.9.7
 
-# Verify Python installation and refresh PATH
-RUN $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine'); \
-    if (Test-Path -Path 'C:\Program Files\Python39\python.exe') { \
-    Write-Host "Python found at C:\Program Files\Python39\python.exe"; \
-    $env:PATH = "$($env:PATH);C:\Program Files\Python39;C:\Program Files\Python39\Scripts"; \
-    [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine); \
-    } else { \
-    Write-Host "Looking for Python installation..."; \
-    Get-ChildItem 'C:\Program Files' | ForEach-Object { Write-Host $_.FullName }; \
-    throw "Python installation not found"; \
-    }
-
-# Set working directory
 WORKDIR C:/app
 
-# Copy only requirements first for better layer caching
 COPY requirements.txt C:/app/
 
-# Install dependencies using full path to pip
-RUN python -m pip install --upgrade pip; \
-    python -m pip install --no-cache-dir -r requirements.txt
+RUN python -m pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application
 COPY . C:/app/
 
-# Expose the port Django runs on
-EXPOSE 8000
-
-# Command to run the application
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
