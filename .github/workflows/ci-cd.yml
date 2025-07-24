@@ -52,28 +52,28 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/secureauth:linux
 
-  # build-windows:
-  #   needs: test
-  #   runs-on: windows-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
+  build-windows:
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
 
-  #     - name: Log in to Docker Hub
-  #       uses: docker/login-action@v2
-  #       with:
-  #         username: ${{ secrets.DOCKER_USERNAME }}
-  #         password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-  #     - name: Build Docker image (Windows)
-  #       run: |
-  #         docker build -t ${{ secrets.DOCKER_USERNAME }}/secureauth:windows -f Dockerfile.windows .
+      - name: Build Docker image (Windows)
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/secureauth:windows -f Dockerfile.windows .
 
-  #     - name: Push Windows image
-  #       run: |
-  #         docker push ${{ secrets.DOCKER_USERNAME }}/secureauth:windows
+      - name: Push Windows image
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/secureauth:windows
 
   create-manifest:
-    needs: build-linux
+    needs: [build-linux, build-windows]
     runs-on: ubuntu-latest
     steps:
       - name: Log in to Docker Hub
@@ -91,6 +91,7 @@ jobs:
           docker manifest create ${{ secrets.DOCKER_USERNAME }}/secureauth:latest \
             ${{ secrets.DOCKER_USERNAME }}/secureauth@$LINUX_AMD64_DIGEST \
             ${{ secrets.DOCKER_USERNAME }}/secureauth@$LINUX_ARM64_DIGEST \
+            ${{ secrets.DOCKER_USERNAME }}/secureauth:windows
           
           docker manifest push ${{ secrets.DOCKER_USERNAME }}/secureauth:latest
     
