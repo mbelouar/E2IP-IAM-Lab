@@ -1,34 +1,44 @@
 # Variables
 PROJECT_NAME := secureauth
-IMAGE_NAME := $(PROJECT_NAME)-image
-CONTAINER_NAME := $(PROJECT_NAME)-container
+DOCKER_DIR := docker
+COMPOSE_FILE := $(DOCKER_DIR)/docker-compose.yaml
 PORT := 8000
 
-# Build the Docker image
-build:
-	docker build -t $(IMAGE_NAME) .
+# Build and run with Docker Compose
+up:
+	cd $(DOCKER_DIR) && docker-compose up --build
 
-# Run the container
-run:
-	docker run -d --name $(CONTAINER_NAME) -p $(PORT):8000 $(IMAGE_NAME)
+# Run in background
+up-d:
+	cd $(DOCKER_DIR) && docker-compose up --build -d
 
-# Stop and remove the container
-stop:
-	docker stop $(CONTAINER_NAME) || true
-	docker rm $(CONTAINER_NAME) || true
+# Stop Docker Compose services
+down:
+	cd $(DOCKER_DIR) && docker-compose down
 
 # Rebuild everything (clean run)
-rebuild: stop build run
+rebuild: down up
 
 # Show logs
 logs:
-	docker logs -f $(CONTAINER_NAME)
+	cd $(DOCKER_DIR) && docker-compose logs -f
 
-# Remove image, container, and volumes
-clean: stop
-	docker rmi $(IMAGE_NAME) || true
-	docker volume prune -f
+# Remove containers, networks, and volumes
+clean:
+	cd $(DOCKER_DIR) && docker-compose down -v --rmi all
 
-# Execute bash in container
+# Execute bash in the web container
 bash:
-	docker exec -it $(CONTAINER_NAME) bash
+	cd $(DOCKER_DIR) && docker-compose exec web bash
+
+# Build individual Docker images
+build-linux:
+	docker build -t $(PROJECT_NAME):linux -f $(DOCKER_DIR)/Dockerfile.linux .
+
+build-windows:
+	docker build -t $(PROJECT_NAME):windows -f $(DOCKER_DIR)/Dockerfile.windows .
+
+# Legacy commands for backward compatibility
+build: build-linux
+run: up-d
+stop: down

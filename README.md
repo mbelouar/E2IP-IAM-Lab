@@ -27,6 +27,11 @@ A streamlined authentication system built with Django, focusing exclusively on A
 ```
 auth_project/               # Main Django project directory
 authentication/             # Django app for authentication features
+docker/                     # Docker configuration files
+  ├── Dockerfile.linux      # Linux container configuration
+  ├── Dockerfile.windows    # Windows container configuration
+  ├── docker-compose.yaml   # Docker Compose configuration
+  └── README.md             # Docker-specific documentation
 static/
   ├── css/                  # Stylesheet files
   │   ├── background-enhancements.css
@@ -40,8 +45,6 @@ templates/
   └── authentication/       # Authentication-specific templates
       ├── home.html         # Dashboard/home page (protected)
       └── login.html        # ADFS login page
-Dockerfile                  # Docker configuration
-docker-compose.yaml         # Docker Compose configuration
 Makefile                    # Utility commands for Docker operations
 requirements.txt            # Python dependencies
 ```
@@ -72,13 +75,14 @@ requirements.txt            # Python dependencies
 3. Build and run with Docker
 
    ```
-   make rebuild
-   ```
-
-   Or with Docker Compose directly:
-
-   ```
+   cd docker
    docker-compose up --build
+   ```
+
+   Or with Make from the project root:
+
+   ```
+   make rebuild
    ```
 
 4. Access the application at http://localhost:8000/

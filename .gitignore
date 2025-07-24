@@ -1,50 +1,27 @@
-# Python bytecode
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
+*.pyc
+*.pyo
+*.pyd
 
 # Django
 *.log
 db.sqlite3
 db.sqlite3-journal
-media
+media/
 
 # Virtual environments
 venv/
-ENV/
 env/
-
-# Editor/IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Docker
-.docker/
 
 # Environment variables
 .env
 .env.local
 
+# Editor/IDE
+.idea/
+.vscode/
+
 # OS
 .DS_Store
-Thumbs.db

@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -46,7 +46,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: Dockerfile.linux
+          file: docker/Dockerfile.linux
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
@@ -66,7 +66,7 @@ jobs:
 
       - name: Build Docker image (Windows)
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/secureauth:windows -f Dockerfile.windows .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/secureauth:windows -f docker/Dockerfile.windows .
 
       - name: Push Windows image
         run: |
@@ -86,12 +86,11 @@ jobs:
           # Extract individual platform images from the Linux manifest list
           LINUX_AMD64_DIGEST=$(docker manifest inspect ${{ secrets.DOCKER_USERNAME }}/secureauth:linux | jq -r '.manifests[] | select(.platform.architecture=="amd64") | .digest')
           LINUX_ARM64_DIGEST=$(docker manifest inspect ${{ secrets.DOCKER_USERNAME }}/secureauth:linux | jq -r '.manifests[] | select(.platform.architecture=="arm64") | .digest')
-          
+
           # Create new manifest with individual platform images + Windows
           docker manifest create ${{ secrets.DOCKER_USERNAME }}/secureauth:latest \
             ${{ secrets.DOCKER_USERNAME }}/secureauth@$LINUX_AMD64_DIGEST \
             ${{ secrets.DOCKER_USERNAME }}/secureauth@$LINUX_ARM64_DIGEST \
             ${{ secrets.DOCKER_USERNAME }}/secureauth:windows
-          
+
           docker manifest push ${{ secrets.DOCKER_USERNAME }}/secureauth:latest
-    
