@@ -22,6 +22,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('authentication.urls', namespace='authentication')),
+    path('saml2/', include('djangosaml2.urls')),
 ]
 
 if settings.DEBUG:

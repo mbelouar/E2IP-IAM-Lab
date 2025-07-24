@@ -11,6 +11,13 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+import saml2
+from saml2.saml import NAMEID_FORMAT_EMAILADDRESS
+
+# Load environment variables
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +27,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-()fi^gqzhho1!1e47!w1h4o$y212_a53nx+4f3k+wqz=9xgx8a'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-()fi^gqzhho1!1e47!w1h4o$y212_a53nx+4f3k+wqz=9xgx8a')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,192.168.1.46').split(',')
 
 
 # Application definition
@@ -38,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'authentication',
+    'djangosaml2',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -46,6 +55,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'djangosaml2.middleware.SamlSessionMiddleware',  # Add SAML session middleware
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -128,3 +138,65 @@ LOGIN_URL = 'authentication:login'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# SAML Configuration - Completely permissive for testing
+SAML_CONFIG = {
+    'entityid': os.getenv('SAML_ENTITY_ID', 'http://localhost:8000/saml2/metadata/'),
+    'description': 'E2IP IAM Lab SAML Service',
+    'service': {
+        'sp': {
+            'name': 'E2IP IAM Lab',
+            'name_id_format': NAMEID_FORMAT_EMAILADDRESS,
+            'endpoints': {
+                'assertion_consumer_service': [
+                    (os.getenv('SAML_ACS_URL', 'https://192.168.1.46:8000/custom-saml-acs/'), saml2.BINDING_HTTP_POST),
+                ],
+                'single_logout_service': [
+                    (os.getenv('SAML_SLS_URL', 'https://192.168.1.46:8000/saml2/sls/'), saml2.BINDING_HTTP_REDIRECT),
+                ],
+            },
+            'force_authn': False,
+            'name_id_format_allow_create': True,
+            'want_response_signed': False,
+            'want_assertions_signed': False,
+            'want_assertions_or_response_signed': False,
+            'authn_requests_signed': False,
+            'logout_requests_signed': False,
+            'allow_unsolicited': True,  # Allow IdP-initiated SSO
+            'only_use_keys_in_metadata': False,  # Don't restrict to metadata keys
+        },
+    },
+    'debug': DEBUG,
+    # Disable all signature verification
+    'verify_ssl_cert': False,
+    'xmlsec_binary': '/opt/homebrew/bin/xmlsec1',
+}
+
+# Configure SAML with ADFS metadata file
+metadata_file = BASE_DIR / 'saml_metadata' / 'adfs_metadata.xml'
+SAML_CONFIG['metadata'] = {
+    'local': [str(metadata_file)],
+}
+
+# Authentication backends
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'djangosaml2.backends.Saml2Backend',
+]
+
+# SAML attribute mapping
+SAML_ATTRIBUTE_MAPPING = {
+    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': ('email', 'username'),
+    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname': ('first_name',),
+    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname': ('last_name',),
+    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': ('username',),
+}
+
+# SAML user creation settings
+SAML_CREATE_UNKNOWN_USER = True
+SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'username'
+SAML_DJANGO_USER_MAIN_ATTRIBUTE_LOOKUP = '__iexact'
+
+# Update login/logout URLs for SAML
+LOGIN_URL = '/saml2/login/'
+SAML_DEFAULT_NEXT_URL = '/'
