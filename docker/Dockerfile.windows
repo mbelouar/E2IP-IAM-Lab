@@ -8,10 +8,10 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Ne
 
 WORKDIR C:/app
 
-COPY ../requirements.txt C:/app/
+COPY requirements.txt C:/app/
 
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
-COPY .. C:/app/
+COPY . C:/app/
 
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

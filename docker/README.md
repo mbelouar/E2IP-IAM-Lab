@@ -96,7 +96,8 @@ The GitHub Actions workflow automatically builds and pushes multi-platform image
 
 ## Development Notes
 
-- **Build Context**: The Dockerfiles reference the parent directory (`..`) to access the application code
+- **Build Context**: Both Dockerfiles use the project root as build context (`.`) with paths relative to the project root
+- **Cross-Platform Compatibility**: Path syntax is normalized for both Linux and Windows Docker builds
 - **Volume Mounts**: Docker Compose is configured to mount the project directory for development hot-reloading
 - **Environment**: Environment variables are loaded from the `.env` file in the project root
 - **Database**: SQLite database files are excluded from Docker images via `.dockerignore`
