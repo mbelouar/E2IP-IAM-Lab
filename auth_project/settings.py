@@ -198,5 +198,5 @@ SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'username'
 SAML_DJANGO_USER_MAIN_ATTRIBUTE_LOOKUP = '__iexact'
 
 # Update login/logout URLs for SAML
-LOGIN_URL = '/saml2/login/'
+# LOGIN_URL = '/saml2/login/'  # Comment out direct SAML login
 SAML_DEFAULT_NEXT_URL = '/'
