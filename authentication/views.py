@@ -239,70 +239,535 @@ def show_saml_processing_page(request, saml_response, relay_state):
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Processing SAML Authentication...</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
         <style>
-            body {{
-                font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            :root {{
+                /* SecureAuth Brand Colors */
+                --primary-blue: #0066cc;
+                --primary-blue-dark: #004499;
+                --primary-blue-light: #3385d6;
+                --secondary-blue: #4da6ff;
+                --accent-blue: #80bfff;
+                --success: #00a86b;
+                --warning: #ff8c00;
+                --error: #dc3545;
+                --info: #17a2b8;
+                
+                /* Neutral Colors */
+                --white: #ffffff;
+                --gray-50: #f8fafc;
+                --gray-100: #f1f5f9;
+                --gray-200: #e2e8f0;
+                --gray-300: #cbd5e1;
+                --gray-400: #94a3b8;
+                --gray-500: #64748b;
+                --gray-600: #475569;
+                --gray-700: #334155;
+                --gray-800: #1e293b;
+                --gray-900: #0f172a;
+                
+                /* Typography */
+                --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                
+                /* Spacing Scale */
+                --space-xs: 0.25rem;
+                --space-sm: 0.5rem;
+                --space-md: 1rem;
+                --space-lg: 1.5rem;
+                --space-xl: 2rem;
+                --space-2xl: 3rem;
+                --space-3xl: 4rem;
+                
+                /* Border Radius */
+                --radius-sm: 0.375rem;
+                --radius-md: 0.5rem;
+                --radius-lg: 0.75rem;
+                --radius-xl: 1rem;
+                --radius-2xl: 1.5rem;
+                
+                /* Shadows */
+                --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+                --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            }}
+
+            * {{
                 margin: 0;
                 padding: 0;
+                box-sizing: border-box;
+            }}
+
+            html {{
+                font-size: 16px;
+                scroll-behavior: smooth;
+            }}
+
+            body {{
+                font-family: var(--font-family-primary);
+                background: linear-gradient(135deg, var(--primary-blue) 0%, #1e3a8a 50%, var(--primary-blue-dark) 100%);
+                min-height: 100vh;
                 display: flex;
+                flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                min-height: 100vh;
-                color: #333;
+                color: var(--gray-900);
+                line-height: 1.6;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                text-rendering: optimizeLegibility;
+                position: relative;
+                overflow-x: hidden;
             }}
+
+            /* Enhanced Background Elements */
+            .background-wrapper {{
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                pointer-events: none;
+                z-index: 0;
+            }}
+
+            .background-grid {{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0.03;
+                background-image: 
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+                    linear-gradient(0deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+                background-size: 50px 50px;
+                animation: gridShimmer 8s ease-in-out infinite;
+            }}
+
+            @keyframes gridShimmer {{
+                0%, 100% {{ opacity: 0.03; }}
+                50% {{ opacity: 0.05; }}
+            }}
+
+            .background-overlay {{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: 
+                    radial-gradient(circle at 20% 20%, rgba(0, 102, 204, 0.4) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(0, 68, 153, 0.4) 0%, transparent 50%),
+                    radial-gradient(circle at 50% 50%, rgba(77, 166, 255, 0.2) 0%, transparent 70%);
+                opacity: 0.7;
+                animation: backgroundPulse 15s ease-in-out infinite;
+            }}
+
+            @keyframes backgroundPulse {{
+                0%, 100% {{ opacity: 0.7; }}
+                50% {{ opacity: 0.5; }}
+            }}
+
+            .floating-elements {{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }}
+
+            /* Enhanced floating elements */
+            .floating-element {{
+                position: absolute;
+                border-radius: 50%;
+                filter: blur(2px);
+                animation: float 12s ease-in-out infinite;
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+                backdrop-filter: blur(5px);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+            }}
+
+            .floating-element:nth-child(1) {{
+                width: 200px;
+                height: 200px;
+                left: 10%;
+                top: 10%;
+                animation-delay: 0s;
+            }}
+
+            .floating-element:nth-child(2) {{
+                width: 150px;
+                height: 150px;
+                left: 85%;
+                top: 15%;
+                animation-delay: 3s;
+            }}
+
+            .floating-element:nth-child(3) {{
+                width: 180px;
+                height: 180px;
+                left: 70%;
+                top: 70%;
+                animation-delay: 6s;
+            }}
+
+            .floating-element:nth-child(4) {{
+                width: 120px;
+                height: 120px;
+                left: 20%;
+                top: 80%;
+                animation-delay: 9s;
+            }}
+
+            /* Add more floating elements */
+            .floating-element:nth-child(5) {{
+                width: 100px;
+                height: 100px;
+                left: 50%;
+                top: 25%;
+                animation-delay: 2s;
+                animation-duration: 15s;
+            }}
+
+            .floating-element:nth-child(6) {{
+                width: 80px;
+                height: 80px;
+                left: 30%;
+                top: 50%;
+                animation-delay: 7s;
+                animation-duration: 18s;
+            }}
+
+            /* Enhanced animation */
+            @keyframes float {{
+                0% {{ 
+                    transform: translateY(0) translateX(0) rotate(0deg);
+                    opacity: 0.6;
+                }}
+                25% {{
+                    transform: translateY(-30px) translateX(20px) rotate(90deg);
+                    opacity: 0.8;
+                }}
+                50% {{ 
+                    transform: translateY(-60px) translateX(0px) rotate(180deg);
+                    opacity: 0.6;
+                }}
+                75% {{
+                    transform: translateY(-30px) translateX(-20px) rotate(270deg);
+                    opacity: 0.8;
+                }}
+                100% {{ 
+                    transform: translateY(0) translateX(0) rotate(360deg);
+                    opacity: 0.6;
+                }}
+            }}
+
+            /* Enhanced circuit lines */
+            .circuit-lines {{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0.07;
+                background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10 L90 10 M10 30 L30 30 L30 90 M70 30 L90 30 M50 10 L50 90 M70 50 L90 50 M10 70 L30 70 M70 70 L90 70 M10 90 L90 90' stroke='white' stroke-width='1.2' fill='none' /%3E%3Ccircle cx='30' cy='30' r='2' fill='white'/%3E%3Ccircle cx='70' cy='30' r='2' fill='white'/%3E%3Ccircle cx='30' cy='70' r='2' fill='white'/%3E%3Ccircle cx='70' cy='70' r='2' fill='white'/%3E%3C/svg%3E");
+                background-size: 200px 200px;
+                animation: circuitPulse 10s ease-in-out infinite;
+            }}
+
+            @keyframes circuitPulse {{
+                0%, 100% {{ opacity: 0.07; }}
+                50% {{ opacity: 0.04; }}
+            }}
+
+            /* Processing Container */
             .processing-container {{
-                background: white;
-                padding: 3rem;
-                border-radius: 16px;
-                box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(20px);
+                padding: var(--space-3xl);
+                border-radius: var(--radius-2xl);
+                box-shadow: var(--shadow-2xl);
                 text-align: center;
-                max-width: 500px;
+                max-width: 520px;
                 width: 90%;
+                position: relative;
+                z-index: 10;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1);
             }}
+
+            @keyframes fadeInScale {{
+                0% {{
+                    opacity: 0;
+                    transform: scale(0.9) translateY(20px);
+                }}
+                100% {{
+                    opacity: 1;
+                    transform: scale(1) translateY(0);
+                }}
+            }}
+
+            /* Logo Section */
+            .logo-section {{
+                margin-bottom: var(--space-xl);
+            }}
+
+            .logo-container {{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: var(--space-md);
+            }}
+
+            .logo-icon {{
+                width: 48px;
+                height: 48px;
+                padding: var(--space-md);
+                background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+                color: white;
+                border-radius: var(--radius-xl);
+                box-shadow: var(--shadow-lg);
+            }}
+
+            .company-info {{
+                text-align: center;
+            }}
+
+            .company-name {{
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: var(--primary-blue);
+                margin-bottom: var(--space-xs);
+            }}
+
+            .company-tagline {{
+                font-size: 0.875rem;
+                color: var(--gray-600);
+                font-weight: 500;
+            }}
+
+            /* Spinner */
+            .spinner-container {{
+                margin: var(--space-xl) 0;
+            }}
+
             .spinner {{
-                width: 60px;
-                height: 60px;
-                border: 4px solid #f3f3f3;
-                border-top: 4px solid #0066cc;
+                width: 64px;
+                height: 64px;
+                border: 4px solid var(--gray-200);
+                border-top: 4px solid var(--primary-blue);
                 border-radius: 50%;
                 animation: spin 1s linear infinite;
-                margin: 0 auto 2rem auto;
+                margin: 0 auto;
+                position: relative;
             }}
+
+            .spinner::after {{
+                content: '';
+                position: absolute;
+                top: -4px;
+                left: -4px;
+                right: -4px;
+                bottom: -4px;
+                border: 2px solid transparent;
+                border-top: 2px solid var(--primary-blue-light);
+                border-radius: 50%;
+                animation: spin 2s linear infinite reverse;
+            }}
+
             @keyframes spin {{
                 0% {{ transform: rotate(0deg); }}
                 100% {{ transform: rotate(360deg); }}
             }}
+
+            /* Typography */
             .processing-title {{
-                font-size: 1.5rem;
-                font-weight: 600;
-                margin-bottom: 1rem;
-                color: #0066cc;
+                font-size: 1.75rem;
+                font-weight: 700;
+                margin-bottom: var(--space-md);
+                color: var(--gray-900);
+                letter-spacing: -0.025em;
             }}
+
             .processing-message {{
                 font-size: 1rem;
-                color: #666;
-                margin-bottom: 2rem;
-                line-height: 1.5;
+                color: var(--gray-600);
+                margin-bottom: var(--space-xl);
+                line-height: 1.6;
+                font-weight: 500;
             }}
+
             .countdown {{
-                font-size: 0.9rem;
-                color: #999;
-                margin-top: 1rem;
+                font-size: 0.95rem;
+                color: var(--gray-500);
+                margin-top: var(--space-lg);
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: var(--space-sm);
             }}
+
+            .countdown-number {{
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 28px;
+                height: 28px;
+                background: var(--primary-blue);
+                color: white;
+                border-radius: 50%;
+                font-weight: 600;
+                font-size: 0.875rem;
+                animation: pulse 1s ease-in-out infinite;
+            }}
+
+            @keyframes pulse {{
+                0%, 100% {{ transform: scale(1); }}
+                50% {{ transform: scale(1.1); }}
+            }}
+
+            /* Technical Info */
             .technical-info {{
-                margin-top: 2rem;
-                padding: 1rem;
-                background: #f8f9fa;
-                border-radius: 8px;
-                font-size: 0.85rem;
-                color: #666;
+                margin-top: var(--space-xl);
+                padding: var(--space-lg);
+                background: linear-gradient(to right, rgba(0, 102, 204, 0.05), rgba(51, 133, 214, 0.05));
+                border-radius: var(--radius-lg);
+                font-size: 0.875rem;
+                color: var(--gray-600);
+                border-left: 3px solid var(--primary-blue-light);
+                text-align: left;
+            }}
+
+            .technical-info strong {{
+                color: var(--gray-800);
+                font-weight: 600;
+                display: block;
+                margin-bottom: var(--space-sm);
+            }}
+
+            .technical-info ul {{
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }}
+
+            .technical-info li {{
+                display: flex;
+                align-items: center;
+                margin-bottom: var(--space-sm);
+                padding-left: var(--space-md);
+                position: relative;
+            }}
+
+            .technical-info li::before {{
+                content: '✓';
+                position: absolute;
+                left: 0;
+                color: var(--success);
+                font-weight: 600;
+                font-size: 0.75rem;
+            }}
+
+            .technical-info li:last-child {{
+                margin-bottom: 0;
+            }}
+
+            /* Status indicator */
+            .status-indicator {{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: var(--space-sm);
+                margin-top: var(--space-lg);
+                padding: var(--space-md);
+                background: rgba(0, 168, 107, 0.1);
+                border-radius: var(--radius-lg);
+                color: var(--success);
+                font-size: 0.875rem;
+                font-weight: 600;
+            }}
+
+            .status-dot {{
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--success);
+                animation: pulse-dot 2s infinite;
+            }}
+
+            @keyframes pulse-dot {{
+                0% {{ box-shadow: 0 0 0 0 rgba(0, 168, 107, 0.7); }}
+                70% {{ box-shadow: 0 0 0 10px rgba(0, 168, 107, 0); }}
+                100% {{ box-shadow: 0 0 0 0 rgba(0, 168, 107, 0); }}
+            }}
+
+            /* Responsive Design */
+            @media (max-width: 640px) {{
+                .processing-container {{
+                    padding: var(--space-xl);
+                    margin: var(--space-md);
+                }}
+                
+                .processing-title {{
+                    font-size: 1.5rem;
+                }}
+                
+                .spinner {{
+                    width: 48px;
+                    height: 48px;
+                }}
+                
+                .logo-icon {{
+                    width: 40px;
+                    height: 40px;
+                }}
             }}
         </style>
     </head>
     <body>
+        <!-- Enhanced Background Elements -->
+        <div class="background-wrapper">
+            <div class="background-grid"></div>
+            <div class="background-overlay"></div>
+            <div class="circuit-lines"></div>
+            <div class="floating-elements">
+                <div class="floating-element"></div>
+                <div class="floating-element"></div>
+                <div class="floating-element"></div>
+                <div class="floating-element"></div>
+                <div class="floating-element"></div>
+                <div class="floating-element"></div>
+            </div>
+        </div>
+
         <div class="processing-container">
-            <div class="spinner"></div>
+            <!-- Logo Section -->
+            <div class="logo-section">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <div class="company-info">
+                        <div class="company-name">SecureAuth</div>
+                        <div class="company-tagline">Enterprise Access Portal</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spinner -->
+            <div class="spinner-container">
+                <div class="spinner"></div>
+            </div>
+
             <h1 class="processing-title">Processing SAML Authentication</h1>
             <p class="processing-message">
                 Successfully received authentication response from ADFS.<br>
@@ -310,14 +775,25 @@ def show_saml_processing_page(request, saml_response, relay_state):
             </p>
             
             <div class="technical-info">
-                <strong>Technical Details:</strong><br>
-                • SAML Response received from ADFS<br>
-                • Validating digital signatures<br>
-                • Extracting user attributes<br>
-                • Creating secure session<br>
+                <strong>Authentication Progress:</strong>
+                <ul>
+                    <li>SAML Response received from ADFS</li>
+                    <li>Validating digital signatures</li>
+                    <li>Extracting user attributes</li>
+                    <li>Creating secure session</li>
+                </ul>
+            </div>
+
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>Authentication in progress</span>
             </div>
             
-            <p class="countdown">This page will automatically continue in <span id="countdown">3</span> seconds...</p>
+            <p class="countdown">
+                This page will automatically continue in 
+                <span class="countdown-number" id="countdown">3</span> 
+                seconds...
+            </p>
             
             <!-- Hidden auto-submit form -->
             <form id="samlForm" method="POST" style="display: none;">
@@ -330,6 +806,7 @@ def show_saml_processing_page(request, saml_response, relay_state):
         <script>
             let countdown = 3;
             const countdownElement = document.getElementById('countdown');
+            const statusIndicator = document.querySelector('.status-indicator span');
             
             const timer = setInterval(() => {{
                 countdown--;
@@ -337,7 +814,11 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 
                 if (countdown <= 0) {{
                     clearInterval(timer);
-                    countdownElement.textContent = 'Processing...';
+                    countdownElement.textContent = '0';
+                    statusIndicator.textContent = 'Processing authentication...';
+                    
+                    // Add a subtle fade effect before submit
+                    document.querySelector('.processing-container').style.opacity = '0.8';
                     document.getElementById('samlForm').submit();
                 }}
             }}, 1000);
