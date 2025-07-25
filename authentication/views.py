@@ -58,18 +58,6 @@ def adfs_login(request):
     """
     return redirect('/saml2/login/')
 
-@login_required
-def sso_success(request):
-    """
-    Handle successful SSO authentication
-    """
-    if request.user.is_authenticated:
-        messages.success(request, f"Welcome {request.user.first_name or request.user.username}! You have successfully authenticated via SSO.")
-        return redirect('authentication:home')
-    else:
-        messages.error(request, "SSO authentication failed. Please try again.")
-        return redirect('authentication:login')
-
 def saml_debug_view(request):
     """
     Debug view to check SAML configuration

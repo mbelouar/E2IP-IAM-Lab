@@ -8,10 +8,7 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('adfs-login/', views.adfs_login, name='adfs_login'),
-    path('sso-success/', views.sso_success, name='sso_success'),
     path('saml-debug/', views.saml_debug_view, name='saml_debug'),
     path('saml-error/', views.saml_error_view, name='saml_error'),
     path('custom-saml-acs/', views.custom_saml_acs, name='custom_saml_acs'),
-    # Temporary redirect for testing
-    path('saml2-acs-debug/', views.custom_saml_acs, name='saml2_acs_debug'),
 ]
