@@ -22,8 +22,14 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('authentication.urls', namespace='authentication')),
-    path('saml2/', include('djangosaml2.urls')),
 ]
+
+# Add SAML URLs only if djangosaml2 is available
+try:
+    import djangosaml2
+    urlpatterns.append(path('saml2/', include('djangosaml2.urls')))
+except ImportError:
+    pass
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
