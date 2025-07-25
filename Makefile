@@ -31,6 +31,13 @@ clean:
 bash:
 	cd $(DOCKER_DIR) && docker-compose exec web bash
 
+# Local development commands
+runserver:
+	./venv/bin/python3 manage.py runserver 0.0.0.0:$(PORT)
+
+runserver-ssl:
+	./venv/bin/python3 manage.py runserver_plus --cert-file ssl/cert.pem --key-file ssl/key.pem 0.0.0.0:$(PORT)
+
 # Build individual Docker images
 build-linux:
 	docker build -t $(PROJECT_NAME):linux -f $(DOCKER_DIR)/Dockerfile.linux .
