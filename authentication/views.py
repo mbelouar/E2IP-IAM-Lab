@@ -173,8 +173,6 @@ def adfs_login(request):
     logger.info(f"Redirecting to: {redirect_url}")
     return redirect(redirect_url)
 
-
-
 def saml_error_view(request):
     """
     Custom SAML error handler
@@ -203,139 +201,284 @@ def saml_error_view(request):
         <li>Verify certificates are properly configured</li>
     </ol>
     <p><a href="/saml2/metadata/">View SP Metadata</a></p>
-    <p><a href="/authentication/saml-debug/">View SAML Debug Info</a></p>
     """, content_type='text/html')
 
 @csrf_exempt
 def custom_saml_acs(request):
     """
-    Custom SAML Assertion Consumer Service for debugging
+    Custom SAML Assertion Consumer Service with visual processing indicator
     """
     if request.method == 'POST':
         saml_response = request.POST.get('SAMLResponse', '')
         relay_state = request.POST.get('RelayState', '/')
         
-        logger.info(f"Received SAML Response: {saml_response[:100]}...")
-        
-        try:
-            # Decode the SAML response (it's base64 encoded)
-            decoded_response = base64.b64decode(saml_response).decode('utf-8')
-            logger.info(f"Decoded SAML Response: {decoded_response[:500]}...")
+        # Check if this is the processing step (form resubmission)
+        if request.POST.get('_processing') == 'true':
+            # This is the actual processing step
+            logger.info(f"Processing SAML Response: {saml_response[:100]}...")
             
-            # Parse the XML to extract user information
-            root = ET.fromstring(decoded_response)
-            
-            # Define namespaces for SAML
-            namespaces = {
-                'saml': 'urn:oasis:names:tc:SAML:2.0:assertion',
-                'samlp': 'urn:oasis:names:tc:SAML:2.0:protocol'
-            }
-            
-            # Extract user attributes
-            attributes = {}
-            for attr in root.findall('.//saml:Attribute', namespaces):
-                attr_name = attr.get('Name', '')
-                attr_values = [value.text for value in attr.findall('saml:AttributeValue', namespaces)]
-                attributes[attr_name] = attr_values
-                
-            # Extract NameID
-            name_id_element = root.find('.//saml:NameID', namespaces)
-            name_id = name_id_element.text if name_id_element is not None else None
-            
-            # Try to extract NameID from Subject if not found in attributes
-            if not name_id:
-                subject_name_id = root.find('.//saml:Subject/saml:NameID', namespaces)
-                name_id = subject_name_id.text if subject_name_id is not None else None
-            
-            logger.info(f"Extracted attributes: {attributes}")
-            logger.info(f"NameID: {name_id}")
-            
-            # Create or get user based on email or name
-            email = None
-            username = None
-            first_name = ''
-            last_name = ''
-            
-            # Extract user info from attributes
-            for attr_name, attr_values in attributes.items():
-                if 'emailaddress' in attr_name.lower() and attr_values:
-                    email = attr_values[0]
-                elif 'givenname' in attr_name.lower() and attr_values:
-                    first_name = attr_values[0]
-                elif 'surname' in attr_name.lower() and attr_values:
-                    last_name = attr_values[0]
-                elif 'name' in attr_name.lower() and attr_values:
-                    username = attr_values[0]
-            
-            # If no attributes were provided, use NameID or create a default user
-            if not email and not username and name_id:
-                # Try to extract domain/username from NameID if it looks like domain\username
-                if '\\' in name_id:
-                    domain, user_part = name_id.split('\\', 1)
-                    username = user_part
-                    first_name = user_part.title()
-                else:
-                    username = name_id
-                    first_name = name_id.title()
-            
-            # Use email as username if available, otherwise use NameID or extracted username
-            if email:
-                username = email
-            elif not username and name_id:
-                username = name_id
-            elif not username:
-                username = 'saml_user'
-                
-            logger.info(f"Creating/finding user: {username}")
-            
-            # Create or get the user
-            user, created = User.objects.get_or_create(
-                username=username,
-                defaults={
-                    'email': email or '',
-                    'first_name': first_name,
-                    'last_name': last_name,
-                    'is_active': True,
-                }
-            )
-            
-            if not created:
-                # Update user info
-                user.email = email or user.email
-                user.first_name = first_name or user.first_name
-                user.last_name = last_name or user.last_name
-                user.save()
-                
-            # Log the user in with explicit backend
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            
-            # Store SAML session information for proper logout
-            request.session['saml_authenticated'] = True
-            request.session['saml_name_id'] = name_id
-            request.session['saml_user_email'] = email
-            request.session['saml_login_time'] = str(timezone.now()) if 'timezone' in globals() else 'unknown'
-            
-            # Mark this as a SAML session for logout purposes
-            request.session['authentication_method'] = 'saml'
-            
-            messages.success(request, f"Successfully authenticated via SAML! Welcome {user.first_name or user.username}!")
-            
-            return redirect(relay_state or 'authentication:home')
-            
-        except Exception as e:
-            logger.error(f"Error processing SAML response: {str(e)}")
-            return HttpResponse(f"""
-                <h1>SAML Response Debug</h1>
-                <h2>Error:</h2>
-                <p>{str(e)}</p>
-                <h2>Raw SAML Response:</h2>
-                <textarea rows="10" cols="100">{saml_response}</textarea>
-                <h2>Decoded Response:</h2>
-                <textarea rows="20" cols="100">{decoded_response if 'decoded_response' in locals() else 'Failed to decode'}</textarea>
-                <p><a href="/authentication/login/">Back to Login</a></p>
-            """, content_type='text/html')
+            try:
+                return process_saml_response(request, saml_response, relay_state)
+            except Exception as e:
+                logger.error(f"Error processing SAML response: {str(e)}")
+                return show_saml_error(request, saml_response, str(e))
+        else:
+            # First time receiving from ADFS - show processing page with auto-submit form
+            return show_saml_processing_page(request, saml_response, relay_state)
     
     return HttpResponse("Method not allowed", status=405)
+
+def show_saml_processing_page(request, saml_response, relay_state):
+    """
+    Show a processing page with auto-submitting form
+    """
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Processing SAML Authentication...</title>
+        <style>
+            body {{
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                color: #333;
+            }}
+            .processing-container {{
+                background: white;
+                padding: 3rem;
+                border-radius: 16px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                text-align: center;
+                max-width: 500px;
+                width: 90%;
+            }}
+            .spinner {{
+                width: 60px;
+                height: 60px;
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid #0066cc;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 2rem auto;
+            }}
+            @keyframes spin {{
+                0% {{ transform: rotate(0deg); }}
+                100% {{ transform: rotate(360deg); }}
+            }}
+            .processing-title {{
+                font-size: 1.5rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+                color: #0066cc;
+            }}
+            .processing-message {{
+                font-size: 1rem;
+                color: #666;
+                margin-bottom: 2rem;
+                line-height: 1.5;
+            }}
+            .countdown {{
+                font-size: 0.9rem;
+                color: #999;
+                margin-top: 1rem;
+            }}
+            .technical-info {{
+                margin-top: 2rem;
+                padding: 1rem;
+                background: #f8f9fa;
+                border-radius: 8px;
+                font-size: 0.85rem;
+                color: #666;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="processing-container">
+            <div class="spinner"></div>
+            <h1 class="processing-title">Processing SAML Authentication</h1>
+            <p class="processing-message">
+                Successfully received authentication response from ADFS.<br>
+                Processing your credentials and creating your session...
+            </p>
+            
+            <div class="technical-info">
+                <strong>Technical Details:</strong><br>
+                • SAML Response received from ADFS<br>
+                • Validating digital signatures<br>
+                • Extracting user attributes<br>
+                • Creating secure session<br>
+            </div>
+            
+            <p class="countdown">This page will automatically continue in <span id="countdown">3</span> seconds...</p>
+            
+            <!-- Hidden auto-submit form -->
+            <form id="samlForm" method="POST" style="display: none;">
+                <input type="hidden" name="SAMLResponse" value="{saml_response}">
+                <input type="hidden" name="RelayState" value="{relay_state}">
+                <input type="hidden" name="_processing" value="true">
+            </form>
+        </div>
+        
+        <script>
+            let countdown = 3;
+            const countdownElement = document.getElementById('countdown');
+            
+            const timer = setInterval(() => {{
+                countdown--;
+                countdownElement.textContent = countdown;
+                
+                if (countdown <= 0) {{
+                    clearInterval(timer);
+                    countdownElement.textContent = 'Processing...';
+                    document.getElementById('samlForm').submit();
+                }}
+            }}, 1000);
+            
+            // Also submit after 3 seconds as backup
+            setTimeout(() => {{
+                document.getElementById('samlForm').submit();
+            }}, 3000);
+        </script>
+    </body>
+    </html>
+    """
+    return HttpResponse(html_content, content_type='text/html')
+
+def process_saml_response(request, saml_response, relay_state):
+    """
+    Process the actual SAML response
+    """
+    # Decode the SAML response (it's base64 encoded)
+    decoded_response = base64.b64decode(saml_response).decode('utf-8')
+    logger.info(f"Decoded SAML Response: {decoded_response[:500]}...")
+    
+    # Parse the XML to extract user information
+    root = ET.fromstring(decoded_response)
+    
+    # Define namespaces for SAML
+    namespaces = {
+        'saml': 'urn:oasis:names:tc:SAML:2.0:assertion',
+        'samlp': 'urn:oasis:names:tc:SAML:2.0:protocol'
+    }
+    
+    # Extract user attributes
+    attributes = {}
+    for attr in root.findall('.//saml:Attribute', namespaces):
+        attr_name = attr.get('Name', '')
+        attr_values = [value.text for value in attr.findall('saml:AttributeValue', namespaces)]
+        attributes[attr_name] = attr_values
+        
+    # Extract NameID
+    name_id_element = root.find('.//saml:NameID', namespaces)
+    name_id = name_id_element.text if name_id_element is not None else None
+    
+    # Try to extract NameID from Subject if not found in attributes
+    if not name_id:
+        subject_name_id = root.find('.//saml:Subject/saml:NameID', namespaces)
+        name_id = subject_name_id.text if subject_name_id is not None else None
+    
+    logger.info(f"Extracted attributes: {attributes}")
+    logger.info(f"NameID: {name_id}")
+    
+    # Create or get user based on email or name
+    email = None
+    username = None
+    first_name = ''
+    last_name = ''
+    
+    # Extract user info from attributes
+    for attr_name, attr_values in attributes.items():
+        if 'emailaddress' in attr_name.lower() and attr_values:
+            email = attr_values[0]
+        elif 'givenname' in attr_name.lower() and attr_values:
+            first_name = attr_values[0]
+        elif 'surname' in attr_name.lower() and attr_values:
+            last_name = attr_values[0]
+        elif 'name' in attr_name.lower() and attr_values:
+            username = attr_values[0]
+    
+    # If no attributes were provided, use NameID or create a default user
+    if not email and not username and name_id:
+        # Try to extract domain/username from NameID if it looks like domain\username
+        if '\\' in name_id:
+            domain, user_part = name_id.split('\\', 1)
+            username = user_part
+            first_name = user_part.title()
+        else:
+            username = name_id
+            first_name = name_id.title()
+    
+    # Use email as username if available, otherwise use NameID or extracted username
+    if email:
+        username = email
+    elif not username and name_id:
+        username = name_id
+    elif not username:
+        username = 'saml_user'
+        
+    logger.info(f"Creating/finding user: {username}")
+    
+    # Create or get the user
+    user, created = User.objects.get_or_create(
+        username=username,
+        defaults={
+            'email': email or '',
+            'first_name': first_name,
+            'last_name': last_name,
+            'is_active': True,
+        }
+    )
+    
+    if not created:
+        # Update user info
+        user.email = email or user.email
+        user.first_name = first_name or user.first_name
+        user.last_name = last_name or user.last_name
+        user.save()
+        
+    # Log the user in with explicit backend
+    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+    
+    # Store SAML session information for proper logout
+    request.session['saml_authenticated'] = True
+    request.session['saml_name_id'] = name_id
+    request.session['saml_user_email'] = email
+    request.session['saml_login_time'] = str(timezone.now()) if 'timezone' in globals() else 'unknown'
+    
+    # Mark this as a SAML session for logout purposes
+    request.session['authentication_method'] = 'saml'
+    
+    messages.success(request, f"Successfully authenticated via SAML! Welcome {user.first_name or user.username}!")
+    
+    return redirect(relay_state or 'authentication:home')
+
+def show_saml_error(request, saml_response, error_message):
+    """
+    Show SAML error page with debug information
+    """
+    try:
+        decoded_response = base64.b64decode(saml_response).decode('utf-8')
+    except:
+        decoded_response = 'Failed to decode SAML response'
+    
+    return HttpResponse(f"""
+        <h1>SAML Response Debug</h1>
+        <h2>Error:</h2>
+        <p>{error_message}</p>
+        <h2>Raw SAML Response:</h2>
+        <textarea rows="10" cols="100">{saml_response}</textarea>
+        <h2>Decoded Response:</h2>
+        <textarea rows="20" cols="100">{decoded_response}</textarea>
+        <p><a href="/authentication/login/">Back to Login</a></p>
+    """, content_type='text/html')
 
 @csrf_exempt
 def saml_logout_view(request):
@@ -363,7 +506,3 @@ def saml_logout_view(request):
         # Force logout anyway
         logout(request)
         return redirect('authentication:login')
-
-
-
-
