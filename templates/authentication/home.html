@@ -302,8 +302,20 @@
         
         <div class="welcome-card">
             <h2>Welcome to SecureAuth</h2>
-            <p>You have successfully authenticated to the enterprise portal. 
+            <p>Hello <strong>{{ user.first_name|default:user.username }}</strong>! 
+               You have successfully authenticated to the enterprise portal. 
                From here, you can access all your authorized applications and services.</p>
+            
+            {% if request.session.authentication_method == 'saml' %}
+            <div style="margin-top: 1rem; padding: 1rem; background: rgba(255, 255, 255, 0.1); border-radius: 8px; border-left: 4px solid #00a86b;">
+                <p style="margin: 0; color: #ffffff; font-size: 0.9rem;">
+                    <svg style="display: inline-block; width: 16px; height: 16px; margin-right: 8px; vertical-align: middle;" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/>
+                    </svg>
+                    Authenticated via Single Sign-On (SSO)
+                </p>
+            </div>
+            {% endif %}
         </div>
         
         <div class="card-grid">

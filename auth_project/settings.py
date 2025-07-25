@@ -181,15 +181,16 @@ if SAML_AVAILABLE and SAML_IMPORTS_AVAILABLE and not os.getenv('CI'):
                         (os.getenv('SAML_SLS_URL', 'https://192.168.1.46:8000/saml2/sls/'), saml2.BINDING_HTTP_REDIRECT),
                     ],
                 },
-                'force_authn': False,
+                'force_authn': True,  # Always force fresh authentication
                 'name_id_format_allow_create': True,
                 'want_response_signed': False,
                 'want_assertions_signed': False,
                 'want_assertions_or_response_signed': False,
                 'authn_requests_signed': False,
                 'logout_requests_signed': False,
-                'allow_unsolicited': True,  # Allow IdP-initiated SSO
+                'allow_unsolicited': False,  # Disable IdP-initiated SSO to force fresh requests
                 'only_use_keys_in_metadata': False,  # Don't restrict to metadata keys
+                'disable_ssl_certificate_validation': True,  # For development
             },
         },
         'debug': DEBUG,

@@ -68,8 +68,52 @@ class AuthenticationViewsTest(TestCase):
             
         response = self.client.get(reverse('authentication:adfs_login'))
         self.assertEqual(response.status_code, 302)
-        # Should redirect to SAML login endpoint
-        self.assertTrue(response.url.endswith('/saml2/login/'))
+        # Should redirect to SAML login endpoint with forceAuthn parameter
+        self.assertTrue('/saml2/login/' in response.url)
+        self.assertTrue('forceAuthn=true' in response.url)
+    
+    def test_saml_session_clearing(self):
+        """Test SAML session data is cleared on logout"""
+        import os
+        if os.getenv('CI'):
+            self.skipTest("SAML not available in CI environment")
+            
+        # Simulate SAML login by setting session data
+        session = self.client.session
+        session['saml_authenticated'] = True
+        session['saml_name_id'] = 'test@example.com'
+        session['authentication_method'] = 'saml'
+        session.save()
+        
+        # Login user
+        self.client.login(username='testuser', password='testpass123')
+        
+        # Logout
+        response = self.client.get(reverse('authentication:logout'))
+        self.assertEqual(response.status_code, 302)
+        
+        # Check that session is cleared
+        session = self.client.session
+        self.assertNotIn('saml_authenticated', session)
+        self.assertNotIn('saml_name_id', session)
+        self.assertNotIn('authentication_method', session)
+    
+    def test_clear_saml_session_view(self):
+        """Test manual SAML session clearing view"""
+        import os
+        if os.getenv('CI'):
+            self.skipTest("SAML not available in CI environment")
+            
+        # Set some SAML session data
+        session = self.client.session
+        session['saml_authenticated'] = True
+        session['saml2_session'] = 'test_session'
+        session.save()
+        
+        # Call clear session view
+        response = self.client.get(reverse('authentication:clear_saml_session'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('SAML Session Cleared', response.content.decode())
 
 
 class ConfigurationTest(TestCase):

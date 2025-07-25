@@ -82,6 +82,27 @@
             
             <div class="login-options">
                 <h3 class="auth-heading">Choose Login Method</h3>
+                
+                <!-- Django Messages -->
+                {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="message message-{{ message.tags }}">
+                            <svg style="display: inline-block; width: 16px; height: 16px; margin-right: 8px; vertical-align: middle;" fill="currentColor" viewBox="0 0 24 24">
+                                {% if message.tags == 'success' %}
+                                <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M11,16.5L18,9.5L16.59,8.09L11,13.67L7.41,10.09L6,11.5L11,16.5Z"/>
+                                {% elif message.tags == 'error' %}
+                                <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,7A1,1 0 0,0 11,8V16A1,1 0 0,0 12,17A1,1 0 0,0 13,16V8A1,1 0 0,0 12,7M12,20.5A1.5,1.5 0 0,0 13.5,19A1.5,1.5 0 0,0 12,17.5A1.5,1.5 0 0,0 10.5,19A1.5,1.5 0 0,0 12,20.5Z"/>
+                                {% else %}
+                                <path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+                                {% endif %}
+                            </svg>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
                 <div class="auth-buttons">
                     <button id="standardLoginBtn" class="auth-option-button" onclick="toggleLoginForm('standard')">
                         <svg class="auth-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
