@@ -4,12 +4,8 @@ DOCKER_DIR := docker
 COMPOSE_FILE := $(DOCKER_DIR)/docker-compose.yaml
 PORT := 8000
 
-# Build and run with Docker Compose
+# Build and run with Docker Compose in detached mode
 up:
-	cd $(DOCKER_DIR) && docker-compose up --build
-
-# Run in background
-up-d:
 	cd $(DOCKER_DIR) && docker-compose up --build -d
 
 # Stop Docker Compose services

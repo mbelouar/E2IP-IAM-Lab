@@ -117,7 +117,8 @@ def logout_view(request):
     response['Cache-Control'] = 'no-cache, no-store, must-revalidate, private, max-age=0'
     response['Pragma'] = 'no-cache'
     response['Expires'] = '0'
-    response['Clear-Site-Data'] = '"cache", "cookies", "storage", "executionContexts"'
+    # Modified Clear-Site-Data to preserve localStorage (theme preference)
+    response['Clear-Site-Data'] = '"cache", "cookies", "executionContexts"'
     
     # Clear any potential SAML cookies and other session cookies
     response.delete_cookie('sessionid')
@@ -268,6 +269,14 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 --gray-800: #1e293b;
                 --gray-900: #0f172a;
                 
+                /* Dark Mode Colors */
+                --dark-bg: #0a0e1a;
+                --dark-surface: #1a1f2e;
+                --dark-surface-elevated: #252b3d;
+                --dark-border: #2d3748;
+                --dark-text-primary: #f7fafc;
+                --dark-text-secondary: #a0aec0;
+                
                 /* Typography */
                 --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
                 
@@ -321,6 +330,12 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 text-rendering: optimizeLegibility;
                 position: relative;
                 overflow-x: hidden;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }}
+
+            body.dark-mode {{
+                background: linear-gradient(135deg, var(--dark-bg) 0%, #1a202c 50%, var(--gray-900) 100%);
+                color: var(--dark-text-primary);
             }}
 
             /* Enhanced Background Elements */
@@ -493,12 +508,18 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 border-radius: var(--radius-2xl);
                 box-shadow: var(--shadow-2xl);
                 text-align: center;
-                max-width: 520px;
+                max-width: 580px;
                 width: 90%;
                 position: relative;
                 z-index: 10;
                 border: 1px solid rgba(255, 255, 255, 0.2);
                 animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            }}
+
+            body.dark-mode .processing-container {{
+                background: rgba(26, 32, 44, 0.95);
+                border: 1px solid var(--dark-border);
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
             }}
 
             @keyframes fadeInScale {{
@@ -545,10 +566,18 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 margin-bottom: var(--space-xs);
             }}
 
+            body.dark-mode .company-name {{
+                color: var(--primary-blue-light);
+            }}
+
             .company-tagline {{
                 font-size: 0.875rem;
                 color: var(--gray-600);
                 font-weight: 500;
+            }}
+
+            body.dark-mode .company-tagline {{
+                color: var(--dark-text-secondary);
             }}
 
             /* Spinner */
@@ -565,6 +594,11 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 animation: spin 1s linear infinite;
                 margin: 0 auto;
                 position: relative;
+            }}
+
+            body.dark-mode .spinner {{
+                border-color: var(--dark-border);
+                border-top-color: var(--primary-blue-light);
             }}
 
             .spinner::after {{
@@ -594,12 +628,20 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 letter-spacing: -0.025em;
             }}
 
+            body.dark-mode .processing-title {{
+                color: var(--dark-text-primary);
+            }}
+
             .processing-message {{
                 font-size: 1rem;
                 color: var(--gray-600);
                 margin-bottom: var(--space-xl);
                 line-height: 1.6;
                 font-weight: 500;
+            }}
+
+            body.dark-mode .processing-message {{
+                color: var(--dark-text-secondary);
             }}
 
             .countdown {{
@@ -611,6 +653,12 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 align-items: center;
                 justify-content: center;
                 gap: var(--space-sm);
+                flex-wrap: nowrap;
+                white-space: nowrap;
+            }}
+
+            body.dark-mode .countdown {{
+                color: var(--dark-text-secondary);
             }}
 
             .countdown-number {{
@@ -644,11 +692,21 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 text-align: left;
             }}
 
+            body.dark-mode .technical-info {{
+                background: linear-gradient(to right, rgba(0, 102, 204, 0.1), rgba(51, 133, 214, 0.1));
+                color: var(--dark-text-secondary);
+                border-left-color: var(--primary-blue);
+            }}
+
             .technical-info strong {{
                 color: var(--gray-800);
                 font-weight: 600;
                 display: block;
                 margin-bottom: var(--space-sm);
+            }}
+
+            body.dark-mode .technical-info strong {{
+                color: var(--dark-text-primary);
             }}
 
             .technical-info ul {{
@@ -691,6 +749,10 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 color: var(--success);
                 font-size: 0.875rem;
                 font-weight: 600;
+            }}
+
+            body.dark-mode .status-indicator {{
+                background: rgba(0, 168, 107, 0.15);
             }}
 
             .status-dot {{
@@ -792,7 +854,7 @@ def show_saml_processing_page(request, saml_response, relay_state):
             <p class="countdown">
                 This page will automatically continue in 
                 <span class="countdown-number" id="countdown">3</span> 
-                seconds...
+                <span id="countdown-text">seconds</span>...
             </p>
             
             <!-- Hidden auto-submit form -->
@@ -804,17 +866,43 @@ def show_saml_processing_page(request, saml_response, relay_state):
         </div>
         
         <script>
+            // Theme detection and application (same as login.js)
+            function initializeTheme() {{
+                // Check local storage for theme preference, default to dark
+                const savedTheme = localStorage.getItem('theme');
+                const isDarkMode = savedTheme ? savedTheme === 'dark' : true; // Default to dark mode
+                
+                if (isDarkMode) {{
+                    document.body.classList.add('dark-mode');
+                    // Set default theme in localStorage if not set
+                    if (!savedTheme) {{
+                        localStorage.setItem('theme', 'dark');
+                    }}
+                }} else {{
+                    document.body.classList.remove('dark-mode');
+                }}
+            }}
+
+            // Initialize theme immediately when script loads
+            initializeTheme();
+
+            // Countdown and form submission logic
             let countdown = 3;
             const countdownElement = document.getElementById('countdown');
+            const countdownTextElement = document.getElementById('countdown-text');
             const statusIndicator = document.querySelector('.status-indicator span');
             
             const timer = setInterval(() => {{
                 countdown--;
                 countdownElement.textContent = countdown;
                 
+                // Update singular/plural text
+                countdownTextElement.textContent = countdown === 1 ? 'second' : 'seconds';
+                
                 if (countdown <= 0) {{
                     clearInterval(timer);
                     countdownElement.textContent = '0';
+                    countdownTextElement.textContent = 'seconds';
                     statusIndicator.textContent = 'Processing authentication...';
                     
                     // Add a subtle fade effect before submit

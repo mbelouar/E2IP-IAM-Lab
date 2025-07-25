@@ -15,12 +15,22 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeApp() {
-    // Check local storage for theme preference
+    // Check local storage for theme preference, default to dark
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
+    const isDarkMode = savedTheme ? savedTheme === 'dark' : true; // Default to dark mode
+    
+    if (isDarkMode) {
         document.body.classList.add('dark-mode');
         AppState.darkMode = true;
         updateThemeIcon(true);
+        // Set default theme in localStorage if not set
+        if (!savedTheme) {
+            localStorage.setItem('theme', 'dark');
+        }
+    } else {
+        document.body.classList.remove('dark-mode');
+        AppState.darkMode = false;
+        updateThemeIcon(false);
     }
 
     // Set up event listeners
