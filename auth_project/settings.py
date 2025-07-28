@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -33,12 +34,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-()fi^gqzhho1!1e47!w1h4o$y212_a53nx+4f3k+wqz=9xgx8a')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.46', 'secureauth', 'secureauth:8000']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
 
 # Application definition
@@ -109,10 +110,9 @@ WSGI_APPLICATION = 'auth_project.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL', 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'))
+    )
 }
 
 
@@ -167,7 +167,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # SAML Configuration - Only configure if SAML is available and not in CI
 if SAML_AVAILABLE and SAML_IMPORTS_AVAILABLE and not os.getenv('CI'):
     SAML_CONFIG = {
-        'entityid': os.getenv('SAML_ENTITY_ID', 'https://192.168.1.46:8000/saml2/metadata/'),
+        'entityid': os.getenv('SAML_ENTITY_ID'),
         'description': 'E2IP IAM Lab SAML Service',
         'service': {
             'sp': {
@@ -175,10 +175,10 @@ if SAML_AVAILABLE and SAML_IMPORTS_AVAILABLE and not os.getenv('CI'):
                 'name_id_format': NAMEID_FORMAT_EMAILADDRESS,
                 'endpoints': {
                     'assertion_consumer_service': [
-                        (os.getenv('SAML_ACS_URL', 'https://192.168.1.46:8000/custom-saml-acs/'), saml2.BINDING_HTTP_POST),
+                        (os.getenv('SAML_ACS_URL'), saml2.BINDING_HTTP_POST),
                     ],
                     'single_logout_service': [
-                        (os.getenv('SAML_SLS_URL', 'https://192.168.1.46:8000/saml2/sls/'), saml2.BINDING_HTTP_REDIRECT),
+                        (os.getenv('SAML_SLS_URL'), saml2.BINDING_HTTP_REDIRECT),
                     ],
                 },
                 'force_authn': True,  # Always force fresh authentication
@@ -196,7 +196,7 @@ if SAML_AVAILABLE and SAML_IMPORTS_AVAILABLE and not os.getenv('CI'):
         'debug': DEBUG,
         # Disable all signature verification
         'verify_ssl_cert': False,
-        'xmlsec_binary': '/opt/homebrew/bin/xmlsec1',
+        'xmlsec_binary': os.getenv('XMLSEC_BINARY'),
     }
 
     # Configure SAML with ADFS metadata file
@@ -227,12 +227,12 @@ if SAML_AVAILABLE and SAML_IMPORTS_AVAILABLE and not os.getenv('CI'):
 
 # Cookie security settings for SAML/SSO
 # These settings ensure cookies work properly with SAML authentication over HTTPS
-SESSION_COOKIE_SECURE = True  # Requires HTTPS
-SESSION_COOKIE_SAMESITE = 'None'  # Required for cross-site SAML requests
-CSRF_COOKIE_SECURE = True  # Requires HTTPS
-CSRF_COOKIE_SAMESITE = 'None'  # Required for cross-site SAML requests
+SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'True').lower() == 'true'
+SESSION_COOKIE_SAMESITE = os.getenv('SESSION_COOKIE_SAMESITE', 'None')
+CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'True').lower() == 'true'
+CSRF_COOKIE_SAMESITE = os.getenv('CSRF_COOKIE_SAMESITE', 'None')
 
 # Additional security settings for production
-SECURE_SSL_REDIRECT = False  # Set to True in production
+SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'False').lower() == 'true'
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
