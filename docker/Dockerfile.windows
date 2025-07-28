@@ -4,7 +4,7 @@ FROM mcr.microsoft.com/windows/servercore:ltsc2022
 # Install Python 3.9 manually or via package manager (example below uses Chocolatey)
 SHELL ["powershell", "-Command"]
 
-RUN Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')); choco install -y python --version=3.9.7
+RUN Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')); choco install -y python --version=3.9.7 xmlsec
 
 WORKDIR C:/app
 
@@ -12,6 +12,8 @@ COPY requirements.txt C:/app/
 
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
+COPY ssl/ C:/app/ssl/
+
 COPY . C:/app/
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "manage.py", "runserver_plus", "--cert-file", "ssl/cert.pem", "--key-file", "ssl/key.pem", "0.0.0.0:8000"]

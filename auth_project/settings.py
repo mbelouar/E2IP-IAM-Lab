@@ -196,7 +196,7 @@ if SAML_AVAILABLE and SAML_IMPORTS_AVAILABLE and not os.getenv('CI'):
         'debug': DEBUG,
         # Disable all signature verification
         'verify_ssl_cert': False,
-        'xmlsec_binary': os.getenv('XMLSEC_BINARY'),
+        'xmlsec_binary': os.getenv('XMLSEC_BINARY', 'xmlsec1'),
     }
 
     # Configure SAML with ADFS metadata file

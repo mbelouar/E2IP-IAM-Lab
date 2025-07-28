@@ -43,5 +43,5 @@ build-windows:
 
 # Legacy commands for backward compatibility
 build: build-linux
-run: up-d
+run: up
 stop: down

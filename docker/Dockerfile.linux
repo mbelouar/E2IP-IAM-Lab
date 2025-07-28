@@ -7,8 +7,14 @@ WORKDIR /app
 
 COPY requirements.txt /app/
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends xmlsec1 && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN pip install --no-cache-dir -r requirements.txt
+
+COPY ssl/ /app/ssl/
 
 COPY . /app/
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "manage.py", "runserver_plus", "--cert-file", "ssl/cert.pem", "--key-file", "ssl/key.pem", "0.0.0.0:8000"]
