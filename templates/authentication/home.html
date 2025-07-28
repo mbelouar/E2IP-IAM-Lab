@@ -4,281 +4,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecureAuth - Home</title>
+    <title>SecureAuth Portal - Home</title>
+    <meta name="description" content="Secure employee access portal for SecureAuth enterprise systems">
+    <meta name="robots" content="noindex, nofollow">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%230066cc'/><stop offset='100%' stop-color='%233385d6'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23grad)'/><path d='M50 25c-8.284 0-15 6.716-15 15v5h-5c-2.761 0-5 2.239-5 5v25c0 2.761 2.239 5 5 5h40c2.761 0 5-2.239 5-5V50c0-2.761-2.239-5-5-5h-5v-5c0-8.284-6.716-15-15-15zm0 6c5.523 0 10 4.477 10 10v5H40v-5c0-5.523 4.477-10 10-10z' fill='white'/></svg>">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login-enhancements.css' %}">
+    <link rel="stylesheet" href="{% static 'css/background-enhancements.css' %}">
     <link rel="stylesheet" href="{% static 'css/header-enhancements.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home-enhancements.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        
-        :root {
-            --primary-blue: #0066cc;
-            --primary-blue-dark: #004499;
-            --primary-blue-light: #3385d6;
-            --secondary-blue: #4da6ff;
-            --white: #ffffff;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
-            --gray-400: #94a3b8;
-            --gray-500: #64748b;
-            --gray-600: #475569;
-            --gray-700: #334155;
-            --gray-800: #1e293b;
-            --gray-900: #0f172a;
-            --success: #00a86b;
-            --font-family: 'Inter', sans-serif;
-        }
-        
-        body {
-            font-family: var(--font-family);
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, var(--primary-blue) 0%, #1e3a8a 50%, var(--primary-blue-dark) 100%);
-            min-height: 100vh;
-            color: var(--white);
-        }
-        
-        .container {
+        .home-content {
             width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--white);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .logo-text h1 {
             margin: 0;
-            font-size: 1.5rem;
-            font-weight: 700;
+            padding: 1rem;
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-        
-        .logo-text p {
-            margin: 0;
-            font-size: 0.875rem;
-            opacity: 0.8;
-        }
-        
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .user-info {
-            text-align: right;
-        }
-        
-        .user-name {
-            font-weight: 600;
-            font-size: 1rem;
-        }
-        
-        .user-role {
-            font-size: 0.875rem;
-            opacity: 0.8;
-        }
-        
-        .logout-btn {
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: var(--white);
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            font-family: var(--font-family);
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .logout-btn:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        
         .welcome-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 3rem;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(24px);
+            border-radius: var(--radius-2xl);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.2);
+            padding: var(--space-3xl) var(--space-2xl);
             margin-bottom: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
+        .welcome-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.3);
+        }
         .welcome-card h2 {
             font-size: 2.5rem;
-            margin-bottom: 1rem;
             font-weight: 700;
+            margin: 0 0 1rem 0;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        
         .welcome-card p {
             font-size: 1.125rem;
-            opacity: 0.9;
+            color: var(--gray-700);
             max-width: 600px;
             margin: 0 auto;
             line-height: 1.6;
         }
-        
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
         }
-        
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
+        .grid-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(24px);
+            border-radius: var(--radius-2xl);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.2);
             padding: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
-        .card:hover {
+        .grid-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.3);
         }
-        
-        .card-icon {
-            background: rgba(255, 255, 255, 0.2);
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1rem;
-        }
-        
-        .card h3 {
+        .grid-card h3 {
+            margin: 0 0 0.5rem 0;
             font-size: 1.25rem;
-            margin-bottom: 0.5rem;
+            color: var(--gray-900);
         }
-        
-        .card p {
-            font-size: 0.875rem;
-            opacity: 0.8;
-            margin-bottom: 1.5rem;
+        .grid-card p {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin: 0 0 1.5rem 0;
         }
-        
         .card-link {
-            color: var(--white);
+            color: var(--primary-blue);
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.875rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-        
-        .toast-container {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            z-index: 1000;
+        .card-link:hover {
+            color: var(--primary-blue-dark);
         }
-        
-        .toast {
-            background: var(--white);
-            color: var(--gray-800);
-            border-radius: 8px;
-            padding: 1rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
+        .admin-card {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.2);
         }
-        
-        .toast.success {
-            border-left: 4px solid var(--success);
+        .admin-card .card-link {
+            color: #059669;
         }
-        
-        .toast-icon {
-            width: 24px;
-            height: 24px;
-            color: var(--success);
+        .admin-card .card-link:hover {
+            color: #047857;
         }
-        
-        .toast-content {
-            flex: 1;
+        .saml-attributes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
         }
-        
-        .toast-title {
+        .saml-attributes-table th,
+        .saml-attributes-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .saml-attributes-table th {
             font-weight: 600;
-            margin-bottom: 0.25rem;
+            background-color: var(--gray-50);
+            width: 30%;
+            color: var(--gray-900);
         }
-        
-        .toast-message {
-            font-size: 0.875rem;
-            color: var(--gray-600);
+        .saml-attributes-table td {
+            font-family: monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            color: var(--gray-700);
         }
-        
-        .toast-close {
-            background: none;
-            border: none;
-            color: var(--gray-400);
-            cursor: pointer;
-            padding: 0.25rem;
+        body.dark-mode .welcome-card,
+        body.dark-mode .grid-card {
+            background: rgba(26, 32, 44, 0.85);
+            border: 1px solid var(--dark-border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
         }
-        
-        .toast-close:hover {
-            color: var(--gray-600);
+        body.dark-mode .welcome-card h2 {
+            background: linear-gradient(135deg, #ffffff, #a3c9ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
-            }
-            
-            .user-menu {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .welcome-card {
-                padding: 2rem 1.5rem;
-            }
-            
-            .welcome-card h2 {
-                font-size: 2rem;
-            }
-            
-            .card-grid {
-                grid-template-columns: 1fr;
-            }
+        body.dark-mode .welcome-card p,
+        body.dark-mode .grid-card h3 {
+            color: var(--dark-text-primary);
+        }
+        body.dark-mode .grid-card p {
+            color: var(--dark-text-secondary);
+        }
+        body.dark-mode .saml-attributes-table th {
+            background-color: var(--dark-surface);
+            color: var(--dark-text-primary);
+            border-bottom-color: var(--dark-border);
+        }
+        body.dark-mode .saml-attributes-table td {
+            color: var(--dark-text-secondary);
+            border-bottom-color: var(--dark-border);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
+    <!-- Enhanced Background -->
+    <div class="background-wrapper">
+        <div class="background-grid"></div>
+        <div class="background-overlay"></div>
+        <div class="circuit-lines"></div>
+        <div class="floating-elements">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
             <a href="#" class="header-logo">
                 <div class="header-logo-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -291,125 +187,310 @@
                     <div class="company-tagline">Enterprise Access Portal</div>
                 </div>
             </a>
-            <div class="user-menu">
-                <div class="user-info">
-                    <div class="user-name">{{ request.user.username|default:"User" }}</div>
-                    <div class="user-role">Authenticated User</div>
-                </div>
-                <a href="{% url 'authentication:logout' %}" class="logout-btn">Log Out</a>
+            <div class="system-status">
+                <div class="status-indicator"></div>
+                <span>User: {{ saml_attributes.displayName.0|default:request.user.username }}</span>
             </div>
-        </header>
-        
-        <div class="welcome-card">
-            <h2>Welcome to SecureAuth</h2>
-            <p>Hello <strong>{{ user.first_name|default:user.username }}</strong>! 
-               You have successfully authenticated to the enterprise portal. 
-               From here, you can access all your authorized applications and services.</p>
-            
-            {% if request.session.authentication_method == 'saml' %}
-            <div style="margin-top: 1rem; padding: 1rem; background: rgba(255, 255, 255, 0.1); border-radius: 8px; border-left: 4px solid #00a86b;">
-                <p style="margin: 0; color: #ffffff; font-size: 0.9rem;">
-                    <svg style="display: inline-block; width: 16px; height: 16px; margin-right: 8px; vertical-align: middle;" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/>
-                    </svg>
-                    Authenticated via Single Sign-On (SSO)
+        </div>
+        <div class="utility-controls">
+            <button id="themeToggle" class="utility-btn" aria-label="Toggle dark mode">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+            <a href="{% url 'authentication:logout' %}" class="utility-btn" aria-label="Log out">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <path d="M16 17l5-5-5-5"></path>
+                    <path d="M21 12H9"></path>
+                </svg>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="home-content">
+        <div class="welcome-section">
+            <!-- Quick Actions Bar -->
+            <div class="quick-actions">
+                <div class="quick-action" onclick="navigateTo('profile')">
+                    <div class="quick-action-icon">
+                        <i class="fas fa-user-cog"></i>
+                    </div>
+                    <span>Profile</span>
+                </div>
+                <div class="quick-action" onclick="navigateTo('applications')">
+                    <div class="quick-action-icon">
+                        <i class="fas fa-th-large"></i>
+                    </div>
+                    <span>My Apps</span>
+                </div>
+                <div class="quick-action" onclick="navigateTo('security')">
+                    <div class="quick-action-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <span>Security</span>
+                </div>
+                <div class="quick-action" onclick="navigateTo('settings')">
+                    <div class="quick-action-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <span>Settings</span>
+                </div>
+            </div>
+            <div class="welcome-container">
+                <div class="welcome-badges">
+                    <div class="welcome-badge role">
+                        <i class="fas fa-user-shield"></i>
+                        <span>{{ user.role|default:"User" }} Access</span>
+                    </div>
+                    <div class="welcome-badge verified">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Verified Identity</span>
+                    </div>
+                    {% if user.is_staff %}
+                    <div class="welcome-badge premium">
+                        <i class="fas fa-star"></i>
+                        <span>Premium</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <h1 class="welcome-title">
+                    Welcome back,<br>
+                    <span class="welcome-name">{{ user.first_name|default:user.username }}</span>
+                </h1>
+
+                <p class="welcome-description">
+                    Your secure access to all enterprise applications and services. 
+                    Advanced security measures are actively protecting your session.
                 </p>
+
+                <div class="welcome-stats">
+                    <div class="welcome-stat-card">
+                        <div class="welcome-stat-icon secure">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="welcome-stat-content">
+                            <div class="welcome-stat-label">Session Status</div>
+                            <div class="welcome-stat-value">Secured</div>
+                        </div>
+                    </div>
+                    <div class="welcome-stat-card">
+                        <div class="welcome-stat-icon time">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="welcome-stat-content">
+                            <div class="welcome-stat-label">Last Login</div>
+                            <div class="welcome-stat-value">{{ user.last_login|date:"M d, Y"|default:"First login" }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if user.is_staff %}
+                <div class="welcome-actions">
+                    <a href="{% url 'admin:index' %}" class="admin-button">
+                        <i class="fas fa-cog"></i> Admin Dashboard
+                    </a>
+                    <a href="#" class="security-button">
+                        <i class="fas fa-shield-alt"></i> Security Settings
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if request.session.saml_attributes %}
+            <div class="saml-info">
+                <div class="saml-header">
+                    <h3><i class="fas fa-user-shield"></i> Identity Information</h3>
+                    <span class="secure-badge">ENCRYPTED</span>
+                </div>
+                <div class="saml-grid">
+                    {% for key, value in request.session.saml_attributes.items %}
+                    <div class="saml-attribute">
+                        <div class="saml-attribute-label">{{ key|title }}</div>
+                        <div class="saml-attribute-value" title="{{ value }}">{{ value|truncatechars:40 }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
             {% endif %}
         </div>
-        
-        <div class="card-grid">
-            <div class="card">
-                <div class="card-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 7h-9"></path>
-                        <path d="M14 17H5"></path>
-                        <circle cx="17" cy="17" r="3"></circle>
-                        <circle cx="7" cy="7" r="3"></circle>
-                    </svg>
+
+        <!-- Recent Activity & Quick Access -->
+        <div class="dashboard-grid">
+            <!-- Recent Activity -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                    <a href="#" class="view-all">View All</a>
                 </div>
-                <h3>Account Settings</h3>
-                <p>Update your personal information, security settings, and notification preferences.</p>
-                <a href="#" class="card-link">
-                    Manage Settings
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                </a>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon success">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Successful Login</div>
+                            <div class="activity-time">Just now</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon info">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Password Updated</div>
+                            <div class="activity-time">2 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Failed Login Attempt</div>
+                            <div class="activity-time">Yesterday</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="card">
-                <div class="card-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
-                    </svg>
+
+            <!-- Quick Access -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-rocket"></i> Quick Access</h3>
                 </div>
-                <h3>Documentation</h3>
-                <p>Access user guides, documentation, and help resources for all enterprise applications.</p>
-                <a href="#" class="card-link">
-                    View Documentation
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                </a>
+                <div class="quick-access-grid">
+                    <a href="#" class="quick-access-item">
+                        <div class="quick-access-icon">
+                            <i class="fas fa-user-edit"></i>
+                        </div>
+                        <span>Edit Profile</span>
+                    </a>
+                    <a href="#" class="quick-access-item">
+                        <div class="quick-access-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <span>Change Password</span>
+                    </a>
+                    <a href="#" class="quick-access-item">
+                        <div class="quick-access-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <span>2FA Setup</span>
+                    </a>
+                    <a href="#" class="quick-access-item">
+                        <div class="quick-access-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <span>Security Checkup</span>
+                    </a>
+                </div>
             </div>
-            
-            <div class="card">
-                <div class="card-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                    </svg>
+
+            <!-- System Status -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-server"></i> System Status</h3>
+                    <span class="status-badge online">All Systems Operational</span>
                 </div>
-                <h3>Help & Support</h3>
-                <p>Contact IT support, submit tickets, or browse common troubleshooting solutions.</p>
-                <a href="#" class="card-link">
-                    Get Support
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                </a>
+                <div class="status-list">
+                    <div class="status-item">
+                        <div class="status-indicator online"></div>
+                        <span>Authentication Service</span>
+                        <span class="status-detail">Operational</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator online"></div>
+                        <span>API Gateway</span>
+                        <span class="status-detail">Operational</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator warning"></div>
+                        <span>Database</span>
+                        <span class="status-detail">Degraded Performance</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator online"></div>
+                        <span>File Storage</span>
+                        <span class="status-detail">Operational</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Your Applications -->
+            <div class="dashboard-card apps-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-th-large"></i> Your Applications</h3>
+                    <a href="#" class="view-all">Manage</a>
+                </div>
+                <div class="apps-grid">
+                    <a href="#" class="app-item">
+                        <div class="app-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <span>Mail</span>
+                    </a>
+                    <a href="#" class="app-item">
+                        <div class="app-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <span>Calendar</span>
+                    </a>
+                    <a href="#" class="app-item">
+                        <div class="app-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <span>Documents</span>
+                    </a>
+                    <a href="#" class="app-item">
+                        <div class="app-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span>Teams</span>
+                    </a>
+                    <a href="#" class="app-item">
+                        <div class="app-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <span>Analytics</span>
+                    </a>
+                    <a href="#" class="app-item">
+                        <div class="app-icon">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <span>Add App</span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-    
-    <!-- Toast notifications -->
-    {% if messages %}
-    <div class="toast-container">
-        {% for message in messages %}
-        <div class="toast {% if message.tags %}{{ message.tags }}{% else %}success{% endif %}">
-            <div class="toast-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 SecureAuth. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Contact Support</a>
             </div>
-            <div class="toast-content">
-                <div class="toast-title">Notification</div>
-                <div class="toast-message">{{ message }}</div>
-            </div>
-            <button class="toast-close" onclick="this.parentElement.remove()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </button>
         </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-    
+    </footer>
+
+    <script src="{% static 'js/login.js' %}"></script>
+    <script src="{% static 'js/home.js' %}"></script>
     <script>
-        // Auto-close toasts after 5 seconds
+        // Initialize interactive elements when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
-            const toasts = document.querySelectorAll('.toast');
-            toasts.forEach(toast => {
-                setTimeout(() => {
-                    toast.style.opacity = '0';
-                    setTimeout(() => toast.remove(), 300);
-                }, 5000);
-            });
+            // Check if the initInteractiveElements function exists and call it
+            if (typeof initInteractiveElements === 'function') {
+                initInteractiveElements();
+            }
+            
+            // Add any other initialization code here
+            console.log('Home page initialized');
         });
     </script>
 </body>

@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureAuth Enterprise - Executive Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Premium Header -->
+        <header class="premium-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-container">
+                        <div class="logo-background"></div>
+                        <div class="logo-icon">
+                            <i class="fas fa-shield-alt"></i>
+                            <div class="logo-overlay"></div>
+                            <div class="executive-badge">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="logo-text">
+                        <div class="brand-name">
+                            <h1>SecureAuth</h1>
+                            <span class="enterprise-badge">ENTERPRISE</span>
+                        </div>
+                        <p class="brand-subtitle">Executive Identity Platform</p>
+                    </div>
+                </div>
+
+                <div class="header-navigation">
+                    <!-- Executive Dashboard Stats -->
+                    <div class="header-stats">
+                        <div class="stat-item">
+                            <div class="status-indicator"></div>
+                            <div class="stat-content">
+                                <div class="stat-label">System Status</div>
+                                <div class="stat-value">Optimal</div>
+                            </div>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="stat-item">
+                            <i class="fas fa-chart-line stat-icon"></i>
+                            <div class="stat-content">
+                                <div class="stat-label">Security Score</div>
+                                <div class="stat-value">99%</div>
+                            </div>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="stat-item">
+                            <i class="fas fa-wifi stat-icon"></i>
+                            <div class="stat-content">
+                                <div class="stat-label">Uptime</div>
+                                <div class="stat-value">99.99%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notifications -->
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-count">7</span>
+                    </button>
+
+                    <!-- User Menu -->
+                    <div class="user-menu" onclick="toggleUserMenu()">
+                        <div class="user-avatar">
+                            <img src="/placeholder.svg?height=40&width=40" alt="Dr. Sarah Mitchell">
+                            <div class="user-status"></div>
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">Dr. Sarah Mitchell</div>
+                            <div class="user-title">Chief Security Officer</div>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-avatar">
+                                <img src="/placeholder.svg?height=56&width=56" alt="Dr. Sarah Mitchell">
+                            </div>
+                            <div class="dropdown-user-info">
+                                <div class="dropdown-name">Dr. Sarah Mitchell</div>
+                                <div class="dropdown-email">sarah.mitchell@techcorp.com</div>
+                                <div class="dropdown-badges">
+                                    <span class="badge premium">Premium</span>
+                                    <span class="badge security">Security: 99%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                <span>Executive Profile</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                <span>Security Preferences</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-eye"></i>
+                                <span>Privacy Controls</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Secure Sign Out</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Executive Hero Section -->
+            <section class="hero-section">
+                <div class="hero-background">
+                    <div class="hero-pattern"></div>
+                    <div class="floating-element-1"></div>
+                    <div class="floating-element-2"></div>
+                </div>
+                
+                <div class="hero-content">
+                    <div class="hero-left">
+                        <div class="hero-badges">
+                            <div class="hero-badge executive">
+                                <i class="fas fa-crown"></i>
+                                <span>Executive Access</span>
+                            </div>
+                            <div class="hero-badge verified">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Verified Identity</span>
+                            </div>
+                            <div class="hero-badge premium">
+                                <i class="fas fa-star"></i>
+                                <span>Premium</span>
+                            </div>
+                        </div>
+
+                        <h1 class="hero-title">
+                            Welcome back,<br>
+                            <span class="hero-name">Sarah</span>
+                        </h1>
+
+                        <p class="hero-description">
+                            Your executive security command center is operational. Advanced threat protection, compliance monitoring, and enterprise-grade identity management at your fingertips.
+                        </p>
+
+                        <div class="hero-stats">
+                            <div class="hero-stat-card">
+                                <div class="hero-stat-icon mfa">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="hero-stat-content">
+                                    <div class="hero-stat-label">Multi-Factor Auth</div>
+                                    <div class="hero-stat-value">Active</div>
+                                </div>
+                            </div>
+                            <div class="hero-stat-card">
+                                <div class="hero-stat-icon session">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="hero-stat-content">
+                                    <div class="hero-stat-label">Last Session</div>
+                                    <div class="hero-stat-value">1/15/2024</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hero-right">
+                        <div class="metrics-dashboard">
+                            <div class="metrics-header">
+                                <h3><i class="fas fa-chart-bar"></i> Executive Dashboard</h3>
+                                <span class="realtime-badge">REAL-TIME</span>
+                            </div>
+                            <div class="metrics-grid">
+                                <div class="metric-item">
+                                    <div class="metric-icon">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <div class="metric-value">99%</div>
+                                    <div class="metric-label">Security Score</div>
+                                    <div class="metric-trend">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span>+1</span>
+                                    </div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-icon">
+                                        <i class="fas fa-crosshairs"></i>
+                                    </div>
+                                    <div class="metric-value">0</div>
+                                    <div class="metric-label">Threat Level</div>
+                                    <div class="metric-trend">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span>0</span>
+                                    </div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-icon">
+                                        <i class="fas fa-award"></i>
+                                    </div>
+                                    <div class="metric-value">100%</div>
+                                    <div class="metric-label">Compliance</div>
+                                    <div class="metric-trend">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span>+2</span>
+                                    </div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-icon">
+                                        <i class="fas fa-microchip"></i>
+                                    </div>
+                                    <div class="metric-value">98%</div>
+                                    <div class="metric-label">System Health</div>
+                                    <div class="metric-trend">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span>+1</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Executive Services Grid -->
+            <section class="services-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <h2>Executive Services</h2>
+                        <p>Enterprise-grade security and identity management solutions</p>
+                    </div>
+                    <button class="section-action">
+                        <i class="fas fa-layer-group"></i>
+                        <span>Service Catalog</span>
+                        <i class="fas fa-external-link-alt"></i>
+                    </button>
+                </div>
+
+                <div class="services-grid">
+                    <!-- Enterprise SSO -->
+                    <div class="service-card" data-service="sso">
+                        <div class="card-background"></div>
+                        <div class="card-floating-element"></div>
+                        <div class="card-header">
+                            <div class="card-icon-container">
+                                <div class="card-icon sso">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                            </div>
+                            <div class="card-badges">
+                                <span class="card-badge primary">Core Platform</span>
+                                <span class="card-badge executive">EXECUTIVE</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Enterprise SSO</h3>
+                            <p class="card-description">
+                                Executive-level single sign-on with advanced security protocols, privileged access management, and comprehensive audit trails for all enterprise applications.
+                            </p>
+                            <div class="card-stats">
+                                <div class="card-stat">
+                                    <div class="stat-number">47</div>
+                                    <div class="stat-label">Connected Apps</div>
+                                </div>
+                                <div class="card-stat">
+                                    <div class="stat-number">100%</div>
+                                    <div class="stat-label">Uptime</div>
+                                </div>
+                                <div class="card-stat">
+                                    <div class="stat-number">24/7</div>
+                                    <div class="stat-label">Support</div>
+                                </div>
+                            </div>
+                            <button class="card-button sso">
+                                Access Executive Portal
+                                <i class="fas fa-external-link-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Executive MFA -->
+                    <div class="service-card" data-service="mfa">
+                        <div class="card-background"></div>
+                        <div class="card-floating-element"></div>
+                        <div class="card-header">
+                            <div class="card-icon-container">
+                                <div class="card-icon mfa">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                            </div>
+                            <div class="card-badges">
+                                <span class="card-badge security">Security</span>
+                                <span class="card-badge advanced">ADVANCED</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Executive MFA</h3>
+                            <p class="card-description">
+                                Military-grade multi-factor authentication with biometric verification, hardware tokens, and behavioral analysis for executive-level security.
+                            </p>
+                            <div class="card-stats">
+                                <div class="card-stat">
+                                    <div class="stat-number">5</div>
+                                    <div class="stat-label">Auth Methods</div>
+                                </div>
+                                <div class="card-stat">
+                                    <div class="stat-number">100%</div>
+                                    <div class="stat-label">Coverage</div>
+                                </div>
+                                <div class="card-stat">
+                                    <div class="stat-number">0.1s</div>
+                                    <div class="stat-label">Response</div>
+                                </div>
+                            </div>
+                            <button class="card-button mfa">
+                                Configure Security
+                                <i class="fas fa-external-link-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Security Command -->
+                    <div class="service-card" data-service="security">
+                        <div class="card-background"></div>
+                        <div class="card-floating-element"></div>
+                        <div class="card-header">
+                            <div class="card-icon-container">
+                                <div class="card-icon security">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                            </div>
+                            <div class="card-badges">
+                                <span class="card-badge premium">Premium</span>
+                                <span class="card-badge executive">EXECUTIVE</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Security Command</h3>
+                            <p class="card-description">
+                                Executive security dashboard with threat intelligence, risk assessment, and advanced password policies with breach monitoring.
+                            </p>
+                            <div class="card-stats">
+                                <div class="card-stat">
+                                    <div class="stat-number">A+</div>
+                                    <div class="stat-label">Security Grade</div>
+                                </div>
+                                <div class="card-stat">
+                                    <div class="stat-number">0</div>
+                                    <div class="stat-label">Threats</div>
+                                </div>
+                                <div class="card-stat">
+                                    <div class="stat-number">90</div>
+                                    <div class="stat-label">Days Left</div>
+                                </div>
+                            </div>
+                            <button class="card-button security">
+                                Security Center
+                                <i class="fas fa-external-link-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Organization Control -->
+                    <div class="service-card" data-service="organization">
+                        <div class="card-background"></div>
+                        <div class="card-floating-element"></div>
+                        <div class="card-header">
+                            <div class="card-icon-container">
+                                <div class="card-icon organization">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                            <div class="card-badges">
+                                <span class="card-badge executive">Executive</span>
+                                <span class="card-badge admin">ADMIN</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Organization Control</h3>
+                            <p class="card-description">
+                                Executive oversight of organizational identity management, user provisioning, and enterprise-wide security policy enforcement.
+                            </p>
+                            <div class="card-stats">
+                                <div class="card-stat">
+                                    <div class="stat-number">2.4K</div>
+                                    <div class="stat-label">Total Users</div>
+                                </div>
+                                <div class="card-stat">
+                                    <div class="stat-number">99%</div>
+                                    <div class="stat-label">Active</div>
+                                </div>
+                                <div class="card-stat">
+                                    <div class="stat-number">15</div>
+                                    <div class="stat-label">Departments</div>
+                                </div>
+                            </div>
+                            <button class="card-button organization">
+                                Executive Console
+                                <i class="fas fa-external-link-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Executive Intelligence -->
+                    <div class="service-card" data-service="intelligence">
+                        <div class="card-background"></div>
+                        <div class="card-floating-element"></div>
+                        <div class="card-header">
+                            <div class="card-icon-container">
+                                <div class="card-icon intelligence">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                            </div>
+                            <div class="card-badges">
+                                <span class="card-badge intelligence">Intelligence</span>
+                                <span class="card-badge analytics">ANALYTICS</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Executive Intelligence</h3>
+                            <p class="card-description">
+                                Advanced analytics and business intelligence for security metrics, compliance reporting, and strategic decision making.
+                            </p>
+                            <div class="card-stats">
+                                <div class="card-stat">
+                                    <div class="stat-number">24/7</div>
+                                    <div class="stat-label">Monitoring</div>
+                                </div>
+                                <div class="card-stat">
+                                    <div class="stat-number">0</div>
+                                    <div class="stat-label">Incidents</div>
+                                </div>
+                                <div class="card-stat">
+                                    <div class="stat-number">AI</div>
+                                    <div class="stat-label">Powered</div>
+                                </div>
+                            </div>
+                            <button class="card-button intelligence">
+                                Intelligence Hub
+                                <i class="fas fa-external-link-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Infrastructure Hub -->
+                    <div class="service-card" data-service="infrastructure">
+                        <div class="card-background"></div>
+                        <div class="card-floating-element"></div>
+                        <div class="card-header">
+                            <div class="card-icon-container">
+                                <div class="card-icon infrastructure">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                            </div>
+                            <div class="card-badges">
+                                <span class="card-badge infrastructure">Infrastructure</span>
+                                <span class="card-badge enterprise">ENTERPRISE</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Infrastructure Hub</h3>
+                            <p class="card-description">
+                                Enterprise infrastructure management with Active Directory integration, domain controllers, and organizational unit administration.
+                            </p>
+                            <div class="card-stats">
+                                <div class="card-stat">
+                                    <div class="stat-number">Online</div>
+                                    <div class="stat-label">Status</div>
+                                </div>
+                                <div class="card-stat">
+                                    <div class="stat-number">5</div>
+                                    <div class="stat-label">Controllers</div>
+                                </div>
+                                <div class="card-stat">
+                                    <div class="stat-number">99.9%</div>
+                                    <div class="stat-label">Uptime</div>
+                                </div>
+                            </div>
+                            <button class="card-button infrastructure">
+                                Infrastructure Console
+                                <i class="fas fa-external-link-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Executive Activity Timeline -->
+            <section class="activity-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <h2>Executive Activity</h2>
+                        <p>Real-time security events and executive-level system interactions</p>
+                    </div>
+                    <button class="section-action">
+                        <i class="fas fa-activity"></i>
+                        <span>Full Activity Log</span>
+                        <i class="fas fa-external-link-alt"></i>
+                    </button>
+                </div>
+
+                <div class="activity-timeline">
+                    <div class="activity-item">
+                        <div class="activity-icon success">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-header">
+                                <h4>Executive Access Granted</h4>
+                                <div class="activity-badges">
+                                    <span class="risk-badge low">LOW RISK</span>
+                                    <span class="status-badge success">SUCCESS</span>
+                                </div>
+                            </div>
+                            <p class="activity-description">
+                                Secure authentication completed via biometric verification
+                            </p>
+                            <div class="activity-meta">
+                                <span class="activity-time">
+                                    <i class="fas fa-clock"></i>
+                                    1/15/2024, 10:30:00 AM
+                                </span>
+                                <span class="activity-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Executive Suite, San Francisco
+                                </span>
+                            </div>
+                        </div>
+                        <button class="activity-action">
+                            <i class="fas fa-external-link-alt"></i>
+                        </button>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon success">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-header">
+                                <h4>Advanced MFA Verification</h4>
+                                <div class="activity-badges">
+                                    <span class="risk-badge low">LOW RISK</span>
+                                    <span class="status-badge success">SUCCESS</span>
+                                </div>
+                            </div>
+                            <p class="activity-description">
+                                Multi-layer authentication with hardware token and biometrics
+                            </p>
+                            <div class="activity-meta">
+                                <span class="activity-time">
+                                    <i class="fas fa-clock"></i>
+                                    1/15/2024, 10:29:45 AM
+                                </span>
+                                <span class="activity-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Corporate Network
+                                </span>
+                            </div>
+                        </div>
+                        <button class="activity-action">
+                            <i class="fas fa-external-link-alt"></i>
+                        </button>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon info">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-header">
+                                <h4>Security Policy Update</h4>
+                                <div class="activity-badges">
+                                    <span class="risk-badge medium">MEDIUM RISK</span>
+                                    <span class="status-badge info">INFO</span>
+                                </div>
+                            </div>
+                            <p class="activity-description">
+                                New compliance requirements applied to executive accounts
+                            </p>
+                            <div class="activity-meta">
+                                <span class="activity-time">
+                                    <i class="fas fa-clock"></i>
+                                    1/15/2024, 9:00:00 AM
+                                </span>
+                                <span class="activity-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Security Operations Center
+                                </span>
+                            </div>
+                        </div>
+                        <button class="activity-action">
+                            <i class="fas fa-external-link-alt"></i>
+                        </button>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon success">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-header">
+                                <h4>Executive Dashboard Access</h4>
+                                <div class="activity-badges">
+                                    <span class="risk-badge low">LOW RISK</span>
+                                    <span class="status-badge success">SUCCESS</span>
+                                </div>
+                            </div>
+                            <p class="activity-description">
+                                High-privilege access granted to financial reporting systems
+                            </p>
+                            <div class="activity-meta">
+                                <span class="activity-time">
+                                    <i class="fas fa-clock"></i>
+                                    1/14/2024, 4:22:00 PM
+                                </span>
+                                <span class="activity-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Secure Data Center
+                                </span>
+                            </div>
+                        </div>
+                        <button class="activity-action">
+                            <i class="fas fa-external-link-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Premium Footer -->
+        <footer class="premium-footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <div class="footer-logo-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="footer-brand-info">
+                            <div class="footer-brand-name">
+                                <h3>SecureAuth Enterprise</h3>
+                                <span class="footer-executive-badge">EXECUTIVE</span>
+                            </div>
+                            <p class="footer-brand-subtitle">Executive Identity & Access Management Platform</p>
+                        </div>
+                    </div>
+                    <p class="footer-description">
+                        Delivering enterprise-grade security solutions with executive-level oversight, advanced threat protection, and comprehensive compliance management for global organizations.
+                    </p>
+                    <div class="footer-compliance">
+                        <span class="compliance-badge soc">SOC 2 Type II</span>
+                        <span class="compliance-badge iso">ISO 27001</span>
+                        <span class="compliance-badge gdpr">GDPR Compliant</span>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <h4>Executive Resources</h4>
+                    <a href="#"><i class="fas fa-question-circle"></i> Executive Support</a>
+                    <a href="#"><i class="fas fa-shield-alt"></i> Security Policies</a>
+                    <a href="#"><i class="fas fa-info-circle"></i> Platform Documentation</a>
+                    <a href="#"><i class="fas fa-briefcase"></i> Enterprise Solutions</a>
+                </div>
+
+                <div class="footer-status">
+                    <h4>System Intelligence</h4>
+                    <div class="status-item">
+                        <div class="status-indicator active"></div>
+                        <span>All Systems Operational</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator active"></div>
+                        <span>99.99% Uptime SLA</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator info"></div>
+                        <span>Global Infrastructure</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator premium"></div>
+                        <span>AI-Powered Security</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="footer-copyright">
+                    © 2024 SecureAuth Enterprise Platform. All rights reserved. | Executive Edition v4.2.1
+                </p>
+                <div class="footer-powered">
+                    <span>Powered by</span>
+                    <div class="powered-brand">
+                        <i class="fas fa-bolt"></i>
+                        <span>Enterprise Cloud Infrastructure</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

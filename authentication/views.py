@@ -17,7 +17,25 @@ logger = logging.getLogger(__name__)
 @login_required
 def home(request):
     """View for the home page (only accessible when logged in)"""
-    return render(request, 'authentication/home.html')
+    saml_attributes = request.session.get('samlUserdata', {})
+    # The attribute name for groups can vary. Common names are 'groups', 'memberOf', or a full URN.
+    # We'll check for a few common ones here.
+    group_attribute_keys = [
+        'http://schemas.microsoft.com/ws/2008/06/identity/claims/groups',
+        'groups',
+        'memberOf'
+    ]
+    user_groups = []
+    for key in group_attribute_keys:
+        if key in saml_attributes:
+            user_groups = saml_attributes.get(key, [])
+            break
+
+    context = {
+        'saml_attributes': saml_attributes,
+        'user_groups': user_groups
+    }
+    return render(request, 'authentication/home.html', context)
 
 def login_view(request):
     """View for user login - using our SecureAuth template"""
