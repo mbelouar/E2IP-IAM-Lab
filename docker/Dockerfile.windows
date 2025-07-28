@@ -12,8 +12,6 @@ COPY requirements.txt C:/app/
 
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
-COPY ssl/ C:/app/ssl/
-
 COPY . C:/app/
 
 CMD ["python", "manage.py", "runserver_plus", "--cert-file", "ssl/cert.pem", "--key-file", "ssl/key.pem", "0.0.0.0:8000"]
