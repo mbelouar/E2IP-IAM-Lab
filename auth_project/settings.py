@@ -167,7 +167,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # SAML Configuration - Only configure if SAML is available and not in CI
 if SAML_AVAILABLE and SAML_IMPORTS_AVAILABLE and not os.getenv('CI'):
     SAML_CONFIG = {
-        'entityid': os.getenv('SAML_ENTITY_ID', 'http://localhost:8000/saml2/metadata/'),
+        'entityid': os.getenv('SAML_ENTITY_ID', 'https://192.168.1.46:8000/saml2/metadata/'),
         'description': 'E2IP IAM Lab SAML Service',
         'service': {
             'sp': {
@@ -224,3 +224,15 @@ AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 
 if SAML_AVAILABLE and SAML_IMPORTS_AVAILABLE and not os.getenv('CI'):
     AUTHENTICATION_BACKENDS.append('djangosaml2.backends.Saml2Backend')
+
+# Cookie security settings for SAML/SSO
+# These settings ensure cookies work properly with SAML authentication over HTTPS
+SESSION_COOKIE_SECURE = True  # Requires HTTPS
+SESSION_COOKIE_SAMESITE = 'None'  # Required for cross-site SAML requests
+CSRF_COOKIE_SECURE = True  # Requires HTTPS
+CSRF_COOKIE_SAMESITE = 'None'  # Required for cross-site SAML requests
+
+# Additional security settings for production
+SECURE_SSL_REDIRECT = False  # Set to True in production
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True

@@ -10,8 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
     animateBackground();
     
-    // Default to SSO login option
-    toggleLoginForm('sso');
+    // No default login option selected - let user choose
 });
 
 function initializeApp() {
@@ -190,6 +189,26 @@ function toggleLoginForm(loginType) {
         standardBtn.classList.remove('active');
         ssoBtn.classList.add('active');
     }
+}
+
+// Generic login handler that determines the login type
+function handleLogin(event) {
+    event.preventDefault();
+    
+    // Determine which form is being submitted
+    const form = event.target;
+    const isStandardForm = form.closest('#standardLoginForm');
+    const isSSOForm = form.closest('#ssoLoginForm');
+    
+    if (isStandardForm) {
+        return handleStandardLogin(event);
+    } else if (isSSOForm) {
+        // Handle SSO login - redirect to SSO endpoint
+        window.location.href = '/auth/sso/login/';
+        return false;
+    }
+    
+    return false;
 }
 
 // Login handling for standard login

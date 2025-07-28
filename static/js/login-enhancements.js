@@ -4,10 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const standardBtn = document.getElementById('standardLoginBtn');
     const ssoBtn = document.getElementById('ssoLoginBtn');
     
-    // Make sure buttons are initialized with active class
+    // Make sure buttons are initialized without any active class
     if (standardBtn && ssoBtn) {
-        // Default to SSO login option as specified
-        ssoBtn.classList.add('active');
+        // No default selection - let user choose
         
         standardBtn.addEventListener('click', function() {
             standardBtn.classList.add('active');
@@ -40,14 +39,12 @@ function enhanceFormTransitions() {
     
     if (standardForm && ssoForm) {
         // Ensure initial state is properly set with display:none to allow animation
+        standardForm.style.display = 'none';
         standardForm.style.opacity = '0';
+        ssoForm.style.display = 'none';
         ssoForm.style.opacity = '0';
         
-        // Default to SSO as specified
-        setTimeout(() => {
-            ssoForm.style.display = 'block';
-            ssoForm.style.opacity = '1';
-        }, 100);
+        // No default form shown - user must select
     }
 }
 
@@ -251,6 +248,7 @@ function enhanceBackgroundElements() {
         element.className = 'floating-element';
         container.appendChild(element);
     }
-    
-    // Add this function to the DOMContentLoaded event
-    document.addEventListener('DOMContentLoaded', enhanceBackgroundElements);
+}
+
+// Add this function to the DOMContentLoaded event
+document.addEventListener('DOMContentLoaded', enhanceBackgroundElements);
