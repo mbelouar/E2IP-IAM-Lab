@@ -209,8 +209,11 @@ if SAML_AVAILABLE and SAML_IMPORTS_AVAILABLE and not os.getenv('CI'):
     saml_acs_url = os.getenv('SAML_ACS_URL')
     saml_sls_url = os.getenv('SAML_SLS_URL')
     
-    # Only configure SAML if required environment variables are set
-    if all([saml_entity_id, saml_acs_url, saml_sls_url]):
+    # Check if xmlsec1 binary is available
+    xmlsec_binary_path = _get_xmlsec_binary_path()
+    
+    # Only configure SAML if required environment variables are set AND xmlsec1 is available
+    if all([saml_entity_id, saml_acs_url, saml_sls_url]) and xmlsec_binary_path:
         SAML_READY = True
         SAML_CONFIG = {
             'entityid': saml_entity_id,
@@ -242,7 +245,7 @@ if SAML_AVAILABLE and SAML_IMPORTS_AVAILABLE and not os.getenv('CI'):
         'debug': DEBUG,
         # Disable all signature verification
         'verify_ssl_cert': False,
-        'xmlsec_binary': _get_xmlsec_binary_path(),
+        'xmlsec_binary': xmlsec_binary_path,
         }
 
         # Configure SAML with ADFS metadata file
