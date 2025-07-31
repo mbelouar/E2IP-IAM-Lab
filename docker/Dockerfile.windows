@@ -17,9 +17,6 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
 RUN choco install -y python --version=3.9.7
 RUN choco install -y openssl
 
-# Refresh environment variables to make them available
-RUN refreshenv
-
 # Set working directory
 WORKDIR /app
 
