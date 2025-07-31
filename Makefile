@@ -21,7 +21,7 @@ logs:
 
 # Remove containers, networks, and volumes
 clean:
-	cd $(DOCKER_DIR) && docker-compose down -v --rmi all
+	cd $(DOCKER_DIR) && docker-compose down -v --rmi all 
 
 # Execute bash in the web container
 bash:

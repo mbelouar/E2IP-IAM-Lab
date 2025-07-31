@@ -7,13 +7,30 @@ WORKDIR /app
 
 COPY requirements.txt /app/
 
+# Install system dependencies including openssl for certificate generation and SAML dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends xmlsec1 && \
+    apt-get install -y --no-install-recommends \
+    xmlsec1 \
+    libxml2-dev \
+    libxmlsec1-dev \
+    libxmlsec1-openssl \
+    openssl \
+    pkg-config && \
     rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app/
+
+# Create ssl directory and generate self-signed certificates
+RUN mkdir -p ssl && \
+    openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
+    -subj "/C=US/ST=State/L=City/O=Organization/CN=localhost" \
+    -keyout ssl/key.pem \
+    -out ssl/cert.pem
+
+# Expose port 8000
+EXPOSE 8000
 
 # Run migrations and start server
 CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver_plus --cert-file=ssl/cert.pem --key-file=ssl/key.pem 0.0.0.0:8000"]

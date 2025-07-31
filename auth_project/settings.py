@@ -168,6 +168,40 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SAML_CONFIG = None
 SAML_READY = False
 
+def _get_xmlsec_binary_path():
+    """
+    Get the correct xmlsec1 binary path based on the environment.
+    First checks environment variable, then tries to detect the correct path.
+    """
+    import shutil
+    
+    # First try the environment variable
+    env_path = os.getenv('XMLSEC_BINARY')
+    if env_path and os.path.exists(env_path):
+        return env_path
+    
+    # Common paths to check
+    possible_paths = [
+        '/usr/bin/xmlsec1',              # Linux (Ubuntu/Debian/Docker)
+        '/opt/homebrew/bin/xmlsec1',     # macOS (Homebrew)
+        '/usr/local/bin/xmlsec1',        # macOS (alternative)
+        'xmlsec1',                       # Try system PATH
+    ]
+    
+    # Check each possible path
+    for path in possible_paths:
+        if path == 'xmlsec1':
+            # Use shutil.which to check if it's in PATH
+            found_path = shutil.which('xmlsec1')
+            if found_path:
+                return found_path
+        elif os.path.exists(path):
+            return path
+    
+    # If nothing found, return the environment variable (even if None)
+    # This will let the error be handled by the SAML library
+    return env_path
+
 # SAML Configuration - Only configure if SAML is available and not in CI
 if SAML_AVAILABLE and SAML_IMPORTS_AVAILABLE and not os.getenv('CI'):
     # Get SAML environment variables with defaults
@@ -208,7 +242,7 @@ if SAML_AVAILABLE and SAML_IMPORTS_AVAILABLE and not os.getenv('CI'):
         'debug': DEBUG,
         # Disable all signature verification
         'verify_ssl_cert': False,
-        'xmlsec_binary': os.getenv('XMLSEC_BINARY'),
+        'xmlsec_binary': _get_xmlsec_binary_path(),
         }
 
         # Configure SAML with ADFS metadata file
