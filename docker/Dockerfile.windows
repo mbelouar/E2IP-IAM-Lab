@@ -24,16 +24,16 @@ WORKDIR /app
 COPY requirements.txt /app/
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
-# Download and install xmlsec1 binaries from zlatkovic.com (official Windows binaries)
-RUN $xmlsecUrl = 'https://www.zlatkovic.com/pub/libxml/64bit/xmlsec1-1.2.20-win32-x86_64.7z'; \
+# Download and install xmlsec1 binaries (simpler approach)
+RUN choco install -y 7zip; \
+    $xmlsecUrl = 'https://www.zlatkovic.com/pub/libxml/64bit/xmlsec1-1.2.20-win32-x86_64.7z'; \
     $xmlsecZip = 'C:\temp\xmlsec.7z'; \
-    $xmlsecDir = 'C:\xmlsec'; \
-    New-Item -ItemType Directory -Force -Path C:\temp; \
-    New-Item -ItemType Directory -Force -Path $xmlsecDir; \
+    New-Item -ItemType Directory -Force -Path C:\temp, C:\xmlsec; \
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
     Invoke-WebRequest -Uri $xmlsecUrl -OutFile $xmlsecZip; \
-    choco install -y 7zip; \
-    & "C:\Program Files\7-Zip\7z.exe" x $xmlsecZip -o"$xmlsecDir"; \
+    $sevenZip = Get-Command '7z.exe' -ErrorAction SilentlyContinue; \
+    if (-not $sevenZip) { $sevenZip = 'C:\Program Files\7-Zip\7z.exe' }; \
+    & $sevenZip x $xmlsecZip '-oC:\xmlsec'; \
     Remove-Item $xmlsecZip
 
 # Add xmlsec1 to PATH and set environment variable
@@ -45,10 +45,8 @@ COPY . /app/
 
 # Create ssl directory and generate self-signed certificates using OpenSSL
 RUN New-Item -ItemType Directory -Force -Path ssl; \
-    openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
-    -subj '/C=US/ST=State/L=City/O=Organization/CN=localhost' \
-    -keyout ssl/key.pem \
-    -out ssl/cert.pem
+    $env:PATH = 'C:\Program Files\OpenSSL-Win64\bin;' + $env:PATH; \
+    & 'C:\Program Files\OpenSSL-Win64\bin\openssl.exe' req -new -newkey rsa:4096 -days 365 -nodes -x509 -subj '/C=US/ST=State/L=City/O=Organization/CN=localhost' -keyout ssl/key.pem -out ssl/cert.pem
 
 # Expose port 8000
 EXPOSE 8000
