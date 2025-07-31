@@ -42,6 +42,11 @@ function showToast(message, type = 'info') {
     
     document.body.appendChild(toast);
     
+    // Trigger the show animation
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+    
     // Auto remove after 5 seconds
     setTimeout(() => {
         toast.classList.add('fade-out');

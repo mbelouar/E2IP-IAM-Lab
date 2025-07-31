@@ -16,7 +16,7 @@ venv/
 env/
 
 # Environment variables
-.env
+# .env
 .env.local
 
 # Editor/IDE

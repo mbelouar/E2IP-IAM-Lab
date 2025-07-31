@@ -9,18 +9,14 @@
 }
 
 .welcome-container {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
-    backdrop-filter: blur(25px);
-    border-radius: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 1.5rem;
     padding: 3rem;
-    box-shadow: 
-        0 20px 40px 0 rgba(31, 38, 135, 0.2),
-        0 8px 16px 0 rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
 }
 
 .welcome-container::before {
@@ -30,13 +26,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 60%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
+    background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 40%);
     z-index: -1;
-    opacity: 0.8;
-    animation: welcomeGlow 8s ease-in-out infinite alternate;
 }
 
 .welcome-badges {
@@ -599,42 +590,35 @@
     margin-top: 0.25rem;
 }
 
-/* Toast Notifications */
+/* Toast Notifications - Override login.css */
 .toast {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: rgba(15, 23, 42, 0.95);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(71, 85, 105, 0.3);
-    border-radius: 0.75rem;
-    padding: 1rem 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    min-width: 300px;
-    max-width: 400px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-    z-index: 9999;
-    transform: translateX(100%);
-    animation: slideIn 0.3s ease forwards;
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
+    padding: 16px 20px !important;
+    min-width: 300px !important;
+    max-width: 400px !important;
+    border-left: 4px solid #0066cc !important;
+    transform: translateX(120%) !important;
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) !important;
+    overflow: hidden !important;
+    z-index: 9999 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
 }
 
-.toast.success {
-    border-left: 4px solid #10b981;
+.toast.show {
+    transform: translateX(0) !important;
 }
 
-.toast.info {
-    border-left: 4px solid #3b82f6;
-}
-
-.toast.warning {
-    border-left: 4px solid #f59e0b;
-}
-
-.toast.error {
-    border-left: 4px solid #ef4444;
-}
+.toast.success { border-left-color: #10b981; }
+.toast.error { border-left-color: #ef4444; }
+.toast.warning { border-left-color: #f59e0b; }
+.toast.info { border-left-color: #3b82f6; }
 
 .toast-content {
     display: flex;
@@ -664,31 +648,44 @@
 }
 
 .toast-content span {
-    color: #f8fafc;
-    font-size: 0.9375rem;
-    font-weight: 500;
+    color: #1f2937 !important;
+    font-size: 0.9375rem !important;
+    font-weight: 500 !important;
 }
 
 .toast-close {
     background: none;
     border: none;
-    color: #94a3b8;
     cursor: pointer;
-    padding: 0.25rem;
-    border-radius: 0.375rem;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: #6b7280;
+    padding: 0;
 }
 
 .toast-close:hover {
-    background: rgba(71, 85, 105, 0.3);
-    color: #f8fafc;
+    color: #374151;
 }
 
 .toast.fade-out {
     animation: slideOut 0.3s ease forwards;
+}
+
+/* Dark mode support for toast notifications */
+body.dark-mode .toast {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-mode .toast-content span {
+    color: #f1f5f9 !important;
+}
+
+body.dark-mode .toast-close {
+    color: #94a3b8;
+}
+
+body.dark-mode .toast-close:hover {
+    color: #f1f5f9;
 }
 
 /* Animation */
