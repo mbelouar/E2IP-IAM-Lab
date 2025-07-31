@@ -24,10 +24,12 @@ urlpatterns = [
     path('', include('authentication.urls', namespace='authentication')),
 ]
 
-# Add SAML URLs only if djangosaml2 is available
+# Add SAML URLs only if djangosaml2 is available and SAML is properly configured
 try:
     import djangosaml2
-    urlpatterns.append(path('saml2/', include('djangosaml2.urls')))
+    # Only include SAML URLs if SAML_CONFIG is properly set
+    if getattr(settings, 'SAML_READY', False) and settings.SAML_CONFIG:
+        urlpatterns.append(path('saml2/', include('djangosaml2.urls')))
 except ImportError:
     pass
 

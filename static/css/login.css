@@ -1020,6 +1020,33 @@ body.dark-mode .footer {
     color: var(--gray-600);
 }
 
+/* Dark mode support for toast notifications */
+body.dark-mode .toast {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-mode .toast-title {
+    color: #f1f5f9 !important;
+}
+
+body.dark-mode .toast-message {
+    color: #f1f5f9 !important;
+}
+
+body.dark-mode .toast-content span {
+    color: #f1f5f9 !important;
+}
+
+body.dark-mode .toast-close {
+    color: #94a3b8 !important;
+}
+
+body.dark-mode .toast-close:hover {
+    color: #f1f5f9 !important;
+}
+
 /* Message Styles */
 .messages {
     margin-bottom: 1.5rem;

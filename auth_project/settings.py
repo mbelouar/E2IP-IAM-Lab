@@ -164,23 +164,35 @@ LOGIN_URL = 'authentication:login'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Initialize SAML_CONFIG as None by default
+SAML_CONFIG = None
+SAML_READY = False
+
 # SAML Configuration - Only configure if SAML is available and not in CI
 if SAML_AVAILABLE and SAML_IMPORTS_AVAILABLE and not os.getenv('CI'):
-    SAML_CONFIG = {
-        'entityid': os.getenv('SAML_ENTITY_ID'),
-        'description': 'E2IP IAM Lab SAML Service',
-        'service': {
-            'sp': {
-                'name': 'E2IP IAM Lab',
-                'name_id_format': NAMEID_FORMAT_EMAILADDRESS,
-                'endpoints': {
-                    'assertion_consumer_service': [
-                        (os.getenv('SAML_ACS_URL'), saml2.BINDING_HTTP_POST),
-                    ],
-                    'single_logout_service': [
-                        (os.getenv('SAML_SLS_URL'), saml2.BINDING_HTTP_REDIRECT),
-                    ],
-                },
+    # Get SAML environment variables with defaults
+    saml_entity_id = os.getenv('SAML_ENTITY_ID')
+    saml_acs_url = os.getenv('SAML_ACS_URL')
+    saml_sls_url = os.getenv('SAML_SLS_URL')
+    
+    # Only configure SAML if required environment variables are set
+    if all([saml_entity_id, saml_acs_url, saml_sls_url]):
+        SAML_READY = True
+        SAML_CONFIG = {
+            'entityid': saml_entity_id,
+            'description': 'E2IP IAM Lab SAML Service',
+            'service': {
+                'sp': {
+                    'name': 'E2IP IAM Lab',
+                    'name_id_format': NAMEID_FORMAT_EMAILADDRESS,
+                    'endpoints': {
+                        'assertion_consumer_service': [
+                            (saml_acs_url, saml2.BINDING_HTTP_POST),
+                        ],
+                        'single_logout_service': [
+                            (saml_sls_url, saml2.BINDING_HTTP_REDIRECT),
+                        ],
+                    },
                 'force_authn': True,  # Always force fresh authentication
                 'name_id_format_allow_create': True,
                 'want_response_signed': False,
@@ -197,33 +209,41 @@ if SAML_AVAILABLE and SAML_IMPORTS_AVAILABLE and not os.getenv('CI'):
         # Disable all signature verification
         'verify_ssl_cert': False,
         'xmlsec_binary': os.getenv('XMLSEC_BINARY'),
-    }
-
-    # Configure SAML with ADFS metadata file
-    metadata_file = BASE_DIR / 'saml_metadata' / 'adfs_metadata.xml'
-    if metadata_file.exists():
-        SAML_CONFIG['metadata'] = {
-            'local': [str(metadata_file)],
         }
 
-    # SAML attribute mapping
-    SAML_ATTRIBUTE_MAPPING = {
-        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': ('email', 'username'),
-        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname': ('first_name',),
-        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname': ('last_name',),
-        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': ('username',),
-    }
+        # Configure SAML with ADFS metadata file
+        metadata_file = BASE_DIR / 'saml_metadata' / 'adfs_metadata.xml'
+        if metadata_file.exists():
+            SAML_CONFIG['metadata'] = {
+                'local': [str(metadata_file)],
+            }
 
-    # SAML user creation settings
-    SAML_CREATE_UNKNOWN_USER = True
-    SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'username'
-    SAML_DJANGO_USER_MAIN_ATTRIBUTE_LOOKUP = '__iexact'
+        # SAML attribute mapping
+        SAML_ATTRIBUTE_MAPPING = {
+            'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': ('email', 'username'),
+            'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname': ('first_name',),
+            'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname': ('last_name',),
+            'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': ('username',),
+        }
+
+        # SAML user creation settings
+        SAML_CREATE_UNKNOWN_USER = True
+        SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'username'
+        SAML_DJANGO_USER_MAIN_ATTRIBUTE_LOOKUP = '__iexact'
 
 # Authentication backends
-AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
+# Default authentication backends
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
 
-if SAML_AVAILABLE and SAML_IMPORTS_AVAILABLE and not os.getenv('CI'):
-    AUTHENTICATION_BACKENDS.append('djangosaml2.backends.Saml2Backend')
+# Only add SAML backend if properly configured
+if SAML_READY:
+    try:
+        import djangosaml2
+        AUTHENTICATION_BACKENDS.append('djangosaml2.backends.Saml2Backend')
+    except ImportError:
+        pass
 
 # Cookie security settings for SAML/SSO
 # These settings ensure cookies work properly with SAML authentication over HTTPS

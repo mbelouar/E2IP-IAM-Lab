@@ -17,7 +17,25 @@ logger = logging.getLogger(__name__)
 @login_required
 def home(request):
     """View for the home page (only accessible when logged in)"""
-    return render(request, 'authentication/home.html')
+    saml_attributes = request.session.get('samlUserdata', {})
+    # The attribute name for groups can vary. Common names are 'groups', 'memberOf', or a full URN.
+    # We'll check for a few common ones here.
+    group_attribute_keys = [
+        'http://schemas.microsoft.com/ws/2008/06/identity/claims/groups',
+        'groups',
+        'memberOf'
+    ]
+    user_groups = []
+    for key in group_attribute_keys:
+        if key in saml_attributes:
+            user_groups = saml_attributes.get(key, [])
+            break
+
+    context = {
+        'saml_attributes': saml_attributes,
+        'user_groups': user_groups
+    }
+    return render(request, 'authentication/home.html', context)
 
 def login_view(request):
     """View for user login - using our SecureAuth template"""
@@ -136,6 +154,12 @@ def adfs_login(request):
     """
     Redirect to SAML SSO authentication with aggressive session clearing
     """
+    # Check if SAML is properly configured
+    from django.conf import settings
+    if not getattr(settings, 'SAML_READY', False) or not settings.SAML_CONFIG:
+        messages.error(request, "SAML authentication is not configured. Please contact your administrator.")
+        return redirect('authentication:login')
+    
     # Log current session state for debugging
     logger.info(f"ADFS login attempt - Session keys before clearing: {list(request.session.keys())}")
     logger.info(f"User authenticated: {request.user.is_authenticated}")
@@ -1063,11 +1087,17 @@ def saml_logout_view(request):
         logout(request)
         
         # Try to redirect to SAML SLS endpoint if available
-        try:
-            return redirect('/saml2/sls/')
-        except Exception:
-            # Fallback to local logout
-            messages.info(request, "You have been logged out from SSO.")
+        from django.conf import settings
+        if getattr(settings, 'SAML_READY', False) and settings.SAML_CONFIG:
+            try:
+                return redirect('/saml2/sls/')
+            except Exception:
+                # Fallback to local logout
+                messages.info(request, "You have been logged out from SSO.")
+                return redirect('authentication:login')
+        else:
+            # SAML not configured, just do local logout
+            messages.info(request, "You have been logged out.")
             return redirect('authentication:login')
             
     except Exception as e:
