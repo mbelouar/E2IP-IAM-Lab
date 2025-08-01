@@ -18,16 +18,17 @@ RUN choco install -y python --version=3.9.7
 RUN choco install -y openssl  
 RUN choco install -y 7zip
 
-# Set Python PATH
-ENV PATH="C:\\Python39;C:\\Python39\\Scripts;${PATH}"
+# Find where Python was actually installed
+RUN Get-ChildItem C:\ -Name "*Python*" -Directory -Recurse -ErrorAction SilentlyContinue
+RUN Get-ChildItem "C:\\ProgramData\\chocolatey\\lib\\python\\tools" -ErrorAction SilentlyContinue
 
 # Set working directory
 WORKDIR /app
 
-# Copy and install requirements
+# Copy and install requirements using chocolatey's Python path
 COPY requirements.txt .
-RUN python -m pip install --upgrade pip
-RUN python -m pip install -r requirements.txt
+RUN & "C:\\ProgramData\\chocolatey\\lib\\python\\tools\\python.exe" -m pip install --upgrade pip
+RUN & "C:\\ProgramData\\chocolatey\\lib\\python\\tools\\python.exe" -m pip install -r requirements.txt
 
 # Install xmlsec1
 RUN $url = 'https://www.zlatkovic.com/pub/libxml/64bit/xmlsec1-1.2.20-win32-x86_64.7z'; \
@@ -53,4 +54,4 @@ RUN New-Item -ItemType Directory -Force -Path ssl; \
 EXPOSE 8000
 
 # Start application
-CMD ["powershell", "-Command", "python manage.py migrate --noinput; python manage.py runserver_plus --cert-file=ssl/cert.pem --key-file=ssl/key.pem 0.0.0.0:8000"]
+CMD ["powershell", "-Command", "& 'C:\\ProgramData\\chocolatey\\lib\\python\\tools\\python.exe' manage.py migrate --noinput; & 'C:\\ProgramData\\chocolatey\\lib\\python\\tools\\python.exe' manage.py runserver_plus --cert-file=ssl/cert.pem --key-file=ssl/key.pem 0.0.0.0:8000"]
