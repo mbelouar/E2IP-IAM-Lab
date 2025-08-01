@@ -293,3 +293,24 @@ CSRF_COOKIE_SAMESITE = os.getenv('CSRF_COOKIE_SAMESITE', 'None')
 SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'False').lower() == 'true'
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# WebAuthn Configuration for MFA
+WEBAUTHN_AVAILABLE = True
+try:
+    import webauthn
+    WEBAUTHN_RP_ID = os.getenv('WEBAUTHN_RP_ID', 'localhost')  # Should match your domain
+    WEBAUTHN_RP_NAME = os.getenv('WEBAUTHN_RP_NAME', 'SecureAuth')
+    WEBAUTHN_ORIGIN = os.getenv('WEBAUTHN_ORIGIN', 'http://localhost:8000')  # Full origin URL
+    
+    # For production, use your actual domain:
+    # WEBAUTHN_RP_ID = 'yourdomain.com'
+    # WEBAUTHN_ORIGIN = 'https://yourdomain.com'
+    
+except ImportError:
+    WEBAUTHN_AVAILABLE = False
+    print("Warning: WebAuthn library not installed. MFA functionality will be limited.")
+
+# MFA Settings
+MFA_BACKUP_CODE_LENGTH = 10  # Length of backup codes
+MFA_BACKUP_CODE_COUNT = 8    # Number of backup codes to generate
+MFA_CHALLENGE_TIMEOUT = 300  # MFA challenge timeout in seconds (5 minutes)

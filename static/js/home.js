@@ -70,8 +70,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Initialize interactive elements
 function initInteractiveElements() {
-    // Add click handlers for quick access items
-    const quickAccessItems = document.querySelectorAll('.quick-access-item');
+    // Add click handlers for quick access items (only for placeholder links)
+    const quickAccessItems = document.querySelectorAll('.quick-access-item[href="#"]');
     quickAccessItems.forEach(item => {
         item.addEventListener('click', function(e) {
             e.preventDefault();

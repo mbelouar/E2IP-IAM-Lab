@@ -1,0 +1,679 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MFA Backup Codes - SecureAuth</title>
+    <meta name="description" content="Generate and save your MFA backup codes">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%230040b3'/><stop offset='20%' stop-color='%230052cc'/><stop offset='40%' stop-color='%230066ff'/><stop offset='60%' stop-color='%233385d6'/><stop offset='80%' stop-color='%2366b3ff'/><stop offset='100%' stop-color='%2399ccff'/></linearGradient><linearGradient id='highlight' x1='0%' y1='0%' x2='100%' y2='0%'><stop offset='0%' stop-color='rgba(255,255,255,0.4)'/><stop offset='50%' stop-color='rgba(255,255,255,0.6)'/><stop offset='100%' stop-color='rgba(255,255,255,0.3)'/></linearGradient><filter id='shadow'><feDropShadow dx='0' dy='2' stdDeviation='2' flood-color='rgba(0,0,0,0.3)'/></filter></defs><rect width='100' height='100' rx='24' fill='url(%23grad)'/><rect width='100' height='100' rx='24' fill='url(%23highlight)' opacity='0.7'/><g filter='url(%23shadow)'><path d='M50 20c-10.284 0-18 7.716-18 18v6h-4c-3.314 0-6 2.686-6 6v26c0 3.314 2.686 6 6 6h44c3.314 0 6-2.686 6-6V50c0-3.314-2.686-6-6-6h-4v-6c0-10.284-7.716-18-18-18zm0 8c6.627 0 12 5.373 12 12v6H38v-6c0-6.627 5.373-12 12-12z' fill='white'/></g></svg>">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/login-enhancements.css' %}">
+    <link rel="stylesheet" href="{% static 'css/background-enhancements.css' %}">
+    <link rel="stylesheet" href="{% static 'css/header-enhancements.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home-enhancements.css' %}?v=3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .backup-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .backup-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(24px);
+            border-radius: var(--radius-2xl);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.2);
+            padding: var(--space-3xl) var(--space-2xl);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: cardEntrance 0.6s ease-out forwards;
+        }
+
+        body.dark-mode .backup-card {
+            background: rgba(26, 32, 44, 0.95);
+            border: 1px solid var(--dark-border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+
+        .backup-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .backup-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--warning), #ea580c);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 2rem;
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+        }
+
+        .backup-title {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--warning), #ea580c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .backup-subtitle {
+            color: var(--gray-600);
+            font-size: 1.125rem;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        body.dark-mode .backup-subtitle {
+            color: var(--dark-text-secondary);
+        }
+
+        .alert {
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
+            border: 1px solid;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.2);
+            color: #92400e;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.2);
+            color: #059669;
+        }
+
+        .alert-icon {
+            font-size: 1.25rem;
+            margin-top: 0.125rem;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-content h4 {
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+        }
+
+        .alert-content p {
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .alert-content ul {
+            margin: 0.5rem 0 0 1rem;
+            padding: 0;
+        }
+
+        .alert-content li {
+            margin-bottom: 0.25rem;
+        }
+
+        .codes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            border: 2px dashed var(--gray-300);
+        }
+
+        body.dark-mode .codes-grid {
+            background: var(--dark-surface);
+            border-color: var(--dark-border);
+        }
+
+        .backup-code {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s ease;
+            user-select: all;
+            cursor: pointer;
+        }
+
+        .backup-code:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 2px 8px rgba(0, 102, 204, 0.1);
+            transform: translateY(-1px);
+        }
+
+        body.dark-mode .backup-code {
+            background: var(--dark-surface-elevated);
+            color: var(--dark-text-primary);
+            border-color: var(--dark-border);
+        }
+
+        body.dark-mode .backup-code:hover {
+            border-color: var(--primary-blue);
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-blue-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        body.dark-mode .btn-secondary {
+            background: var(--dark-surface);
+            color: var(--dark-text-primary);
+        }
+
+        body.dark-mode .btn-secondary:hover {
+            background: var(--dark-surface-elevated);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #ea580c;
+            transform: translateY(-2px);
+        }
+
+        .generate-section {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .generate-icon {
+            font-size: 4rem;
+            color: var(--warning);
+            margin-bottom: 1.5rem;
+        }
+
+        .generate-section h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+        }
+
+        body.dark-mode .generate-section h3 {
+            color: var(--dark-text-primary);
+        }
+
+        .generate-section p {
+            color: var(--gray-600);
+            margin-bottom: 2rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        body.dark-mode .generate-section p {
+            color: var(--dark-text-secondary);
+        }
+
+        .print-area {
+            display: none;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            
+            .print-area, .print-area * {
+                visibility: visible;
+            }
+            
+            .print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            
+            .codes-grid {
+                background: white !important;
+                border: 2px solid #ccc !important;
+            }
+            
+            .backup-code {
+                background: white !important;
+                border: 1px solid #333 !important;
+                color: #000 !important;
+            }
+        }
+
+        .copy-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-lg);
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .copy-notification.show {
+            opacity: 1;
+        }
+
+        .security-tips {
+            background: var(--gray-100);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            margin-top: 2rem;
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        body.dark-mode .security-tips {
+            background: var(--dark-surface);
+            border-left-color: var(--primary-blue-light);
+        }
+
+        .security-tips h4 {
+            color: var(--gray-900);
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        body.dark-mode .security-tips h4 {
+            color: var(--dark-text-primary);
+        }
+
+        .security-tips ul {
+            margin: 0;
+            padding-left: 1rem;
+            color: var(--gray-700);
+        }
+
+        body.dark-mode .security-tips ul {
+            color: var(--dark-text-secondary);
+        }
+
+        .security-tips li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="background-wrapper">
+        <div class="background-grid"></div>
+        <div class="background-overlay"></div>
+        <div class="circuit-lines"></div>
+        <div class="floating-elements">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <a href="{% url 'authentication:home' %}" class="header-logo">
+                <div class="header-logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <div class="company-info">
+                    <div class="company-name">SecureAuth</div>
+                    <div class="company-tagline">Enterprise Access Portal</div>
+                </div>
+            </a>
+        </div>
+        <div class="utility-controls">
+            <button id="themeToggle" class="utility-btn" aria-label="Toggle dark mode">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+            <a href="{% url 'authentication:logout' %}" class="utility-btn" aria-label="Log out">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <path d="M16 17l5-5-5-5"></path>
+                    <path d="M21 12H9"></path>
+                </svg>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="backup-container">
+        <div class="backup-card">
+            <div class="backup-header">
+                <div class="backup-icon">
+                    <i class="fas fa-file-code"></i>
+                </div>
+                <h1 class="backup-title">MFA Backup Codes</h1>
+                <p class="backup-subtitle">
+                    These recovery codes can be used to access your account if you lose your security key.
+                </p>
+            </div>
+
+            <!-- Django Messages -->
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        <div class="alert-icon">
+                            {% if message.tags == 'success' %}
+                                <i class="fas fa-check-circle"></i>
+                            {% elif message.tags == 'error' %}
+                                <i class="fas fa-exclamation-triangle"></i>
+                            {% else %}
+                                <i class="fas fa-info-circle"></i>
+                            {% endif %}
+                        </div>
+                        <div class="alert-content">
+                            {{ message }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if show_codes %}
+                <!-- Show Generated Codes -->
+                <div class="alert alert-warning">
+                    <div class="alert-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="alert-content">
+                        <h4>Important Security Information</h4>
+                        <p>
+                            <strong>Save these codes immediately!</strong> They will only be displayed once. 
+                            Each code can only be used once for account recovery.
+                        </p>
+                        <ul>
+                            <li>Store them in a secure location (password manager, safe, etc.)</li>
+                            <li>Do not share these codes with anyone</li>
+                            <li>Each code can only be used once</li>
+                            <li>Generate new codes if these are lost or compromised</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="codes-grid" id="codesGrid">
+                    {% for code in backup_codes %}
+                        <div class="backup-code" onclick="copyCode('{{ code }}')">{{ code }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="downloadCodes()">
+                        <i class="fas fa-download"></i>
+                        Download Codes
+                    </button>
+                    <button class="btn btn-secondary" onclick="printCodes()">
+                        <i class="fas fa-print"></i>
+                        Print Codes
+                    </button>
+                    <button class="btn btn-secondary" onclick="copyAllCodes()">
+                        <i class="fas fa-copy"></i>
+                        Copy All
+                    </button>
+                </div>
+
+                <div class="security-tips">
+                    <h4>
+                        <i class="fas fa-shield-alt"></i>
+                        Security Best Practices
+                    </h4>
+                    <ul>
+                        <li>Store these codes in multiple secure locations</li>
+                        <li>Consider using a password manager to store them encrypted</li>
+                        <li>Keep a printed copy in a secure physical location</li>
+                        <li>Regularly review and regenerate if needed</li>
+                        <li>Never store them in plain text on your computer</li>
+                    </ul>
+                </div>
+
+                <div class="actions">
+                    <a href="{% url 'authentication:mfa_setup' %}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to MFA Setup
+                    </a>
+                </div>
+
+            {% else %}
+                <!-- Generate New Codes -->
+                <div class="generate-section">
+                    <div class="generate-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <h3>Generate Backup Codes</h3>
+                    <p>
+                        Create secure backup codes that can be used to access your account 
+                        if you lose access to your security key.
+                    </p>
+                    
+                    <div class="alert alert-warning">
+                        <div class="alert-icon">
+                            <i class="fas fa-info-circle"></i>    
+                        </div>
+                        <div class="alert-content">
+                            <h4>Before You Continue</h4>
+                            <p>
+                                Generating new backup codes will invalidate any existing codes. 
+                                Make sure you have a secure place to store the new codes before proceeding.
+                            </p>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-plus"></i>
+                            Generate Backup Codes
+                        </button>
+                    </form>
+                </div>
+
+                <div class="actions">
+                    <a href="{% url 'authentication:mfa_setup' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to MFA Setup
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Print Area (Hidden) -->
+    <div class="print-area">
+        <h1>SecureAuth - MFA Backup Codes</h1>
+        <p>User: {{ user.username }}</p>
+        <p>Generated: {{ "now"|date:"F d, Y H:i" }}</p>
+        <div class="codes-grid">
+            {% for code in backup_codes %}
+                <div class="backup-code">{{ code }}</div>
+            {% endfor %}
+        </div>
+        <p><strong>Important:</strong> Keep these codes secure and private. Each code can only be used once.</p>
+    </div>
+
+    <!-- Copy Notification -->
+    <div id="copyNotification" class="copy-notification">
+        <i class="fas fa-check"></i>
+        <span id="copyText">Code copied to clipboard!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 SecureAuth. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Contact Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/login.js' %}"></script>
+    <script>
+        const backupCodes = [
+            {% for code in backup_codes %}
+                '{{ code }}'{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        function copyCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                showNotification('Code copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification('Code copied to clipboard!');
+            });
+        }
+
+        function copyAllCodes() {
+            const allCodes = backupCodes.join('\n');
+            navigator.clipboard.writeText(allCodes).then(() => {
+                showNotification('All codes copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = allCodes;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification('All codes copied to clipboard!');
+            });
+        }
+
+        function downloadCodes() {
+            const content = `SecureAuth - MFA Backup Codes
+User: {{ user.username }}
+Generated: {{ "now"|date:"F d, Y H:i" }}
+
+Backup Codes:
+${backupCodes.join('\n')}
+
+Important: Keep these codes secure and private. Each code can only be used once.`;
+
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'secureauth_backup_codes.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('Backup codes downloaded!');
+        }
+
+        function printCodes() {
+            window.print();
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('copyNotification');
+            const text = document.getElementById('copyText');
+            text.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        // Add click handlers for code grid
+        document.addEventListener('DOMContentLoaded', function() {
+            const codes = document.querySelectorAll('.backup-code');
+            codes.forEach(code => {
+                code.addEventListener('click', function() {
+                    // Add visual feedback
+                    this.style.background = 'var(--primary-blue)';
+                    this.style.color = 'white';
+                    setTimeout(() => {
+                        this.style.background = '';
+                        this.style.color = '';
+                    }, 200);
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

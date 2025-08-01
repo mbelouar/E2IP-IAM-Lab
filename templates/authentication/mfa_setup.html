@@ -1,0 +1,1070 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Factor Authentication Setup - SecureAuth</title>
+    <meta name="description" content="Set up Multi-Factor Authentication with YubiKey for enhanced security">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%230040b3'/><stop offset='20%' stop-color='%230052cc'/><stop offset='40%' stop-color='%230066ff'/><stop offset='60%' stop-color='%233385d6'/><stop offset='80%' stop-color='%2366b3ff'/><stop offset='100%' stop-color='%2399ccff'/></linearGradient><linearGradient id='highlight' x1='0%' y1='0%' x2='100%' y2='0%'><stop offset='0%' stop-color='rgba(255,255,255,0.4)'/><stop offset='50%' stop-color='rgba(255,255,255,0.6)'/><stop offset='100%' stop-color='rgba(255,255,255,0.3)'/></linearGradient><filter id='shadow'><feDropShadow dx='0' dy='2' stdDeviation='2' flood-color='rgba(0,0,0,0.3)'/></filter></defs><rect width='100' height='100' rx='24' fill='url(%23grad)'/><rect width='100' height='100' rx='24' fill='url(%23highlight)' opacity='0.7'/><g filter='url(%23shadow)'><path d='M50 20c-10.284 0-18 7.716-18 18v6h-4c-3.314 0-6 2.686-6 6v26c0 3.314 2.686 6 6 6h44c3.314 0 6-2.686 6-6V50c0-3.314-2.686-6-6-6h-4v-6c0-10.284-7.716-18-18-18zm0 8c6.627 0 12 5.373 12 12v6H38v-6c0-6.627 5.373-12 12-12z' fill='white'/></g></svg>">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/login-enhancements.css' %}">
+    <link rel="stylesheet" href="{% static 'css/background-enhancements.css' %}">
+    <link rel="stylesheet" href="{% static 'css/header-enhancements.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home-enhancements.css' %}?v=3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .mfa-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .mfa-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .mfa-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .mfa-subtitle {
+            font-size: 1.125rem;
+            color: var(--gray-600);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        body.dark-mode .mfa-subtitle {
+            color: var(--dark-text-secondary);
+        }
+
+        .mfa-status-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-2xl);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        body.dark-mode .mfa-status-card {
+            background: rgba(26, 32, 44, 0.85);
+            border: 1px solid var(--dark-border);
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .status-icon.enabled {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status-icon.disabled {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        .status-details h3 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        body.dark-mode .status-details h3 {
+            color: var(--dark-text-primary);
+        }
+
+        .status-details p {
+            margin: 0;
+            color: var(--gray-600);
+        }
+
+        body.dark-mode .status-details p {
+            color: var(--dark-text-secondary);
+        }
+
+        .status-toggle {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .status-toggle:hover {
+            background: var(--primary-blue-dark);
+            transform: translateY(-2px);
+        }
+
+        .status-toggle.danger {
+            background: var(--error);
+        }
+
+        .status-toggle.danger:hover {
+            background: #dc2626;
+        }
+
+        .mfa-section {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-2xl);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        body.dark-mode .mfa-section {
+            background: rgba(26, 32, 44, 0.85);
+            border: 1px solid var(--dark-border);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        body.dark-mode .section-header {
+            border-bottom-color: var(--dark-border);
+        }
+
+        .section-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .section-title {
+            flex: 1;
+        }
+
+        .section-title h2 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        body.dark-mode .section-title h2 {
+            color: var(--dark-text-primary);
+        }
+
+        .section-title p {
+            margin: 0;
+            color: var(--gray-600);
+        }
+
+        body.dark-mode .section-title p {
+            color: var(--dark-text-secondary);
+        }
+
+        .add-key-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-key-btn:hover {
+            background: var(--primary-blue-dark);
+            transform: translateY(-2px);
+        }
+
+        .credentials-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .credential-item {
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid var(--gray-200);
+        }
+
+        body.dark-mode .credential-item {
+            background: var(--dark-surface);
+            border-color: var(--dark-border);
+        }
+
+        .credential-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .credential-info {
+            flex: 1;
+        }
+
+        .credential-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        body.dark-mode .credential-name {
+            color: var(--dark-text-primary);
+        }
+
+        .credential-details {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        body.dark-mode .credential-details {
+            color: var(--dark-text-secondary);
+        }
+
+        .credential-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .btn-small.danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        .btn-small.danger:hover {
+            background: var(--error);
+            color: white;
+        }
+
+        .backup-codes-section {
+            text-align: center;
+        }
+
+        .backup-btn {
+            background: var(--warning);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            padding: 1rem 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .backup-btn:hover {
+            background: #ea580c;
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-600);
+        }
+
+        body.dark-mode .empty-state {
+            color: var(--dark-text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--gray-400);
+            margin-bottom: 1rem;
+        }
+
+        body.dark-mode .empty-state i {
+            color: var(--gray-600);
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+        }
+
+        body.dark-mode .empty-state h3 {
+            color: var(--dark-text-primary);
+        }
+
+        /* Loading states */
+        .loading {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-2xl);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        body.dark-mode .modal-content {
+            background: rgba(26, 32, 44, 0.95);
+            border: 1px solid var(--dark-border);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .modal-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0;
+        }
+
+        body.dark-mode .modal-title {
+            color: var(--dark-text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark-mode .form-group label {
+            color: var(--dark-text-primary);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-blue);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        body.dark-mode .form-group input {
+            background: var(--dark-surface);
+            border-color: var(--dark-border);
+            color: var(--dark-text-primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-blue-dark);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        body.dark-mode .btn-secondary {
+            background: var(--dark-surface);
+            color: var(--dark-text-primary);
+        }
+
+        body.dark-mode .btn-secondary:hover {
+            background: var(--dark-surface-elevated);
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            color: var(--gray-400);
+            font-size: 0.875rem;
+        }
+
+        .progress-step.active {
+            color: var(--primary-blue);
+        }
+
+        .progress-step.completed {
+            color: var(--success);
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.5rem;
+            font-weight: 600;
+        }
+
+        .progress-step.active .step-number {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .progress-step.completed .step-number {
+            background: var(--success);
+            color: white;
+        }
+
+        .webauthn-prompt {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .webauthn-icon {
+            font-size: 4rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 1rem;
+            border: 1px solid;
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.2);
+            color: #1e40af;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.2);
+            color: #92400e;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="background-wrapper">
+        <div class="background-grid"></div>
+        <div class="background-overlay"></div>
+        <div class="circuit-lines"></div>
+        <div class="floating-elements">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <a href="{% url 'authentication:home' %}" class="header-logo">
+                <div class="header-logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <div class="company-info">
+                    <div class="company-name">SecureAuth</div>
+                    <div class="company-tagline">Enterprise Access Portal</div>
+                </div>
+            </a>
+        </div>
+        <div class="utility-controls">
+            <button id="themeToggle" class="utility-btn" aria-label="Toggle dark mode">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+            <a href="{% url 'authentication:logout' %}" class="utility-btn" aria-label="Log out">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <path d="M16 17l5-5-5-5"></path>
+                    <path d="M21 12H9"></path>
+                </svg>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="mfa-container">
+        <!-- Header -->
+        <div class="mfa-header">
+            <h1 class="mfa-title">Multi-Factor Authentication</h1>
+            <p class="mfa-subtitle">
+                Enhance your account security with YubiKey or other FIDO2 security keys. 
+                MFA provides an additional layer of protection for your account.
+            </p>
+        </div>
+
+        <!-- Django Messages -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- MFA Status -->
+        <div class="mfa-status-card">
+            <div class="status-row">
+                <div class="status-info">
+                    <div class="status-icon {% if mfa_enabled %}enabled{% else %}disabled{% endif %}">
+                        {% if mfa_enabled %}
+                            <i class="fas fa-shield-alt"></i>
+                        {% else %}
+                            <i class="fas fa-shield"></i>
+                        {% endif %}
+                    </div>
+                    <div class="status-details">
+                        <h3>Multi-Factor Authentication</h3>
+                        <p>
+                            {% if mfa_enabled %}
+                                MFA is <strong>enabled</strong> for your account. Your account is protected by an additional security layer.
+                            {% else %}
+                                MFA is <strong>disabled</strong>. Enable MFA to add an extra layer of security to your account.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="status-actions">
+                    {% if mfa_enabled %}
+                        <form method="post" action="{% url 'authentication:mfa_disable' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="status-toggle danger" onclick="return confirm('Are you sure you want to disable MFA? This will reduce your account security.')">
+                                Disable MFA
+                            </button>
+                        </form>
+                    {% else %}
+                        <form method="post" action="{% url 'authentication:mfa_enable' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="status-toggle" {% if not credentials %}disabled title="Add at least one security key first"{% endif %}>
+                                Enable MFA
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Keys Section -->
+        <div class="mfa-section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-key"></i>
+                </div>
+                <div class="section-title">
+                    <h2>Security Keys</h2>
+                    <p>Register your YubiKey or other FIDO2 security keys for authentication</p>
+                </div>
+                <button class="add-key-btn" onclick="showAddKeyModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Security Key
+                </button>
+            </div>
+
+            {% if credentials %}
+                <div class="credentials-list">
+                    {% for credential in credentials %}
+                        <div class="credential-item">
+                            <div class="credential-icon">
+                                {% if credential.device_type == 'yubikey' %}
+                                    <i class="fab fa-keybase"></i>
+                                {% else %}
+                                    <i class="fas fa-key"></i>
+                                {% endif %}
+                            </div>
+                            <div class="credential-info">
+                                <div class="credential-name">{{ credential.device_name }}</div>
+                                <div class="credential-details">
+                                    Added {{ credential.created_at|date:"M d, Y" }}
+                                    {% if credential.last_used %}
+                                        • Last used {{ credential.last_used|timesince }} ago
+                                    {% else %}
+                                        • Never used
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="credential-actions">
+                                <form method="post" action="{% url 'authentication:delete_credential' credential.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-small danger" onclick="return confirm('Are you sure you want to remove this security key?')">
+                                        <i class="fas fa-trash"></i>
+                                        Remove
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-key"></i>
+                    <h3>No Security Keys Registered</h3>
+                    <p>Add your first security key to get started with MFA protection.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Backup Codes Section -->
+        <div class="mfa-section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-file-code"></i>
+                </div>
+                <div class="section-title">
+                    <h2>Backup Codes</h2>
+                    <p>Generate backup codes to access your account if you lose your security key</p>
+                </div>
+            </div>
+
+            <div class="backup-codes-section">
+                {% if backup_codes_generated %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        You have backup codes generated. Keep them safe and secure.
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        You don't have backup codes yet. Generate them in case you lose access to your security key.
+                    </div>
+                {% endif %}
+
+                <a href="{% url 'authentication:generate_backup_codes' %}" class="backup-btn">
+                    <i class="fas fa-download"></i>
+                    {% if backup_codes_generated %}Regenerate{% else %}Generate{% endif %} Backup Codes
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Security Key Modal -->
+    <div id="addKeyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <h3 class="modal-title">Add Security Key</h3>
+            </div>
+
+            <div class="progress-steps">
+                <div class="progress-step active" id="step1">
+                    <div class="step-number">1</div>
+                    <span>Setup</span>
+                </div>
+                <div class="progress-step" id="step2">
+                    <div class="step-number">2</div>
+                    <span>Register</span>
+                </div>
+                <div class="progress-step" id="step3">
+                    <div class="step-number">3</div>
+                    <span>Complete</span>
+                </div>
+            </div>
+
+            <div id="step1Content">
+                <div class="form-group">
+                    <label for="deviceName">Security Key Name</label>
+                    <input type="text" id="deviceName" placeholder="e.g., My YubiKey" required>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    Make sure your security key is ready and plugged in (if USB). You'll need to touch your key when prompted.
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="startRegistration()">
+                        <i class="fas fa-arrow-right"></i>
+                        Start Registration
+                    </button>
+                </div>
+            </div>
+
+            <div id="step2Content" style="display: none;">
+                <div class="webauthn-prompt">
+                    <div class="webauthn-icon">
+                        <i class="fas fa-hand-pointer"></i>
+                    </div>
+                    <h3>Touch Your Security Key</h3>
+                    <p>Please touch your security key when it blinks or when prompted by your browser.</p>
+                    <div class="spinner" style="margin: 2rem auto;"></div>
+                </div>
+            </div>
+
+            <div id="step3Content" style="display: none;">
+                <div style="text-align: center;">
+                    <div style="font-size: 4rem; color: var(--success); margin-bottom: 1rem;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3>Security Key Added Successfully!</h3>
+                    <p>Your security key has been registered and is ready to use.</p>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="closeModal(); location.reload();">
+                        Done
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 SecureAuth. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Contact Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/login.js' %}"></script>
+    <script>
+        // WebAuthn Registration Functions
+        let registrationOptions = null;
+
+        function showAddKeyModal() {
+            document.getElementById('addKeyModal').classList.add('show');
+            resetModal();
+        }
+
+        function closeModal() {
+            document.getElementById('addKeyModal').classList.remove('show');
+        }
+
+        function resetModal() {
+            // Reset steps
+            document.querySelectorAll('.progress-step').forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            document.getElementById('step1').classList.add('active');
+
+            // Show step 1 content
+            document.getElementById('step1Content').style.display = 'block';
+            document.getElementById('step2Content').style.display = 'none';
+            document.getElementById('step3Content').style.display = 'none';
+
+            // Clear form
+            document.getElementById('deviceName').value = '';
+        }
+
+        async function startRegistration() {
+            const deviceName = document.getElementById('deviceName').value.trim();
+            if (!deviceName) {
+                alert('Please enter a name for your security key.');
+                return;
+            }
+
+            // Move to step 2
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step1').classList.add('completed');
+            document.getElementById('step2').classList.add('active');
+            document.getElementById('step1Content').style.display = 'none';
+            document.getElementById('step2Content').style.display = 'block';
+
+            try {
+                // Get registration options from server
+                const response = await fetch('{% url "authentication:mfa_register_begin" %}', {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to get registration options');
+                }
+
+                const data = await response.json();
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                registrationOptions = data.options;
+
+                // Convert base64 strings to ArrayBuffers
+                registrationOptions.challenge = base64ToArrayBuffer(registrationOptions.challenge);
+                registrationOptions.user.id = base64ToArrayBuffer(registrationOptions.user.id);
+                
+                if (registrationOptions.excludeCredentials) {
+                    registrationOptions.excludeCredentials = registrationOptions.excludeCredentials.map(cred => ({
+                        ...cred,
+                        id: base64ToArrayBuffer(cred.id)
+                    }));
+                }
+
+                // Create credential
+                const credential = await navigator.credentials.create({
+                    publicKey: registrationOptions
+                });
+
+                // Complete registration
+                await completeRegistration(credential, deviceName);
+
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('Registration failed: ' + error.message);
+                closeModal();
+            }
+        }
+
+        async function completeRegistration(credential, deviceName) {
+            try {
+                // Convert credential to JSON format
+                const credentialJSON = {
+                    id: credential.id,
+                    rawId: arrayBufferToBase64(credential.rawId),
+                    response: {
+                        attestationObject: arrayBufferToBase64(credential.response.attestationObject),
+                        clientDataJSON: arrayBufferToBase64(credential.response.clientDataJSON)
+                    },
+                    type: credential.type
+                };
+
+                // Send to server
+                const response = await fetch('{% url "authentication:mfa_register_complete" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({
+                        credential: credentialJSON,
+                        deviceName: deviceName
+                    })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Move to step 3
+                document.getElementById('step2').classList.remove('active');
+                document.getElementById('step2').classList.add('completed');
+                document.getElementById('step3').classList.add('active');
+                document.getElementById('step2Content').style.display = 'none';
+                document.getElementById('step3Content').style.display = 'block';
+
+            } catch (error) {
+                console.error('Registration completion error:', error);
+                alert('Registration failed: ' + error.message);
+                closeModal();
+            }
+        }
+
+        // Utility functions for base64/ArrayBuffer conversion
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function arrayBufferToBase64(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Close modal on background click
+        document.getElementById('addKeyModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Check WebAuthn availability
+        if (!window.PublicKeyCredential) {
+            document.querySelector('.add-key-btn').disabled = true;
+            document.querySelector('.add-key-btn').title = 'WebAuthn not supported in this browser';
+        }
+    </script>
+</body>
+</html> 

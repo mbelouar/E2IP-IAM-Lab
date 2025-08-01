@@ -2,18 +2,62 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponse
-from django.views.decorators.http import require_http_methods
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.http import require_http_methods, require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.conf import settings
+from django.urls import reverse
 import logging
 import json
 import base64
 import xml.etree.ElementTree as ET
+from datetime import timedelta
 
+# Set up logging first
 logger = logging.getLogger(__name__)
 
+# Import MFA models
+from .models import (
+    UserMFAPreference, 
+    WebAuthnCredential, 
+    MFABackupCode, 
+    MFAChallenge, 
+    MFAAttempt
+)
+
+# WebAuthn imports
+try:
+    from webauthn import generate_registration_options, verify_registration_response
+    from webauthn import generate_authentication_options, verify_authentication_response
+    from webauthn.helpers.structs import (
+        PublicKeyCredentialCreationOptions,
+        PublicKeyCredentialRequestOptions,
+        AuthenticatorSelectionCriteria,
+        UserVerificationRequirement,
+        AttestationConveyancePreference,
+        AuthenticatorAttachment,
+        PublicKeyCredentialDescriptor,
+        PublicKeyCredentialType
+    )
+    from webauthn.helpers.cose import COSEAlgorithmIdentifier
+    WEBAUTHN_AVAILABLE = True
+except ImportError:
+    WEBAUTHN_AVAILABLE = False
+    logger.warning("WebAuthn library not available. MFA functionality will be limited.")
+
+# Get client IP helper
+def get_client_ip(request):
+    """Get client IP address from request"""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+# Original views (keeping existing functionality)
 @login_required
 def home(request):
     """View for the home page (only accessible when logged in)"""
@@ -31,9 +75,16 @@ def home(request):
             user_groups = saml_attributes.get(key, [])
             break
 
+    # Get MFA status
+    mfa_preference = getattr(request.user, 'mfa_preference', None)
+    mfa_enabled = mfa_preference.mfa_enabled if mfa_preference else False
+    webauthn_credentials = request.user.webauthn_credentials.filter(is_active=True).count()
+
     context = {
         'saml_attributes': saml_attributes,
-        'user_groups': user_groups
+        'user_groups': user_groups,
+        'mfa_enabled': mfa_enabled,
+        'webauthn_credentials_count': webauthn_credentials,
     }
     return render(request, 'authentication/home.html', context)
 
@@ -51,7 +102,18 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            # Check if user has MFA enabled
+            mfa_preference = getattr(user, 'mfa_preference', None)
+            if mfa_preference and mfa_preference.mfa_enabled:
+                # Store user in session for MFA verification
+                request.session['mfa_user_id'] = user.id
+                request.session['mfa_remember_me'] = remember_me
+                request.session['mfa_required'] = True
+                
+                return redirect('authentication:mfa_challenge')
+            else:
+                # Standard login without MFA
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             
             # Set session expiry based on remember me
             if not remember_me:
@@ -64,6 +126,540 @@ def login_view(request):
     
     return render(request, 'authentication/login.html')
 
+# MFA Views
+@login_required
+def mfa_setup(request):
+    """MFA setup page"""
+    if not WEBAUTHN_AVAILABLE:
+        messages.error(request, "MFA functionality is not available. Please contact your administrator.")
+        return redirect('authentication:home')
+    
+    preference, created = UserMFAPreference.objects.get_or_create(user=request.user)
+    credentials = request.user.webauthn_credentials.filter(is_active=True)
+    
+    context = {
+        'mfa_enabled': preference.mfa_enabled,
+        'credentials': credentials,
+        'backup_codes_generated': preference.backup_codes_generated,
+        'webauthn_available': WEBAUTHN_AVAILABLE,
+    }
+    return render(request, 'authentication/mfa_setup.html', context)
+
+@login_required
+@require_POST
+def mfa_enable(request):
+    """Enable MFA for user"""
+    preference, created = UserMFAPreference.objects.get_or_create(user=request.user)
+    
+    # Check if user has at least one active credential
+    if not request.user.webauthn_credentials.filter(is_active=True).exists():
+        messages.error(request, "You must register at least one security key before enabling MFA.")
+        return redirect('authentication:mfa_setup')
+    
+    preference.mfa_enabled = True
+    preference.save()
+    
+    messages.success(request, "Multi-Factor Authentication has been enabled for your account.")
+    return redirect('authentication:mfa_setup')
+
+@login_required
+@require_POST
+def mfa_disable(request):
+    """Disable MFA for user"""
+    preference, created = UserMFAPreference.objects.get_or_create(user=request.user)
+    preference.mfa_enabled = False
+    preference.save()
+    
+    messages.warning(request, "Multi-Factor Authentication has been disabled for your account.")
+    return redirect('authentication:mfa_setup')
+
+@login_required
+def mfa_register_begin(request):
+    """Begin WebAuthn registration process"""
+    if not WEBAUTHN_AVAILABLE:
+        return JsonResponse({'error': 'WebAuthn not available'}, status=400)
+    
+    try:
+        # Get WebAuthn settings
+        rp_id = getattr(settings, 'WEBAUTHN_RP_ID', request.get_host().split(':')[0])
+        rp_name = getattr(settings, 'WEBAUTHN_RP_NAME', 'SecureAuth')
+        
+        # Debug logging
+        logger.info(f"WebAuthn registration - RP_ID: {rp_id}, Host: {request.get_host()}, Is_Secure: {request.is_secure()}")
+        
+        # Generate registration options
+        registration_options = generate_registration_options(
+            rp_id=rp_id,
+            rp_name=rp_name,
+            user_id=str(request.user.id).encode(),
+            user_name=request.user.username,
+            user_display_name=request.user.get_full_name() or request.user.username,
+            exclude_credentials=[
+                PublicKeyCredentialDescriptor(
+                    id=base64.b64decode(cred.credential_id)
+                ) for cred in request.user.webauthn_credentials.filter(is_active=True)
+            ],
+            authenticator_selection=AuthenticatorSelectionCriteria(
+                authenticator_attachment=AuthenticatorAttachment.CROSS_PLATFORM,
+                user_verification=UserVerificationRequirement.PREFERRED
+            ),
+            attestation=AttestationConveyancePreference.DIRECT,
+            supported_pub_key_algs=[
+                COSEAlgorithmIdentifier.ECDSA_SHA_256,
+                COSEAlgorithmIdentifier.RSASSA_PKCS1_v1_5_SHA_256,
+                COSEAlgorithmIdentifier.EDDSA,
+            ]
+        )
+        
+        # Store challenge in session (base64 encoded for JSON serialization)
+        request.session['registration_challenge'] = base64.b64encode(registration_options.challenge).decode()
+        request.session['registration_user_id'] = base64.b64encode(registration_options.user.id).decode()
+        
+        # Convert to JSON-serializable format
+        options_json = {
+            'challenge': base64.b64encode(registration_options.challenge).decode(),
+            'rp': {
+                'name': registration_options.rp.name,
+                'id': registration_options.rp.id,
+            },
+            'user': {
+                'id': base64.b64encode(registration_options.user.id).decode(),
+                'name': registration_options.user.name,
+                'displayName': registration_options.user.display_name,
+            },
+            'pubKeyCredParams': [
+                {'alg': param.alg.value, 'type': param.type} 
+                for param in registration_options.pub_key_cred_params
+            ],
+            'timeout': registration_options.timeout,
+            'excludeCredentials': [
+                {
+                    'id': base64.b64encode(cred.id).decode(),
+                    'type': cred.type,
+                    'transports': cred.transports or []
+                } for cred in registration_options.exclude_credentials
+            ] if registration_options.exclude_credentials else [],
+            'authenticatorSelection': {
+                'authenticatorAttachment': registration_options.authenticator_selection.authenticator_attachment.value if registration_options.authenticator_selection.authenticator_attachment else None,
+                'userVerification': registration_options.authenticator_selection.user_verification.value,
+                'requireResidentKey': registration_options.authenticator_selection.require_resident_key,
+            },
+            'attestation': registration_options.attestation.value,
+        }
+        
+        return JsonResponse({'options': options_json})
+        
+    except Exception as e:
+        logger.error(f"Error generating registration options: {str(e)}")
+        return JsonResponse({'error': 'Failed to generate registration options'}, status=500)
+
+@login_required
+@require_POST
+def mfa_register_complete(request):
+    """Complete WebAuthn registration"""
+    if not WEBAUTHN_AVAILABLE:
+        return JsonResponse({'error': 'WebAuthn not available'}, status=400)
+    
+    try:
+        data = json.loads(request.body)
+        credential = data.get('credential')
+        device_name = data.get('deviceName', 'Security Key')
+        
+        if not credential:
+            return JsonResponse({'error': 'No credential provided'}, status=400)
+        
+        # Get stored challenge
+        challenge_b64 = request.session.get('registration_challenge')
+        if not challenge_b64:
+            return JsonResponse({'error': 'No registration challenge found'}, status=400)
+        
+        # Decode challenge from base64
+        challenge = base64.b64decode(challenge_b64)
+        
+        # Verify registration response
+        verification = verify_registration_response(
+            credential=credential,
+            expected_challenge=challenge,
+            expected_origin=f"https://{request.get_host()}" if request.is_secure() else f"http://{request.get_host()}",
+            expected_rp_id=getattr(settings, 'WEBAUTHN_RP_ID', request.get_host().split(':')[0]),
+        )
+        
+        if verification.verified:
+            # Store credential in database
+            webauthn_credential = WebAuthnCredential.objects.create(
+                user=request.user,
+                credential_id=base64.b64encode(verification.credential_id).decode(),
+                public_key=base64.b64encode(verification.credential_public_key).decode(),
+                device_name=device_name,
+                aaguid=str(verification.aaguid) if verification.aaguid else '',
+                sign_count=verification.sign_count,
+                device_type='yubikey' if 'yubico' in str(verification.aaguid).lower() else 'security-key'
+            )
+            
+            # Log successful registration
+            MFAAttempt.objects.create(
+                user=request.user,
+                credential=webauthn_credential,
+                attempt_type='registration',
+                success=True,
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')
+            )
+            
+            # Clear session data
+            del request.session['registration_challenge']
+            del request.session['registration_user_id']
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Successfully registered {device_name}',
+                'credential_id': webauthn_credential.id
+            })
+        else:
+            # Log failed registration
+            MFAAttempt.objects.create(
+                user=request.user,
+                attempt_type='registration',
+                success=False,
+                error_message='Registration verification failed',
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')
+            )
+            
+            return JsonResponse({'error': 'Registration verification failed'}, status=400)
+            
+    except Exception as e:
+        logger.error(f"Error completing registration: {str(e)}")
+        MFAAttempt.objects.create(
+            user=request.user,
+            attempt_type='registration',
+            success=False,
+            error_message=str(e),
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', '')
+        )
+        return JsonResponse({'error': 'Registration failed'}, status=500)
+
+def mfa_challenge(request):
+    """MFA challenge page"""
+    if not request.session.get('mfa_required'):
+        return redirect('authentication:login')
+    
+    user_id = request.session.get('mfa_user_id')
+    if not user_id:
+        return redirect('authentication:login')
+    
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return redirect('authentication:login')
+    
+    credentials = user.webauthn_credentials.filter(is_active=True)
+    
+    context = {
+        'user': user,
+        'credentials': credentials,
+        'webauthn_available': WEBAUTHN_AVAILABLE,
+    }
+    return render(request, 'authentication/mfa_challenge.html', context)
+
+def mfa_authenticate_begin(request):
+    """Begin WebAuthn authentication"""
+    if not WEBAUTHN_AVAILABLE:
+        return JsonResponse({'error': 'WebAuthn not available'}, status=400)
+    
+    if not request.session.get('mfa_required'):
+        return JsonResponse({'error': 'MFA not required'}, status=400)
+    
+    user_id = request.session.get('mfa_user_id')
+    if not user_id:
+        return JsonResponse({'error': 'No user for MFA'}, status=400)
+    
+    try:
+        user = User.objects.get(id=user_id)
+        credentials = user.webauthn_credentials.filter(is_active=True)
+        
+        if not credentials.exists():
+            return JsonResponse({'error': 'No registered credentials'}, status=400)
+        
+        # Generate authentication options
+        authentication_options = generate_authentication_options(
+            rp_id=getattr(settings, 'WEBAUTHN_RP_ID', request.get_host().split(':')[0]),
+            allow_credentials=[
+                PublicKeyCredentialDescriptor(
+                    id=base64.b64decode(cred.credential_id)
+                ) for cred in credentials
+            ],
+            user_verification=UserVerificationRequirement.PREFERRED,
+        )
+        
+        # Store challenge in database (more secure than session for auth)
+        MFAChallenge.objects.filter(user=user, expires_at__lt=timezone.now()).delete()  # Cleanup
+        
+        mfa_challenge = MFAChallenge.objects.create(
+            user=user,
+            challenge=base64.b64encode(authentication_options.challenge).decode(),
+            session_key=request.session.session_key or '',
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+            challenge_type='webauthn',
+            expires_at=timezone.now() + timedelta(minutes=5)
+        )
+        
+        # Convert to JSON-serializable format
+        options_json = {
+            'challenge': base64.b64encode(authentication_options.challenge).decode(),
+            'timeout': authentication_options.timeout,
+            'rpId': authentication_options.rp_id,
+            'allowCredentials': [
+                {
+                    'id': base64.b64encode(cred.id).decode(),
+                    'type': cred.type,
+                    'transports': cred.transports or []
+                } for cred in authentication_options.allow_credentials
+            ] if authentication_options.allow_credentials else [],
+            'userVerification': authentication_options.user_verification.value,
+        }
+        
+        return JsonResponse({'options': options_json})
+        
+    except Exception as e:
+        logger.error(f"Error generating authentication options: {str(e)}")
+        return JsonResponse({'error': 'Failed to generate authentication options'}, status=500)
+
+@require_POST
+def mfa_authenticate_complete(request):
+    """Complete WebAuthn authentication"""
+    if not WEBAUTHN_AVAILABLE:
+        return JsonResponse({'error': 'WebAuthn not available'}, status=400)
+    
+    if not request.session.get('mfa_required'):
+        return JsonResponse({'error': 'MFA not required'}, status=400)
+    
+    user_id = request.session.get('mfa_user_id')
+    if not user_id:
+        return JsonResponse({'error': 'No user for MFA'}, status=400)
+    
+    try:
+        data = json.loads(request.body)
+        credential_response = data.get('credential')
+        
+        if not credential_response:
+            return JsonResponse({'error': 'No credential provided'}, status=400)
+        
+        user = User.objects.get(id=user_id)
+        
+        # Get the challenge
+        challenge_obj = MFAChallenge.objects.filter(
+            user=user,
+            challenge_type='webauthn',
+            expires_at__gt=timezone.now()
+        ).first()
+        
+        if not challenge_obj:
+            return JsonResponse({'error': 'No valid challenge found'}, status=400)
+        
+        # Find the credential
+        credential_id = base64.b64encode(base64.b64decode(credential_response['id'])).decode()
+        
+        try:
+            webauthn_credential = WebAuthnCredential.objects.get(
+                user=user,
+                credential_id=credential_id,
+                is_active=True
+            )
+        except WebAuthnCredential.DoesNotExist:
+            return JsonResponse({'error': 'Credential not found'}, status=400)
+        
+        # Verify authentication response
+        verification = verify_authentication_response(
+            credential=credential_response,
+            expected_challenge=base64.b64decode(challenge_obj.challenge),
+            expected_origin=f"https://{request.get_host()}" if request.is_secure() else f"http://{request.get_host()}",
+            expected_rp_id=getattr(settings, 'WEBAUTHN_RP_ID', request.get_host().split(':')[0]),
+            credential_public_key=base64.b64decode(webauthn_credential.public_key),
+            credential_current_sign_count=webauthn_credential.sign_count,
+        )
+        
+        if verification.verified:
+            # Update credential sign count
+            webauthn_credential.sign_count = verification.new_sign_count
+            webauthn_credential.update_last_used()
+            
+            # Log successful authentication
+            MFAAttempt.objects.create(
+                user=user,
+                credential=webauthn_credential,
+                attempt_type='webauthn',
+                success=True,
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')
+            )
+            
+            # Log the user in
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            
+            # Set session expiry based on remember me
+            remember_me = request.session.get('mfa_remember_me', False)
+            if not remember_me:
+                request.session.set_expiry(0)
+            
+            # Clean up MFA session data
+            del request.session['mfa_required']
+            del request.session['mfa_user_id']
+            if 'mfa_remember_me' in request.session:
+                del request.session['mfa_remember_me']
+            
+            # Clean up challenge
+            challenge_obj.delete()
+            
+            return JsonResponse({
+                'success': True,
+                'redirect': reverse('authentication:home')
+            })
+        else:
+            # Log failed authentication
+            MFAAttempt.objects.create(
+                user=user,
+                credential=webauthn_credential,
+                attempt_type='webauthn',
+                success=False,
+                error_message='Authentication verification failed',
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')
+            )
+            
+            return JsonResponse({'error': 'Authentication verification failed'}, status=400)
+            
+    except Exception as e:
+        logger.error(f"Error completing authentication: {str(e)}")
+        if 'user' in locals():
+            MFAAttempt.objects.create(
+                user=user,
+                attempt_type='webauthn',
+                success=False,
+                error_message=str(e),
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')
+            )
+        return JsonResponse({'error': 'Authentication failed'}, status=500)
+
+@login_required
+def generate_backup_codes(request):
+    """Generate backup codes for the user"""
+    if request.method == 'POST':
+        # Generate new backup codes
+        codes = MFABackupCode.generate_codes_for_user(request.user)
+        
+        messages.success(request, 
+            "New backup codes have been generated. Please save them in a secure location. "
+            "These codes can only be used once each."
+        )
+        
+        context = {
+            'backup_codes': codes,
+            'show_codes': True
+        }
+        return render(request, 'authentication/backup_codes.html', context)
+    
+    return render(request, 'authentication/backup_codes.html')
+
+@require_POST  
+def mfa_backup_authenticate(request):
+    """Authenticate using backup code"""
+    if not request.session.get('mfa_required'):
+        return JsonResponse({'error': 'MFA not required'}, status=400)
+    
+    user_id = request.session.get('mfa_user_id')  
+    if not user_id:
+        return JsonResponse({'error': 'No user for MFA'}, status=400)
+    
+    try:
+        data = json.loads(request.body)
+        backup_code = data.get('code', '').strip().upper()
+        
+        if not backup_code:
+            return JsonResponse({'error': 'No backup code provided'}, status=400)
+        
+        user = User.objects.get(id=user_id)
+        
+        # Find unused backup code
+        try:
+            code_obj = MFABackupCode.objects.get(
+                user=user,
+                code=backup_code,
+                used=False
+            )
+        except MFABackupCode.DoesNotExist:
+            # Log failed attempt
+            MFAAttempt.objects.create(
+                user=user,
+                attempt_type='backup',
+                success=False,
+                error_message='Invalid backup code',
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')
+            )
+            return JsonResponse({'error': 'Invalid backup code'}, status=400)
+        
+        # Mark code as used
+        code_obj.mark_as_used()
+        
+        # Log successful authentication
+        MFAAttempt.objects.create(
+            user=user,
+            attempt_type='backup',
+            success=True,
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', '')
+        )
+        
+        # Log the user in
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        
+        # Set session expiry based on remember me
+        remember_me = request.session.get('mfa_remember_me', False)
+        if not remember_me:
+            request.session.set_expiry(0)
+        
+        # Clean up MFA session data
+        del request.session['mfa_required']
+        del request.session['mfa_user_id']
+        if 'mfa_remember_me' in request.session:
+            del request.session['mfa_remember_me']
+        
+        return JsonResponse({
+            'success': True,
+            'redirect': reverse('authentication:home'),
+            'message': 'Successfully authenticated with backup code'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error with backup code authentication: {str(e)}")
+        return JsonResponse({'error': 'Authentication failed'}, status=500)
+
+@login_required
+@require_POST
+def delete_credential(request, credential_id):
+    """Delete a WebAuthn credential"""
+    try:
+        credential = WebAuthnCredential.objects.get(
+            id=credential_id,
+            user=request.user,
+            is_active=True
+        )
+        
+        credential.is_active = False
+        credential.save()
+        
+        messages.success(request, f"Security key '{credential.device_name}' has been removed.")
+        
+    except WebAuthnCredential.DoesNotExist:
+        messages.error(request, "Security key not found.")
+    
+    return redirect('authentication:mfa_setup')
+
+# Keep all existing views below (SAML, logout, etc.)
 def logout_view(request):
     """View for user logout - aggressive session and cache clearing with SAML SLO"""
     was_saml_authenticated = request.session.get('saml_authenticated', False)
@@ -1037,17 +1633,35 @@ def process_saml_response(request, saml_response, relay_state):
         user.last_name = last_name or user.last_name
         user.save()
         
-    # Log the user in with explicit backend
-    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-    
-    # Store SAML session information for proper logout
-    request.session['saml_authenticated'] = True
-    request.session['saml_name_id'] = name_id
-    request.session['saml_user_email'] = email
-    request.session['saml_login_time'] = str(timezone.now()) if 'timezone' in globals() else 'unknown'
-    
-    # Mark this as a SAML session for logout purposes
-    request.session['authentication_method'] = 'saml'
+    # Check if user has MFA enabled BEFORE logging them in
+    mfa_preference = getattr(user, 'mfa_preference', None)
+    if mfa_preference and mfa_preference.mfa_enabled:
+        # Store user in session for MFA verification
+        request.session['mfa_user_id'] = user.id
+        request.session['mfa_remember_me'] = False  # SAML doesn't have remember me
+        request.session['mfa_required'] = True
+        
+        # Store SAML session information for after MFA
+        request.session['saml_authenticated'] = True
+        request.session['saml_name_id'] = name_id
+        request.session['saml_user_email'] = email
+        request.session['saml_login_time'] = str(timezone.now()) if 'timezone' in globals() else 'unknown'
+        request.session['authentication_method'] = 'saml'
+        
+        messages.info(request, f"Multi-Factor Authentication required for {user.first_name or user.username}")
+        return redirect('authentication:mfa_challenge')
+    else:
+        # Standard SAML login without MFA
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        
+        # Store SAML session information for proper logout
+        request.session['saml_authenticated'] = True
+        request.session['saml_name_id'] = name_id
+        request.session['saml_user_email'] = email
+        request.session['saml_login_time'] = str(timezone.now()) if 'timezone' in globals() else 'unknown'
+        
+        # Mark this as a SAML session for logout purposes
+        request.session['authentication_method'] = 'saml'
     
     messages.success(request, f"Successfully authenticated via SAML! Welcome {user.first_name or user.username}!")
     
@@ -1105,3 +1719,7 @@ def saml_logout_view(request):
         # Force logout anyway
         logout(request)
         return redirect('authentication:login')
+
+def webauthn_test(request):
+    """Simple WebAuthn test page"""
+    return render(request, 'authentication/webauthn_test.html')

@@ -272,17 +272,17 @@
                             <i class="fas fa-shield-alt"></i>
                         </div>
                         <div class="welcome-stat-content">
-                            <div class="welcome-stat-label">Session Status</div>
-                            <div class="welcome-stat-value">Secured</div>
+                            <div class="welcome-stat-label">MFA Status</div>
+                            <div class="welcome-stat-value">{% if mfa_enabled %}Enabled{% else %}Disabled{% endif %}</div>
                         </div>
                     </div>
                     <div class="welcome-stat-card">
                         <div class="welcome-stat-icon time">
-                            <i class="fas fa-clock"></i>
+                            <i class="fas fa-key"></i>
                         </div>
                         <div class="welcome-stat-content">
-                            <div class="welcome-stat-label">Last Login</div>
-                            <div class="welcome-stat-value">{{ user.last_login|date:"M d, Y"|default:"First login" }}</div>
+                            <div class="welcome-stat-label">Security Keys</div>
+                            <div class="welcome-stat-value">{{ webauthn_credentials_count }} registered</div>
                         </div>
                     </div>
                 </div>
@@ -374,17 +374,11 @@
                         </div>
                         <span>Change Password</span>
                     </a>
-                    <a href="#" class="quick-access-item">
-                        <div class="quick-access-icon">
-                            <i class="fas fa-mobile-alt"></i>
-                        </div>
-                        <span>2FA Setup</span>
-                    </a>
-                    <a href="#" class="quick-access-item">
+                    <a href="{% url 'authentication:mfa_setup' %}" class="quick-access-item">
                         <div class="quick-access-icon">
                             <i class="fas fa-shield-alt"></i>
                         </div>
-                        <span>Security Checkup</span>
+                        <span>{% if mfa_enabled %}MFA Settings{% else %}Setup MFA{% endif %}</span>
                     </a>
                 </div>
             </div>
