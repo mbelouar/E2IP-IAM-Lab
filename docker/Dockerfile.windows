@@ -13,11 +13,10 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
     iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
-# Install dependencies and setup Python in one layer
-RUN choco install -y python --version=3.9.7; \
-    choco install -y openssl; \
-    choco install -y 7zip; \
-    refreshenv
+# Install dependencies
+RUN choco install -y python --version=3.9.7
+RUN choco install -y openssl  
+RUN choco install -y 7zip
 
 # Set Python PATH
 ENV PATH="C:\\Python39;C:\\Python39\\Scripts;${PATH}"
