@@ -18,7 +18,7 @@ RUN choco install -y python --version=3.9.7
 RUN choco install -y openssl
 RUN choco install -y 7zip
 
-# Set Python PATH
+# Set Python PATH and refresh environment
 ENV PATH="C:\\Python39;C:\\Python39\\Scripts;${PATH}"
 
 # Set working directory
@@ -26,8 +26,8 @@ WORKDIR /app
 
 # Copy and install requirements
 COPY requirements.txt .
-RUN python -m pip install --upgrade pip
-RUN python -m pip install -r requirements.txt
+RUN C:\\Python39\\python.exe -m pip install --upgrade pip
+RUN C:\\Python39\\python.exe -m pip install -r requirements.txt
 
 # Install xmlsec1
 RUN $url = 'https://www.zlatkovic.com/pub/libxml/64bit/xmlsec1-1.2.20-win32-x86_64.7z'; \
@@ -53,4 +53,4 @@ RUN New-Item -ItemType Directory -Force -Path ssl; \
 EXPOSE 8000
 
 # Start application
-CMD ["powershell", "-Command", "python manage.py migrate --noinput; python manage.py runserver_plus --cert-file=ssl/cert.pem --key-file=ssl/key.pem 0.0.0.0:8000"]
+CMD ["powershell", "-Command", "C:\\Python39\\python.exe manage.py migrate --noinput; C:\\Python39\\python.exe manage.py runserver_plus --cert-file=ssl/cert.pem --key-file=ssl/key.pem 0.0.0.0:8000"]
