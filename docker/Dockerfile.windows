@@ -1,11 +1,11 @@
-# Use a Windows base image with Python installed
+# Use Windows base image
 FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install Chocolatey and system dependencies
+# Use PowerShell
 SHELL ["powershell", "-Command"]
 
 # Install Chocolatey
@@ -13,42 +13,44 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
     iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
-# Install system dependencies: Python and OpenSSL
+# Install dependencies
 RUN choco install -y python --version=3.9.7
 RUN choco install -y openssl
+RUN choco install -y 7zip
+
+# Set Python PATH
+ENV PATH="C:\\Python39;C:\\Python39\\Scripts;${PATH}"
 
 # Set working directory
 WORKDIR /app
 
-# Copy requirements and install Python dependencies
-COPY requirements.txt /app/
-RUN python -m pip install --no-cache-dir -r requirements.txt
+# Copy and install requirements
+COPY requirements.txt .
+RUN python -m pip install --upgrade pip
+RUN python -m pip install -r requirements.txt
 
-# Download and install xmlsec1 binaries from zlatkovic.com (official Windows binaries)
-RUN $xmlsecUrl = 'https://www.zlatkovic.com/pub/libxml/64bit/xmlsec1-1.2.20-win32-x86_64.7z'; \
-    $xmlsecZip = 'C:\temp\xmlsec.7z'; \
-    $xmlsecDir = 'C:\xmlsec'; \
-    New-Item -ItemType Directory -Force -Path C:\temp; \
-    New-Item -ItemType Directory -Force -Path $xmlsecDir; \
-    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
-    Invoke-WebRequest -Uri $xmlsecUrl -OutFile $xmlsecZip; \
-    choco install -y 7zip; \
-    & 'C:\ProgramData\chocolatey\bin\7z.exe' x $xmlsecZip -o"$xmlsecDir" -y; \
-    Remove-Item $xmlsecZip -Force
+# Install xmlsec1
+RUN $url = 'https://www.zlatkovic.com/pub/libxml/64bit/xmlsec1-1.2.20-win32-x86_64.7z'; \
+    $zip = 'xmlsec.7z'; \
+    Invoke-WebRequest -Uri $url -OutFile $zip; \
+    & 'C:\\ProgramData\\chocolatey\\bin\\7z.exe' x $zip -oC:\\xmlsec -y; \
+    Remove-Item $zip
 
-# Add xmlsec1 to PATH and set environment variable
-ENV PATH="C:\xmlsec\bin;${PATH}"
-ENV XMLSEC_BINARY="C:\xmlsec\bin\xmlsec1.exe"
+# Set xmlsec PATH
+ENV PATH="C:\\xmlsec\\bin;${PATH}"
+ENV XMLSEC_BINARY="C:\\xmlsec\\bin\\xmlsec1.exe"
 
-# Copy application code
-COPY . /app/
+# Copy application
+COPY . .
 
-# Create ssl directory and generate self-signed certificates using Windows paths
+# Generate SSL certificates
 RUN New-Item -ItemType Directory -Force -Path ssl; \
-    & 'C:\Program Files\OpenSSL\bin\openssl.exe' req -new -newkey rsa:4096 -days 365 -nodes -x509 -subj '/C=US/ST=State/L=City/O=Organization/CN=localhost' -keyout ssl\key.pem -out ssl\cert.pem
+    openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
+    -subj '/C=US/ST=State/L=City/O=Organization/CN=localhost' \
+    -keyout ssl/key.pem -out ssl/cert.pem
 
-# Expose port 8000
+# Expose port
 EXPOSE 8000
 
-# Run migrations and start server
-CMD ["powershell", "-Command", "python manage.py migrate; python manage.py runserver 0.0.0.0:8000 --cert-file=ssl/cert.pem --key-file=ssl/key.pem"]
+# Start application
+CMD ["powershell", "-Command", "python manage.py migrate --noinput; python manage.py runserver_plus --cert-file=ssl/cert.pem --key-file=ssl/key.pem 0.0.0.0:8000"]
