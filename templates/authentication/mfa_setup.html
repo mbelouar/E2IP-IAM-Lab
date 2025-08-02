@@ -1232,17 +1232,18 @@
                 <div class="error-modal">
                     <div class="error-header">
                         <div class="error-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
+                            <i class="fas fa-info-circle"></i>
                         </div>
-                        <h3>YubiKey Registration Issue</h3>
+                        <h3>Quick Tip!</h3>
+                        <p>Let's get your YubiKey set up properly</p>
                     </div>
                     <div class="error-content">
-                        <pre class="error-message">${message}</pre>
+                        <div class="error-message">${message}</div>
                     </div>
                     <div class="error-actions">
                         <button class="btn btn-primary" onclick="scrollToDevices()">
                             <i class="fas fa-check"></i>
-                            I Understand
+                            Got it!
                         </button>
                     </div>
                 </div>
@@ -1257,24 +1258,23 @@
                     left: 0;
                     width: 100%;
                     height: 100%;
-                    background: rgba(0, 0, 0, 0.7);
-                    backdrop-filter: blur(8px);
+                    background: rgba(0, 0, 0, 0.5);
+                    backdrop-filter: blur(4px);
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     z-index: 10000;
-                    animation: fadeIn 0.3s ease-out;
+                    animation: fadeIn 0.2s ease-out;
                 }
                 
                 .error-modal {
                     background: white;
-                    border-radius: var(--radius-2xl);
-                    max-width: 600px;
-                    width: 90%;
-                    max-height: 80vh;
-                    overflow-y: auto;
-                    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+                    border-radius: 16px;
+                    max-width: 480px;
+                    width: 85%;
+                    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
                     animation: slideUp 0.3s ease-out;
+                    overflow: hidden;
                 }
                 
                 body.dark-mode .error-modal {
@@ -1283,56 +1283,74 @@
                 }
                 
                 .error-header {
-                    background: linear-gradient(135deg, #dc2626, #ef4444);
+                    background: linear-gradient(135deg, #0066cc, #4285f4);
                     color: white;
-                    padding: 2rem;
+                    padding: 1.5rem 1.5rem 1rem;
                     text-align: center;
-                    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
                 }
                 
                 .error-icon {
-                    font-size: 3rem;
-                    margin-bottom: 1rem;
+                    font-size: 2.5rem;
+                    margin-bottom: 0.75rem;
+                    opacity: 0.9;
                 }
                 
                 .error-header h3 {
+                    margin: 0 0 0.25rem 0;
+                    font-size: 1.25rem;
+                    font-weight: 600;
+                }
+                
+                .error-header p {
                     margin: 0;
-                    font-size: 1.5rem;
-                    font-weight: 700;
+                    font-size: 0.9rem;
+                    opacity: 0.85;
+                    font-weight: 400;
                 }
                 
                 .error-content {
-                    padding: 2rem;
+                    padding: 1.5rem;
                 }
                 
                 .error-message {
-                    background: rgba(239, 68, 68, 0.1);
-                    border: 1px solid rgba(239, 68, 68, 0.2);
-                    border-radius: var(--radius-lg);
-                    padding: 1.5rem;
+                    background: rgba(66, 133, 244, 0.08);
+                    border: 1px solid rgba(66, 133, 244, 0.15);
+                    border-radius: 12px;
+                    padding: 1.25rem;
                     margin: 0;
                     white-space: pre-wrap;
                     font-family: inherit;
-                    font-size: 0.95rem;
-                    line-height: 1.6;
-                    color: var(--gray-800);
+                    font-size: 0.9rem;
+                    line-height: 1.5;
+                    color: var(--gray-700);
                 }
                 
                 body.dark-mode .error-message {
-                    background: rgba(239, 68, 68, 0.2);
+                    background: rgba(66, 133, 244, 0.15);
+                    border-color: rgba(66, 133, 244, 0.25);
                     color: var(--dark-text-primary);
                 }
                 
                 .error-actions {
-                    padding: 0 2rem 2rem;
+                    padding: 0 1.5rem 1.5rem;
                     display: flex;
-                    gap: 1rem;
                     justify-content: center;
                 }
                 
                 .error-actions .btn {
-                    flex: 1;
-                    max-width: 200px;
+                    min-width: 120px;
+                    padding: 0.75rem 1.5rem;
+                    font-weight: 600;
+                    border-radius: 10px;
+                    background: linear-gradient(135deg, #0066cc, #4285f4);
+                    border: none;
+                    color: white;
+                    transition: all 0.2s ease;
+                }
+                
+                .error-actions .btn:hover {
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
                 }
                 
                 @keyframes fadeIn {
@@ -1343,7 +1361,7 @@
                 @keyframes slideUp {
                     from { 
                         opacity: 0;
-                        transform: translateY(50px) scale(0.95);
+                        transform: translateY(30px) scale(0.95);
                     }
                     to { 
                         opacity: 1;
@@ -1355,7 +1373,7 @@
             document.head.appendChild(errorStyles);
             document.body.appendChild(errorModal);
             
-            // Auto-focus the modal
+            // Focus the modal for accessibility
             errorModal.focus();
         }
 
