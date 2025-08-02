@@ -7,11 +7,11 @@
     <title>Multi-Factor Authentication - SecureAuth</title>
     <meta name="description" content="Complete your login with Multi-Factor Authentication">
     <meta name="robots" content="noindex, nofollow">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%230040b3'/><stop offset='20%' stop-color='%230052cc'/><stop offset='40%' stop-color='%230066ff'/><stop offset='60%' stop-color='%233385d6'/><stop offset='80%' stop-color='%2366b3ff'/><stop offset='100%' stop-color='%2399ccff'/></linearGradient><linearGradient id='highlight' x1='0%' y1='0%' x2='100%' y2='0%'><stop offset='0%' stop-color='rgba(255,255,255,0.4)'/><stop offset='50%' stop-color='rgba(255,255,255,0.6)'/><stop offset='100%' stop-color='rgba(255,255,255,0.3)'/></linearGradient><filter id='shadow'><feDropShadow dx='0' dy='2' stdDeviation='2' flood-color='rgba(0,0,0,0.3)'/></filter></defs><rect width='100' height='100' rx='24' fill='url(%23grad)'/><rect width='100' height='100' rx='24' fill='url(%23highlight)' opacity='0.7'/><g filter='url(%23shadow)'><path d='M50 20c-10.284 0-18 7.716-18 18v6h-4c-3.314 0-6 2.686-6 6v26c0 3.314 2.686 6 6 6h44c3.314 0 6-2.686 6-6V50c0-3.314-2.686-6-6-6h-4v-6c0-10.284-7.716-18-18-18zm0 8c6.627 0 12 5.373 12 12v6H38v-6c0-6.627 5.373-12 12-12z' fill='white'/></g></svg>">
-    <link rel="stylesheet" href="{% static 'css/login.css' %}?v=2">
-    <link rel="stylesheet" href="{% static 'css/login-enhancements.css' %}">
-    <link rel="stylesheet" href="{% static 'css/background-enhancements.css' %}">
-    <link rel="stylesheet" href="{% static 'css/header-enhancements.css' %}">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%230066cc'/><stop offset='100%' stop-color='%233385d6'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23grad)'/><path d='M50 25c-8.284 0-15 6.716-15 15v5h-5c-2.761 0-5 2.239-5 5v25c0 2.761 2.239 5 5 5h40c2.761 0 5-2.239 5-5V50c0-2.761-2.239-5-5-5h-5v-5c0-8.284-6.716-15-15-15zm0 6c5.523 0 10 4.477 10 10v5H40v-5c0-5.523 4.477-10 10-10z' fill='white'/></svg>">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/login-enhancements.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/background-enhancements.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/header-enhancements.css' %}?v=2">
     <link rel="stylesheet" href="{% static 'css/home-enhancements.css' %}?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -25,23 +25,46 @@
 
         /* Header Layout */
         .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem 2rem;
-            background: rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 1rem 2rem !important;
+            background: rgba(0, 0, 0, 0.1) !important;
+            backdrop-filter: blur(10px) !important;
+            position: relative !important;
+            z-index: 50 !important;
         }
 
-        .header-left {
-            flex-shrink: 0;
+        .header .header-left {
+            flex-shrink: 0 !important;
         }
 
-        .utility-controls {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            flex-shrink: 0;
+        .header .utility-controls {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.75rem !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Header Background Color Fix - Override with high specificity */
+        .header .system-status {
+            background: rgba(30, 41, 59, 0.5) !important;
+            border: 1px solid rgba(100, 116, 139, 0.3) !important;
+            color: #e2e8f0 !important;
+        }
+
+        .header .system-status:hover {
+            background: rgba(30, 41, 59, 0.7) !important;
+        }
+
+        .header .utility-btn {
+            background: rgba(30, 41, 59, 0.5) !important;
+            border: 1px solid rgba(100, 116, 139, 0.3) !important;
+            color: #e2e8f0 !important;
+        }
+
+        .header .utility-btn:hover {
+            background: rgba(30, 41, 59, 0.7) !important;
         }
 
         /* Navigation Breadcrumb */
@@ -912,7 +935,10 @@
         <!-- Enhanced Header -->
         <div class="mfa-header">
             <div class="header-icon">
-                <i class="fas fa-shield-alt"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
+                    <rect x="4" y="11" width="16" height="10" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
             </div>
             <h1 class="mfa-title">Complete Authentication</h1>
             <p class="mfa-subtitle">
