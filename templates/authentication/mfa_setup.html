@@ -136,13 +136,13 @@
             transform: translateX(-3px);
         }
 
-        /* Enhanced Header */
+        /* Compact Header */
         .mfa-header {
             text-align: center;
-            margin-bottom: 3rem;
-            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem 1.5rem 1rem;
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.95));
-            border-radius: 20px;
+            border-radius: 16px;
             border: 1px solid rgba(0, 102, 204, 0.3);
             position: relative;
             overflow: hidden;
@@ -155,9 +155,9 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
+            height: 3px;
             background: linear-gradient(135deg, #0066cc, #4285f4);
-            border-radius: 20px 20px 0 0;
+            border-radius: 16px 16px 0 0;
         }
 
         body.dark-mode .mfa-header {
@@ -166,24 +166,24 @@
         }
 
         .header-icon {
-            width: 80px;
-            height: 80px;
+            width: 50px;
+            height: 50px;
             background: linear-gradient(135deg, #0066cc, #4285f4);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 2rem;
-            margin: 0 auto 1.5rem;
-            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.3);
+            font-size: 1.25rem;
+            margin: 0 auto 1rem;
+            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3);
             position: relative;
         }
 
         .header-icon::after {
             content: '';
             position: absolute;
-            inset: -4px;
+            inset: -3px;
             background: linear-gradient(135deg, #0066cc, #4285f4);
             border-radius: 50%;
             z-index: -1;
@@ -192,22 +192,22 @@
         }
 
         .mfa-title {
-            font-size: 2.75rem;
-            font-weight: 800;
+            font-size: 1.75rem;
+            font-weight: 700;
             background: linear-gradient(135deg, #0066cc, #4285f4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .mfa-subtitle {
-            font-size: 1.25rem;
+            font-size: 0.95rem;
             color: var(--gray-600);
-            max-width: 700px;
-            margin: 0 auto 2rem;
-            line-height: 1.6;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.5;
         }
 
         body.dark-mode .mfa-subtitle {
@@ -1286,6 +1286,26 @@
                 transform: translateX(-50%) translateY(0);
             }
         }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mfa-container {
+                padding: 1rem;
+            }
+            
+            .mfa-header {
+                padding: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .mfa-title {
+                font-size: 1.5rem;
+            }
+            
+            .mfa-subtitle {
+                font-size: 0.875rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1369,7 +1389,7 @@
             </div>
             <h1 class="mfa-title">Security Settings</h1>
             <p class="mfa-subtitle">
-                Protect your account with <strong>Multi-Factor Authentication</strong> using YubiKey or other FIDO2 security keys.
+                Configure multi-factor authentication to secure your account
             </p>
         </div>
 
