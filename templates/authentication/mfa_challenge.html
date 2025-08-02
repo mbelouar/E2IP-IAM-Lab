@@ -12,69 +12,154 @@
     <link rel="stylesheet" href="{% static 'css/login-enhancements.css' %}">
     <link rel="stylesheet" href="{% static 'css/background-enhancements.css' %}">
     <link rel="stylesheet" href="{% static 'css/header-enhancements.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home-enhancements.css' %}?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .mfa-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(24px);
-            border-radius: var(--radius-2xl);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.2);
-            padding: var(--space-3xl) var(--space-2xl);
-            width: 100%;
-            max-width: 480px;
+        .mfa-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: cardEntrance 0.6s ease-out forwards;
         }
 
-        .mfa-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.3);
+        /* Header Layout */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
         }
 
-        body.dark-mode .mfa-card {
-            background: rgba(26, 32, 44, 0.95);
-            border: 1px solid var(--dark-border);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+        .header-left {
+            flex-shrink: 0;
         }
 
+        .utility-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        /* Navigation Breadcrumb */
+        .breadcrumb-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0 0 2rem 0;
+            padding: 0;
+            background: none;
+            backdrop-filter: none;
+            border-radius: 0;
+            border: none;
+            box-shadow: none;
+        }
+
+        .breadcrumb-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+        }
+
+        .breadcrumb-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: none;
+        }
+
+        .breadcrumb-separator {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+        }
+
+        .breadcrumb-current {
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        /* Enhanced Header */
         .mfa-header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.95));
+            border-radius: 20px;
+            border: 1px solid rgba(0, 102, 204, 0.3);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         }
 
-        .mfa-icon {
+        .mfa-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+            border-radius: 20px 20px 0 0;
+        }
+
+        body.dark-mode .mfa-header {
+            background: linear-gradient(135deg, rgba(0, 102, 204, 0.1), rgba(66, 133, 244, 0.15));
+            border-color: rgba(0, 102, 204, 0.2);
+        }
+
+        .header-icon {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+            background: linear-gradient(135deg, #0066cc, #4285f4);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1.5rem;
             color: white;
             font-size: 2rem;
-            box-shadow: 0 10px 25px rgba(0, 102, 204, 0.3);
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.3);
+            position: relative;
+        }
+
+        .header-icon::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.3;
+            animation: pulse 2s infinite;
         }
 
         .mfa-title {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--gray-900);
-            margin-bottom: 0.5rem;
-        }
-
-        body.dark-mode .mfa-title {
-            color: var(--dark-text-primary);
+            font-size: 2.75rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .mfa-subtitle {
+            font-size: 1.25rem;
             color: var(--gray-600);
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
         }
 
         body.dark-mode .mfa-subtitle {
@@ -83,13 +168,17 @@
 
         .user-info {
             background: rgba(0, 102, 204, 0.1);
-            padding: 0.75rem 1rem;
-            border-radius: var(--radius-lg);
-            font-size: 0.875rem;
-            color: var(--primary-blue);
-            margin-bottom: 2rem;
-            text-align: center;
             border: 1px solid rgba(0, 102, 204, 0.2);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem auto 0;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            color: #0066cc;
         }
 
         body.dark-mode .user-info {
@@ -97,31 +186,215 @@
             color: var(--primary-blue-light);
         }
 
-        .auth-methods {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+        /* Progress Steps */
+        .progress-section {
+            margin-bottom: 2rem;
         }
 
-        .auth-method {
-            border: 2px solid var(--gray-200);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1.5rem 0;
+            padding: 0 1.5rem;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active,
+        .progress-step.completed {
+            opacity: 1;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(66, 133, 244, 0.1);
+            border: 2px solid rgba(66, 133, 244, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .progress-step.active .step-number {
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+            border-color: #0066cc;
+            color: white;
+        }
+
+        .progress-step.completed .step-number {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+
+        .progress-step span {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--gray-600);
+        }
+
+        .progress-step.active span {
+            color: #0066cc;
+            font-weight: 600;
+        }
+
+        /* Enhanced Messages */
+        .messages-container {
+            margin-bottom: 2rem;
+            space-y: 1rem;
+        }
+
+        .alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .alert:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .alert-icon {
+            font-size: 1.25rem;
+            margin-top: 0.25rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .alert-content {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            font-weight: 500;
+            margin-top: 0;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #047857;
+        }
+
+        .alert-success .alert-icon {
+            color: #10b981;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #dc2626;
+        }
+
+        .alert-error .alert-icon {
+            color: #ef4444;
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: #2563eb;
+        }
+
+        .alert-info .alert-icon {
+            color: #3b82f6;
+        }
+
+        /* Dark mode alert adjustments */
+        body.dark-mode .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        body.dark-mode .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+        }
+
+        body.dark-mode .alert-info {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        /* MFA Card */
+        .mfa-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 102, 204, 0.1);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
 
+        .mfa-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+        }
+
+        .mfa-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 102, 204, 0.15);
+        }
+
+        body.dark-mode .mfa-card {
+            background: rgba(26, 32, 44, 0.9);
+            border-color: rgba(0, 102, 204, 0.2);
+        }
+
+        .auth-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .auth-method {
+            border: 2px solid var(--gray-200);
+            border-radius: 16px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
         .auth-method:hover {
             border-color: var(--primary-blue-light);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.15);
         }
 
         .auth-method.active {
             border-color: var(--primary-blue);
             background: rgba(0, 102, 204, 0.05);
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.2);
         }
 
         body.dark-mode .auth-method {
@@ -141,26 +414,27 @@
         .method-header {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .method-icon {
-            width: 48px;
-            height: 48px;
+            width: 56px;
+            height: 56px;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
-            border-radius: var(--radius-lg);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.25rem;
+            font-size: 1.5rem;
+            flex-shrink: 0;
         }
 
         .method-info h3 {
-            margin: 0 0 0.25rem 0;
-            font-size: 1.125rem;
-            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.375rem;
+            font-weight: 700;
             color: var(--gray-900);
         }
 
@@ -170,8 +444,9 @@
 
         .method-info p {
             margin: 0;
-            font-size: 0.875rem;
+            font-size: 0.95rem;
             color: var(--gray-600);
+            line-height: 1.5;
         }
 
         body.dark-mode .method-info p {
@@ -179,13 +454,16 @@
         }
 
         .method-content {
-            padding-left: 4rem;
+            padding-left: 0;
         }
 
         .webauthn-prompt {
             text-align: center;
             padding: 2rem 0;
             display: none;
+            background: rgba(0, 102, 204, 0.05);
+            border-radius: 12px;
+            margin: 1.5rem 0;
         }
 
         .webauthn-prompt.active {
@@ -200,7 +478,7 @@
         }
 
         .webauthn-instruction {
-            font-size: 1.125rem;
+            font-size: 1.25rem;
             font-weight: 600;
             color: var(--gray-900);
             margin-bottom: 0.5rem;
@@ -212,7 +490,8 @@
 
         .webauthn-details {
             color: var(--gray-600);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
         }
 
         body.dark-mode .webauthn-details {
@@ -221,6 +500,7 @@
 
         .backup-code-form {
             display: none;
+            margin-top: 1.5rem;
         }
 
         .backup-code-form.active {
@@ -229,21 +509,24 @@
 
         .backup-input {
             width: 100%;
-            padding: 1rem;
+            padding: 1.25rem;
             border: 2px solid var(--gray-200);
-            border-radius: var(--radius-lg);
-            font-size: 1.125rem;
+            border-radius: 12px;
+            font-size: 1.25rem;
             text-align: center;
             font-family: 'Courier New', monospace;
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            background: var(--gray-50);
+            transition: all 0.2s ease;
         }
 
         .backup-input:focus {
             border-color: var(--primary-blue);
             outline: none;
             box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+            background: white;
         }
 
         body.dark-mode .backup-input {
@@ -252,58 +535,56 @@
             color: var(--dark-text-primary);
         }
 
-        .backup-submit {
-            width: 100%;
-            background: var(--primary-blue);
-            color: white;
-            border: none;
-            border-radius: var(--radius-lg);
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .backup-submit:hover {
-            background: var(--primary-blue-dark);
-            transform: translateY(-1px);
-        }
-
         .credentials-list {
-            margin-top: 1rem;
+            margin-top: 1.5rem;
+            background: rgba(0, 102, 204, 0.03);
+            border-radius: 12px;
+            padding: 1.5rem;
         }
 
         .credential-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            background: var(--gray-50);
-            border-radius: var(--radius-md);
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            border: 1px solid rgba(0, 102, 204, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .credential-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.1);
+        }
+
+        .credential-item:last-child {
+            margin-bottom: 0;
         }
 
         body.dark-mode .credential-item {
             background: var(--dark-surface-elevated);
+            border-color: var(--dark-border);
         }
 
         .credential-icon {
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             background: var(--primary-blue);
-            border-radius: var(--radius-md);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 0.875rem;
+            font-size: 1rem;
+            flex-shrink: 0;
         }
 
         .credential-name {
             flex: 1;
-            font-weight: 500;
+            font-weight: 600;
             color: var(--gray-900);
         }
 
@@ -312,60 +593,69 @@
         }
 
         .credential-status {
-            font-size: 0.75rem;
-            color: var(--gray-500);
-        }
-
-        body.dark-mode .credential-status {
-            color: var(--gray-400);
+            font-size: 0.8rem;
+            color: #10b981;
+            font-weight: 500;
+            background: rgba(16, 185, 129, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
         }
 
         .method-actions {
-            margin-top: 1.5rem;
+            margin-top: 2rem;
             display: flex;
             gap: 1rem;
         }
 
         .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--radius-lg);
+            padding: 1rem 2rem;
+            border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
             border: none;
-            font-size: 0.95rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
         }
 
         .btn-primary {
-            background: var(--primary-blue);
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
             color: white;
             flex: 1;
+            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3);
         }
 
         .btn-primary:hover {
-            background: var(--primary-blue-dark);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.4);
         }
 
         .btn-primary:disabled {
             background: var(--gray-400);
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
         .btn-secondary {
-            background: var(--gray-200);
-            color: var(--gray-700);
-            min-width: 120px;
+            background: rgba(0, 102, 204, 0.1);
+            color: var(--primary-blue);
+            border: 1px solid rgba(0, 102, 204, 0.2);
+            min-width: 140px;
         }
 
         .btn-secondary:hover {
-            background: var(--gray-300);
+            background: rgba(0, 102, 204, 0.15);
+            transform: translateY(-1px);
         }
 
         body.dark-mode .btn-secondary {
             background: var(--dark-surface);
-            color: var(--dark-text-primary);
+            color: var(--primary-blue-light);
+            border-color: var(--dark-border);
         }
 
         body.dark-mode .btn-secondary:hover {
@@ -374,68 +664,67 @@
 
         .loading {
             pointer-events: none;
-            opacity: 0.6;
+            opacity: 0.7;
         }
 
         .spinner {
             display: inline-block;
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             border: 2px solid transparent;
             border-top: 2px solid currentColor;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-left: 0.5rem;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .help-section {
+            background: rgba(0, 102, 204, 0.05);
+            border: 1px solid rgba(0, 102, 204, 0.15);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(1.05); }
-        }
-
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            color: #dc2626;
-            padding: 0.75rem 1rem;
-            border-radius: var(--radius-lg);
+        .help-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-blue);
             margin-bottom: 1rem;
+        }
+
+        .help-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .help-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
             font-size: 0.875rem;
-            display: none;
+            color: var(--gray-600);
         }
 
-        .error-message.show {
-            display: block;
+        .help-item i {
+            color: var(--primary-blue);
+            margin-top: 0.1rem;
+            flex-shrink: 0;
         }
 
-        body.dark-mode .error-message {
-            background: rgba(239, 68, 68, 0.2);
-            color: #fca5a5;
+        body.dark-mode .help-section {
+            background: rgba(0, 102, 204, 0.1);
+            border-color: rgba(0, 102, 204, 0.2);
         }
 
-        .success-message {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            color: #059669;
-            padding: 0.75rem 1rem;
-            border-radius: var(--radius-lg);
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-            display: none;
-        }
-
-        .success-message.show {
-            display: block;
-        }
-
-        body.dark-mode .success-message {
-            background: rgba(16, 185, 129, 0.2);
-            color: #6ee7b7;
+        body.dark-mode .help-item {
+            color: var(--dark-text-secondary);
         }
 
         .cancel-link {
@@ -452,13 +741,19 @@
         .cancel-link a {
             color: var(--gray-600);
             text-decoration: none;
-            font-size: 0.875rem;
-            transition: color 0.2s ease;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
         }
 
         .cancel-link a:hover {
             color: var(--gray-900);
-            text-decoration: underline;
+            background: var(--gray-100);
+            transform: translateY(-1px);
         }
 
         body.dark-mode .cancel-link a {
@@ -467,6 +762,67 @@
 
         body.dark-mode .cancel-link a:hover {
             color: var(--dark-text-primary);
+            background: var(--dark-surface);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(0, 102, 204, 0.7);
+            }
+            50% { 
+                opacity: 0.8; 
+                transform: scale(1.05);
+                box-shadow: 0 0 0 20px rgba(0, 102, 204, 0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .mfa-card {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mfa-container {
+                padding: 1rem;
+            }
+            
+            .mfa-header {
+                padding: 2rem 1rem;
+            }
+            
+            .mfa-title {
+                font-size: 2rem;
+            }
+            
+            .method-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .method-content {
+                padding-left: 0;
+            }
+            
+            .progress-steps {
+                gap: 1rem;
+            }
+            
+            .help-list {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -501,7 +857,7 @@
             </a>
             <div class="system-status">
                 <div class="status-indicator"></div>
-                <span>Authentication required</span>
+                <span>Authentication in progress</span>
             </div>
         </div>
         <div class="utility-controls">
@@ -513,31 +869,83 @@
         </div>
     </header>
 
-    <!-- Main Container -->
-    <div class="container">
+    <!-- Main Content -->
+    <div class="mfa-container">
+        <!-- Navigation Breadcrumb -->
+        <nav class="breadcrumb-nav">
+            <a href="{% url 'authentication:login' %}" class="breadcrumb-link">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+            <i class="fas fa-chevron-right breadcrumb-separator"></i>
+            <span class="breadcrumb-current">Multi-Factor Authentication</span>
+        </nav>
+
+        <!-- Enhanced Header -->
+        <div class="mfa-header">
+            <div class="header-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h1 class="mfa-title">Secure Login</h1>
+            <p class="mfa-subtitle">
+                Complete your authentication with a <strong>second factor</strong> to ensure your account security.
+            </p>
+            <div class="user-info">
+                <i class="fas fa-user"></i>
+                <span>Logging in as <strong>{{ user.get_full_name|default:user.username }}</strong></span>
+            </div>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="progress-section">
+            <div class="progress-steps">
+                <div class="progress-step completed">
+                    <div class="step-number"><i class="fas fa-check"></i></div>
+                    <span>Username & Password</span>
+                </div>
+                <div class="progress-step active">
+                    <div class="step-number">2</div>
+                    <span>Second Factor</span>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">3</div>
+                    <span>Access Granted</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Messages -->
+        <div class="messages-container">
+            <div id="errorMessage" class="alert alert-error" style="display: none;">
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="alert-content">
+                    <span id="errorText"></span>
+                </div>
+            </div>
+
+            <div id="successMessage" class="alert alert-success" style="display: none;">
+                <div class="alert-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="alert-content">
+                    <span id="successText"></span>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <div class="alert-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="alert-content">
+                    Choose your preferred authentication method below to complete your secure login.
+                </div>
+            </div>
+        </div>
+
+        <!-- MFA Methods -->
         <div class="mfa-card">
-            <div class="mfa-header">
-                <div class="mfa-icon">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <h1 class="mfa-title">Multi-Factor Authentication</h1>
-                <p class="mfa-subtitle">Complete your login with a second factor</p>
-                <div class="user-info">
-                    <i class="fas fa-user"></i>
-                    Logging in as <strong>{{ user.get_full_name|default:user.username }}</strong>
-                </div>
-            </div>
-
-            <div id="errorMessage" class="error-message">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span id="errorText"></span>
-            </div>
-
-            <div id="successMessage" class="success-message">
-                <i class="fas fa-check-circle"></i>
-                <span id="successText"></span>
-            </div>
-
             <div class="auth-methods">
                 <!-- Security Key Method -->
                 {% if credentials %}
@@ -547,12 +955,13 @@
                             <i class="fas fa-key"></i>
                         </div>
                         <div class="method-info">
-                            <h3>Security Key</h3>
-                            <p>Use your registered YubiKey or security key</p>
+                            <h3>Security Key Authentication</h3>
+                            <p>Use your registered YubiKey or FIDO2 security key for the highest level of security.</p>
                         </div>
                     </div>
                     <div class="method-content">
                         <div class="credentials-list">
+                            <h4 style="margin: 0 0 1rem 0; color: var(--gray-700); font-size: 0.95rem;">Your Registered Keys:</h4>
                             {% for credential in credentials %}
                             <div class="credential-item">
                                 <div class="credential-icon">
@@ -581,7 +990,7 @@
                         <div class="method-actions">
                             <button class="btn btn-primary" id="webauthnBtn" onclick="startWebAuthn()">
                                 <i class="fas fa-key"></i>
-                                Use Security Key
+                                <span>Use Security Key</span>
                             </button>
                         </div>
                     </div>
@@ -595,26 +1004,52 @@
                             <i class="fas fa-file-code"></i>
                         </div>
                         <div class="method-info">
-                            <h3>Backup Code</h3>
-                            <p>Use one of your saved backup codes</p>
+                            <h3>Backup Code Authentication</h3>
+                            <p>Use one of your saved backup codes if you don't have access to your security key.</p>
                         </div>
                     </div>
                     <div class="method-content">
                         <div class="backup-code-form" id="backupForm">
-                            <input type="text" id="backupCodeInput" class="backup-input" placeholder="Enter backup code" maxlength="10" autocomplete="off">
-                            <button class="backup-submit" id="backupBtn" onclick="submitBackupCode()">
+                            <input type="text" id="backupCodeInput" class="backup-input" placeholder="Enter your backup code" maxlength="10" autocomplete="off">
+                            <button class="btn btn-primary" id="backupBtn" onclick="submitBackupCode()">
                                 <i class="fas fa-sign-in-alt"></i>
-                                Verify Code
+                                <span>Verify Code</span>
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Help Section -->
+            <div class="help-section">
+                <div class="help-title">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Need Help?</span>
+                </div>
+                <ul class="help-list">
+                    <li class="help-item">
+                        <i class="fas fa-key"></i>
+                        <span>Make sure your security key is plugged in and ready</span>
+                    </li>
+                    <li class="help-item">
+                        <i class="fas fa-hand-pointer"></i>
+                        <span>Touch your key when it blinks or browser prompts</span>
+                    </li>
+                    <li class="help-item">
+                        <i class="fas fa-file-code"></i>
+                        <span>Backup codes are 10-character alphanumeric codes</span>
+                    </li>
+                    <li class="help-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>This extra step keeps your account secure</span>
+                    </li>
+                </ul>
+            </div>
+
             <div class="cancel-link">
                 <a href="{% url 'authentication:login' %}">
                     <i class="fas fa-arrow-left"></i>
-                    Back to Login
+                    <span>Back to Login</span>
                 </a>
             </div>
         </div>
@@ -655,7 +1090,9 @@
                 // Browser security requires direct user interaction for WebAuthn API calls
             } else if (method === 'backup') {
                 document.getElementById('backupForm').classList.add('active');
-                document.getElementById('backupCodeInput').focus();
+                setTimeout(() => {
+                    document.getElementById('backupCodeInput').focus();
+                }, 100);
             }
         }
 
@@ -664,12 +1101,12 @@
             const prompt = document.getElementById('webauthnPrompt');
             
             if (!window.PublicKeyCredential) {
-                showError('WebAuthn is not supported in this browser.');
+                showError('WebAuthn is not supported in this browser. Please try using a backup code or a different browser.');
                 return;
             }
 
             btn.classList.add('loading');
-            btn.innerHTML = '<i class="fas fa-key"></i> Waiting for key... <div class="spinner"></div>';
+            btn.innerHTML = '<i class="fas fa-key"></i> <span>Waiting for key...</span> <div class="spinner"></div>';
             prompt.classList.add('active');
 
             try {
@@ -711,7 +1148,18 @@
 
             } catch (error) {
                 console.error('WebAuthn error:', error);
-                showError('Authentication failed: ' + error.message);
+                let errorMessage = 'Authentication failed: ' + error.message;
+                
+                // Provide more helpful error messages
+                if (error.name === 'NotAllowedError') {
+                    errorMessage = 'Authentication was cancelled or not allowed. Please try again and make sure to touch your security key when prompted.';
+                } else if (error.name === 'SecurityError') {
+                    errorMessage = 'Security error occurred. Please refresh the page and try again.';
+                } else if (error.name === 'AbortError') {
+                    errorMessage = 'Authentication timed out. Please try again and touch your security key promptly.';
+                }
+                
+                showError(errorMessage);
                 resetWebAuthn();
             }
         }
@@ -748,11 +1196,14 @@
                     throw new Error(data.error);
                 }
 
+                // Update progress step
+                updateProgressStep(3);
+                
                 // Success - redirect
-                showSuccess('Authentication successful! Redirecting...');
+                showSuccess('Authentication successful! Redirecting to your dashboard...');
                 setTimeout(() => {
                     window.location.href = data.redirect || '{% url "authentication:home" %}';
-                }, 1000);
+                }, 1500);
 
             } catch (error) {
                 console.error('WebAuthn completion error:', error);
@@ -766,7 +1217,7 @@
             const prompt = document.getElementById('webauthnPrompt');
             
             btn.classList.remove('loading');
-            btn.innerHTML = '<i class="fas fa-key"></i> Use Security Key';
+            btn.innerHTML = '<i class="fas fa-key"></i> <span>Use Security Key</span>';
             prompt.classList.remove('active');
         }
 
@@ -781,8 +1232,14 @@
                 return;
             }
 
+            if (code.length !== 10) {
+                showError('Backup codes are exactly 10 characters long.');
+                input.focus();
+                return;
+            }
+
             btn.classList.add('loading');
-            btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Verifying... <div class="spinner"></div>';
+            btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> <span>Verifying...</span> <div class="spinner"></div>';
             btn.disabled = true;
 
             try {
@@ -802,11 +1259,14 @@
                     throw new Error(data.error);
                 }
 
+                // Update progress step
+                updateProgressStep(3);
+
                 // Success - redirect
-                showSuccess(data.message || 'Authentication successful! Redirecting...');
+                showSuccess(data.message || 'Authentication successful! Redirecting to your dashboard...');
                 setTimeout(() => {
                     window.location.href = data.redirect || '{% url "authentication:home" %}';
-                }, 1000);
+                }, 1500);
 
             } catch (error) {
                 console.error('Backup code error:', error);
@@ -814,31 +1274,49 @@
                 
                 // Reset form
                 btn.classList.remove('loading');
-                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Verify Code';
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> <span>Verify Code</span>';
                 btn.disabled = false;
                 input.value = '';
                 input.focus();
             }
         }
 
+        function updateProgressStep(step) {
+            document.querySelectorAll('.progress-step').forEach((el, index) => {
+                el.classList.remove('active', 'completed');
+                if (index + 1 < step) {
+                    el.classList.add('completed');
+                    el.querySelector('.step-number').innerHTML = '<i class="fas fa-check"></i>';
+                } else if (index + 1 === step) {
+                    el.classList.add('active');
+                }
+            });
+        }
+
         function showError(message) {
             const errorDiv = document.getElementById('errorMessage');
             const errorText = document.getElementById('errorText');
             errorText.textContent = message;
-            errorDiv.classList.add('show');
+            errorDiv.style.display = 'flex';
             
             // Hide success message
-            document.getElementById('successMessage').classList.remove('show');
+            document.getElementById('successMessage').style.display = 'none';
+            
+            // Scroll to top to show message
+            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
         function showSuccess(message) {
             const successDiv = document.getElementById('successMessage');
             const successText = document.getElementById('successText');
             successText.textContent = message;
-            successDiv.classList.add('show');
+            successDiv.style.display = 'flex';
             
             // Hide error message
-            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            // Scroll to top to show message
+            successDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
         // Utility functions
@@ -889,11 +1367,12 @@
 
         // Auto-select first available method
         document.addEventListener('DOMContentLoaded', function() {
-            {% if credentials %}
+            const hasCredentials = document.querySelector('#webauthnMethod') !== null;
+            if (hasCredentials) {
                 selectMethod('webauthn');
-            {% else %}
+            } else {
                 selectMethod('backup');
-            {% endif %}
+            }
         });
 
         // Add CSRF token to page if not present
