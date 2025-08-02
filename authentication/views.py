@@ -1049,10 +1049,17 @@ def show_saml_processing_page(request, saml_response, relay_state):
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Processing SAML Authentication...</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <title>Processing SAML Authentication - SecureAuth</title>
+        <meta name="description" content="Processing SAML authentication response">
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%230066cc'/><stop offset='100%' stop-color='%233385d6'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23grad)'/><path d='M50 25c-8.284 0-15 6.716-15 15v5h-5c-2.761 0-5 2.239-5 5v25c0 2.761 2.239 5 5 5h40c2.761 0 5-2.239 5-5V50c0-2.761-2.239-5-5-5h-5v-5c0-8.284-6.716-15-15-15zm0 6c5.523 0 10 4.477 10 10v5H40v-5c0-5.523 4.477-10 10-10z' fill='white'/></svg>">
+        <link rel="stylesheet" href="/static/css/login.css?v=3">
+        <link rel="stylesheet" href="/static/css/login-enhancements.css?v=2">
+        <link rel="stylesheet" href="/static/css/background-enhancements.css?v=2">
+        <link rel="stylesheet" href="/static/css/header-enhancements.css?v=2">
+        <link rel="stylesheet" href="/static/css/home-enhancements.css?v=3">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <style>
             :root {{
                 /* SecureAuth Brand Colors */
@@ -1129,10 +1136,6 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 font-family: var(--font-family-primary);
                 background: linear-gradient(135deg, var(--primary-blue) 0%, #1e3a8a 50%, var(--primary-blue-dark) 100%);
                 min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
                 color: var(--gray-900);
                 line-height: 1.6;
                 -webkit-font-smoothing: antialiased;
@@ -1198,101 +1201,6 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 50% {{ opacity: 0.5; }}
             }}
 
-            .floating-elements {{
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-            }}
-
-            /* Enhanced floating elements */
-            .floating-element {{
-                position: absolute;
-                border-radius: 50%;
-                filter: blur(2px);
-                animation: float 12s ease-in-out infinite;
-                background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-                backdrop-filter: blur(5px);
-                border: 1px solid rgba(255, 255, 255, 0.05);
-            }}
-
-            .floating-element:nth-child(1) {{
-                width: 200px;
-                height: 200px;
-                left: 10%;
-                top: 10%;
-                animation-delay: 0s;
-            }}
-
-            .floating-element:nth-child(2) {{
-                width: 150px;
-                height: 150px;
-                left: 85%;
-                top: 15%;
-                animation-delay: 3s;
-            }}
-
-            .floating-element:nth-child(3) {{
-                width: 180px;
-                height: 180px;
-                left: 70%;
-                top: 70%;
-                animation-delay: 6s;
-            }}
-
-            .floating-element:nth-child(4) {{
-                width: 120px;
-                height: 120px;
-                left: 20%;
-                top: 80%;
-                animation-delay: 9s;
-            }}
-
-            /* Add more floating elements */
-            .floating-element:nth-child(5) {{
-                width: 100px;
-                height: 100px;
-                left: 50%;
-                top: 25%;
-                animation-delay: 2s;
-                animation-duration: 15s;
-            }}
-
-            .floating-element:nth-child(6) {{
-                width: 80px;
-                height: 80px;
-                left: 30%;
-                top: 50%;
-                animation-delay: 7s;
-                animation-duration: 18s;
-            }}
-
-            /* Enhanced animation */
-            @keyframes float {{
-                0% {{ 
-                    transform: translateY(0) translateX(0) rotate(0deg);
-                    opacity: 0.6;
-                }}
-                25% {{
-                    transform: translateY(-30px) translateX(20px) rotate(90deg);
-                    opacity: 0.8;
-                }}
-                50% {{ 
-                    transform: translateY(-60px) translateX(0px) rotate(180deg);
-                    opacity: 0.6;
-                }}
-                75% {{
-                    transform: translateY(-30px) translateX(-20px) rotate(270deg);
-                    opacity: 0.8;
-                }}
-                100% {{ 
-                    transform: translateY(0) translateX(0) rotate(360deg);
-                    opacity: 0.6;
-                }}
-            }}
-
-            /* Enhanced circuit lines */
             .circuit-lines {{
                 position: absolute;
                 top: 0;
@@ -1310,26 +1218,96 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 50% {{ opacity: 0.04; }}
             }}
 
-            /* Processing Container */
-            .processing-container {{
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(20px);
-                padding: var(--space-3xl);
-                border-radius: var(--radius-2xl);
-                box-shadow: var(--shadow-2xl);
-                text-align: center;
-                max-width: 580px;
-                width: 90%;
-                position: relative;
-                z-index: 10;
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            .floating-elements {{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
             }}
 
-            body.dark-mode .processing-container {{
-                background: rgba(26, 32, 44, 0.95);
-                border: 1px solid var(--dark-border);
-                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            .floating-element {{
+                position: absolute;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                filter: blur(2px);
+                animation: float 12s ease-in-out infinite;
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+                backdrop-filter: blur(5px);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+            }}
+
+            .floating-element:nth-child(1) {{
+                width: 80px;
+                height: 80px;
+                left: 10%;
+                top: 10%;
+                animation-delay: 0s;
+            }}
+
+            .floating-element:nth-child(2) {{
+                width: 60px;
+                height: 60px;
+                left: 85%;
+                top: 15%;
+                animation-delay: 3s;
+            }}
+
+            .floating-element:nth-child(3) {{
+                width: 70px;
+                height: 70px;
+                left: 70%;
+                top: 70%;
+                animation-delay: 6s;
+            }}
+
+            .floating-element:nth-child(4) {{
+                width: 50px;
+                height: 50px;
+                left: 20%;
+                top: 80%;
+                animation-delay: 9s;
+            }}
+
+            @keyframes float {{
+                0%, 100% {{ 
+                    transform: translateY(0) translateX(0) rotate(0deg);
+                    opacity: 0.6;
+                }}
+                50% {{ 
+                    transform: translateY(-40px) translateX(20px) rotate(180deg);
+                    opacity: 0.4;
+                }}
+            }}
+
+            /* Header overrides to match other pages */
+            .header {{
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                padding: 1rem 2rem !important;
+                background: rgba(0, 0, 0, 0.1) !important;
+                backdrop-filter: blur(10px) !important;
+                position: relative !important;
+                z-index: 50 !important;
+            }}
+
+            /* Status indicator for system status */
+            .status-indicator {{
+                width: 8px;
+                height: 8px;
+                background: #10b981;
+                border-radius: 50%;
+                animation: pulse 2s infinite;
+            }}
+
+            /* Main Container */
+            .processing-container {{
+                max-width: 900px;
+                margin: 0 auto;
+                padding: 2rem 1rem;
+                position: relative;
             }}
 
             @keyframes fadeInScale {{
@@ -1343,63 +1321,94 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 }}
             }}
 
-            /* Logo Section */
-            .logo-section {{
-                margin-bottom: var(--space-xl);
-            }}
-
-            .logo-container {{
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: var(--space-md);
-            }}
-
-            .logo-icon {{
-                width: 48px;
-                height: 48px;
-                padding: var(--space-md);
-                background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
-                color: white;
-                border-radius: var(--radius-xl);
-                box-shadow: var(--shadow-lg);
-            }}
-
-            .company-info {{
+            /* Compact Header */
+            .processing-header {{
                 text-align: center;
+                margin-bottom: 2rem;
+                padding: 1.5rem 1.5rem 1rem;
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.95));
+                border-radius: 16px;
+                border: 1px solid rgba(0, 102, 204, 0.3);
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             }}
 
-            .company-name {{
+            .processing-header::before {{
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: linear-gradient(135deg, #0066cc, #4285f4);
+                border-radius: 16px 16px 0 0;
+            }}
+
+            body.dark-mode .processing-header {{
+                background: linear-gradient(135deg, rgba(0, 102, 204, 0.1), rgba(66, 133, 244, 0.15));
+                border-color: rgba(0, 102, 204, 0.2);
+            }}
+
+            .header-icon {{
+                width: 50px;
+                height: 50px;
+                background: linear-gradient(135deg, #0066cc, #4285f4);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
                 font-size: 1.25rem;
+                margin: 0 auto 1rem;
+                box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3);
+                position: relative;
+            }}
+
+            .header-icon::after {{
+                content: '';
+                position: absolute;
+                inset: -3px;
+                background: linear-gradient(135deg, #0066cc, #4285f4);
+                border-radius: 50%;
+                z-index: -1;
+                opacity: 0.3;
+                animation: pulse 2s infinite;
+            }}
+
+            .processing-title {{
+                font-size: 1.75rem;
                 font-weight: 700;
-                color: var(--primary-blue);
-                margin-bottom: var(--space-xs);
+                background: linear-gradient(135deg, #0066cc, #4285f4);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                margin-bottom: 0.5rem;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }}
 
-            body.dark-mode .company-name {{
-                color: var(--primary-blue-light);
-            }}
-
-            .company-tagline {{
-                font-size: 0.875rem;
+            .processing-subtitle {{
+                font-size: 0.95rem;
                 color: var(--gray-600);
-                font-weight: 500;
+                max-width: 500px;
+                margin: 0 auto;
+                line-height: 1.5;
             }}
 
-            body.dark-mode .company-tagline {{
+            body.dark-mode .processing-subtitle {{
                 color: var(--dark-text-secondary);
             }}
 
-            /* Spinner */
+            /* Compact Spinner */
             .spinner-container {{
-                margin: var(--space-xl) 0;
+                margin: 1rem 0;
             }}
 
             .spinner {{
-                width: 64px;
-                height: 64px;
-                border: 4px solid var(--gray-200);
-                border-top: 4px solid var(--primary-blue);
+                width: 48px;
+                height: 48px;
+                border: 3px solid var(--gray-200);
+                border-top: 3px solid var(--primary-blue);
                 border-radius: 50%;
                 animation: spin 1s linear infinite;
                 margin: 0 auto;
@@ -1414,10 +1423,10 @@ def show_saml_processing_page(request, saml_response, relay_state):
             .spinner::after {{
                 content: '';
                 position: absolute;
-                top: -4px;
-                left: -4px;
-                right: -4px;
-                bottom: -4px;
+                top: -3px;
+                left: -3px;
+                right: -3px;
+                bottom: -3px;
                 border: 2px solid transparent;
                 border-top: 2px solid var(--primary-blue-light);
                 border-radius: 50%;
@@ -1429,11 +1438,11 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 100% {{ transform: rotate(360deg); }}
             }}
 
-            /* Typography */
+            /* Compact Typography */
             .processing-title {{
-                font-size: 1.75rem;
+                font-size: 1.4rem;
                 font-weight: 700;
-                margin-bottom: var(--space-md);
+                margin-bottom: 0.5rem;
                 color: var(--gray-900);
                 letter-spacing: -0.025em;
             }}
@@ -1443,10 +1452,10 @@ def show_saml_processing_page(request, saml_response, relay_state):
             }}
 
             .processing-message {{
-                font-size: 1rem;
+                font-size: 0.9rem;
                 color: var(--gray-600);
-                margin-bottom: var(--space-xl);
-                line-height: 1.6;
+                margin-bottom: 1rem;
+                line-height: 1.5;
                 font-weight: 500;
             }}
 
@@ -1454,17 +1463,86 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 color: var(--dark-text-secondary);
             }}
 
-            .countdown {{
-                font-size: 0.95rem;
-                color: var(--gray-500);
-                margin-top: var(--space-lg);
+            /* Processing Card */
+            .processing-card {{
+                background: rgba(255, 255, 255, 0.9);
+                backdrop-filter: blur(20px);
+                border-radius: 20px;
+                padding: 2rem;
+                margin-bottom: 2rem;
+                border: 1px solid rgba(0, 102, 204, 0.1);
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+                animation: fadeIn 0.6s ease-out;
+                text-align: center;
+            }}
+
+            .processing-card::before {{
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: linear-gradient(135deg, #0066cc, #4285f4);
+            }}
+
+            .processing-card:hover {{
+                transform: translateY(-2px);
+                box-shadow: 0 12px 40px rgba(0, 102, 204, 0.15);
+            }}
+
+            body.dark-mode .processing-card {{
+                background: rgba(26, 32, 44, 0.9);
+                border-color: rgba(0, 102, 204, 0.2);
+            }}
+
+            /* Spinner */
+            .spinner {{
+                width: 64px;
+                height: 64px;
+                border: 4px solid var(--gray-200);
+                border-top: 4px solid var(--primary-blue);
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 2rem auto;
+            }}
+
+            body.dark-mode .spinner {{
+                border-color: var(--dark-border);
+                border-top-color: var(--primary-blue-light);
+            }}
+
+            @keyframes spin {{
+                0% {{ transform: rotate(0deg); }}
+                100% {{ transform: rotate(360deg); }}
+            }}
+
+            /* Status Message */
+            .status-message {{
+                background: rgba(0, 102, 204, 0.05);
+                border: 1px solid rgba(0, 102, 204, 0.15);
+                border-radius: 12px;
+                padding: 1rem;
+                margin: 1.5rem 0;
+                color: var(--primary-blue);
+                font-size: 0.9rem;
                 font-weight: 500;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: var(--space-sm);
-                flex-wrap: nowrap;
-                white-space: nowrap;
+            }}
+
+            body.dark-mode .status-message {{
+                background: rgba(0, 102, 204, 0.1);
+                border-color: rgba(0, 102, 204, 0.2);
+                color: var(--primary-blue-light);
+            }}
+
+            .countdown {{
+                font-size: 0.9rem;
+                color: var(--gray-600);
+                margin-top: 1rem;
+                font-weight: 500;
             }}
 
             body.dark-mode .countdown {{
@@ -1472,98 +1550,46 @@ def show_saml_processing_page(request, saml_response, relay_state):
             }}
 
             .countdown-number {{
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                width: 28px;
-                height: 28px;
-                background: var(--primary-blue);
-                color: white;
-                border-radius: 50%;
-                font-weight: 600;
-                font-size: 0.875rem;
-                animation: pulse 1s ease-in-out infinite;
+                color: var(--primary-blue);
+                font-weight: 700;
             }}
 
             @keyframes pulse {{
-                0%, 100% {{ transform: scale(1); }}
-                50% {{ transform: scale(1.1); }}
+                0%, 100% {{ 
+                    opacity: 1; 
+                    transform: scale(1);
+                    box-shadow: 0 0 0 0 rgba(0, 102, 204, 0.7);
+                }}
+                50% {{ 
+                    opacity: 0.8; 
+                    transform: scale(1.05);
+                    box-shadow: 0 0 0 20px rgba(0, 102, 204, 0);
+                }}
             }}
 
-            /* Technical Info */
-            .technical-info {{
-                margin-top: var(--space-xl);
-                padding: var(--space-lg);
-                background: linear-gradient(to right, rgba(0, 102, 204, 0.05), rgba(51, 133, 214, 0.05));
-                border-radius: var(--radius-lg);
-                font-size: 0.875rem;
-                color: var(--gray-600);
-                border-left: 3px solid var(--primary-blue-light);
-                text-align: left;
+            @keyframes fadeIn {{
+                from {{ opacity: 0; transform: translateY(20px); }}
+                to {{ opacity: 1; transform: translateY(0); }}
             }}
 
-            body.dark-mode .technical-info {{
-                background: linear-gradient(to right, rgba(0, 102, 204, 0.1), rgba(51, 133, 214, 0.1));
-                color: var(--dark-text-secondary);
-                border-left-color: var(--primary-blue);
-            }}
-
-            .technical-info strong {{
-                color: var(--gray-800);
-                font-weight: 600;
-                display: block;
-                margin-bottom: var(--space-sm);
-            }}
-
-            body.dark-mode .technical-info strong {{
-                color: var(--dark-text-primary);
-            }}
-
-            .technical-info ul {{
-                list-style: none;
-                margin: 0;
-                padding: 0;
-            }}
-
-            .technical-info li {{
-                display: flex;
-                align-items: center;
-                margin-bottom: var(--space-sm);
-                padding-left: var(--space-md);
-                position: relative;
-            }}
-
-            .technical-info li::before {{
-                content: '✓';
-                position: absolute;
-                left: 0;
-                color: var(--success);
-                font-weight: 600;
-                font-size: 0.75rem;
-            }}
-
-            .technical-info li:last-child {{
-                margin-bottom: 0;
-            }}
-
-            /* Status indicator */
-            .status-indicator {{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: var(--space-sm);
-                margin-top: var(--space-lg);
-                padding: var(--space-md);
-                background: rgba(0, 168, 107, 0.1);
-                border-radius: var(--radius-lg);
-                color: var(--success);
-                font-size: 0.875rem;
-                font-weight: 600;
-            }}
-
-            body.dark-mode .status-indicator {{
-                background: rgba(0, 168, 107, 0.15);
-            }}
+            /* Responsive Design */
+            @media (max-width: 768px) {{
+                .processing-container {{
+                    padding: 1rem;
+                }}
+                
+                .processing-header {{
+                    padding: 1rem;
+                    margin-bottom: 1.5rem;
+                }}
+                
+                .processing-title {{
+                    font-size: 1.5rem;
+                }}
+                
+                .processing-subtitle {{
+                    font-size: 0.875rem;
+                }}
 
             .status-dot {{
                 width: 8px;
@@ -1618,12 +1644,12 @@ def show_saml_processing_page(request, saml_response, relay_state):
             </div>
         </div>
 
-        <div class="processing-container">
-            <!-- Logo Section -->
-            <div class="logo-section">
-                <div class="logo-container">
-                    <div class="logo-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <a href="#" class="header-logo">
+                    <div class="header-logo-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                         </svg>
@@ -1632,40 +1658,59 @@ def show_saml_processing_page(request, saml_response, relay_state):
                         <div class="company-name">SecureAuth</div>
                         <div class="company-tagline">Enterprise Access Portal</div>
                     </div>
+                </a>
+                <div class="system-status">
+                    <div class="status-indicator"></div>
+                    <span>Processing authentication</span>
                 </div>
             </div>
+            <div class="utility-controls">
+                <button id="themeToggle" class="utility-btn" aria-label="Toggle dark mode">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <button id="helpBtn" class="utility-btn" aria-label="Get help">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </button>
+            </div>
+        </header>
 
-            <!-- Spinner -->
-            <div class="spinner-container">
+        <!-- Main Content -->
+        <div class="processing-container">
+            <!-- Compact Header -->
+            <div class="processing-header">
+                <div class="header-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
+                        <rect x="4" y="11" width="16" height="10" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <h1 class="processing-title">Processing Authentication</h1>
+                <p class="processing-subtitle">
+                    Validating your SAML credentials and establishing secure session
+                </p>
+            </div>
+
+            <!-- Processing Card -->
+            <div class="processing-card">
+                <!-- Spinner -->
                 <div class="spinner"></div>
+                
+                <!-- Status Message -->
+                <div class="status-message">
+                    <strong>🔐 Authentication Progress:</strong><br>
+                    SAML response validated • User attributes extracted • Creating secure session
+                </div>
+                
+                <p class="countdown">
+                    Redirecting in <span class="countdown-number" id="countdown">3</span> seconds...
+                </p>
             </div>
-
-            <h1 class="processing-title">Processing SAML Authentication</h1>
-            <p class="processing-message">
-                Successfully received authentication response from ADFS.<br>
-                Processing your credentials and creating your session...
-            </p>
-            
-            <div class="technical-info">
-                <strong>Authentication Progress:</strong>
-                <ul>
-                    <li>SAML Response received from ADFS</li>
-                    <li>Validating digital signatures</li>
-                    <li>Extracting user attributes</li>
-                    <li>Creating secure session</li>
-                </ul>
-            </div>
-
-            <div class="status-indicator">
-                <div class="status-dot"></div>
-                <span>Authentication in progress</span>
-            </div>
-            
-            <p class="countdown">
-                This page will automatically continue in 
-                <span class="countdown-number" id="countdown">3</span> 
-                <span id="countdown-text">seconds</span>...
-            </p>
             
             <!-- Hidden auto-submit form -->
             <form id="samlForm" method="POST" style="display: none;">
@@ -1676,25 +1721,45 @@ def show_saml_processing_page(request, saml_response, relay_state):
         </div>
         
         <script>
-            // Theme detection and application (same as login.js)
+            // Theme Management (Match other pages)
             function initializeTheme() {{
-                // Check local storage for theme preference, default to dark
                 const savedTheme = localStorage.getItem('theme');
-                const isDarkMode = savedTheme ? savedTheme === 'dark' : true; // Default to dark mode
+                const isDarkMode = savedTheme ? savedTheme === 'dark' : true;
                 
                 if (isDarkMode) {{
                     document.body.classList.add('dark-mode');
-                    // Set default theme in localStorage if not set
                     if (!savedTheme) {{
                         localStorage.setItem('theme', 'dark');
                     }}
-                }} else {{
-                    document.body.classList.remove('dark-mode');
+                }}
+                
+                // Update theme toggle icon
+                updateThemeIcon(isDarkMode);
+            }}
+
+            function updateThemeIcon(isDarkMode) {{
+                const themeToggle = document.getElementById('themeToggle');
+                if (themeToggle) {{
+                    const icon = themeToggle.querySelector('svg');
+                    if (isDarkMode) {{
+                        icon.innerHTML = '<path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
+                    }} else {{
+                        icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+                    }}
                 }}
             }}
 
-            // Initialize theme immediately when script loads
+            function toggleTheme() {{
+                const isDarkMode = document.body.classList.toggle('dark-mode');
+                localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+                updateThemeIcon(isDarkMode);
+            }}
+
+            // Initialize theme
             initializeTheme();
+
+            // Theme toggle event listener
+            document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
 
             // Countdown and form submission logic
             let countdown = 3;
@@ -1908,4 +1973,5 @@ def saml_logout_view(request):
         logger.error(f"Error during SAML logout: {str(e)}")
         # Force logout anyway
         logout(request)
+        return redirect('authentication:login')
         return redirect('authentication:login')
