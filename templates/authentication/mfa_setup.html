@@ -601,6 +601,76 @@
             border-color: rgba(245, 158, 11, 0.2);
             color: #92400e;
         }
+
+        /* New styles for info box */
+        .info-box {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        body.dark-mode .info-box {
+            background: rgba(26, 32, 44, 0.85);
+            border: 1px solid var(--dark-border);
+        }
+
+        .info-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .info-content h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        body.dark-mode .info-content h4 {
+            color: var(--dark-text-primary);
+        }
+
+        .info-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-content li {
+            margin-bottom: 0.5rem;
+            font-size: 0.9375rem;
+            color: var(--gray-600);
+        }
+
+        body.dark-mode .info-content li {
+            color: var(--dark-text-secondary);
+        }
+
+        /* Animation for the devices tooltip */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
     </style>
 </head>
 <body>
@@ -810,11 +880,28 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-icon">
-                    <i class="fas fa-plus"></i>
+                    <i class="fas fa-key"></i>
                 </div>
-                <h3 class="modal-title">Add Security Key</h3>
+                <h2 class="modal-title">Add Security Key</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
-
+            
+            <!-- Add helpful info box -->
+            <div class="info-box">
+                <div class="info-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="info-content">
+                    <h4>📝 Important Information</h4>
+                    <ul>
+                        <li><strong>Each YubiKey can only be registered once</strong> per account</li>
+                        <li>If your YubiKey is already registered, you'll see it in the list below</li>
+                        <li>For backup security, consider using a second physical YubiKey</li>
+                        <li>You can always set up backup codes as an alternative method</li>
+                    </ul>
+                </div>
+            </div>
+            
             <div class="progress-steps">
                 <div class="progress-step active" id="step1">
                     <div class="step-number">1</div>
@@ -976,8 +1063,78 @@
 
             } catch (error) {
                 console.error('Registration error:', error);
-                alert('Registration failed: ' + error.message);
-                closeModal();
+                let errorMessage = 'Registration failed: ' + error.message;
+                
+                // Provide more specific error messages
+                if (error.name === 'NotAllowedError') {
+                    errorMessage = '🔐 YubiKey Registration Not Allowed\n\n' +
+                                  'This usually happens because:\n\n' +
+                                  '• This YubiKey is already registered to your account\n' +
+                                  '• This YubiKey is registered to another account\n' +
+                                  '• You clicked "Cancel" in the browser security prompt\n' +
+                                  '• Browser security blocked the request\n\n' +
+                                  '💡 What you can do:\n' +
+                                  '• Check if this YubiKey is already in your registered devices below\n' +
+                                  '• Try using a different YubiKey\n' +
+                                  '• Remove an existing registration first if you want to re-register\n' +
+                                  '• Refresh the page and ensure you click "Allow" when prompted';
+                } else if (error.name === 'InvalidStateError') {
+                    errorMessage = '⚠️ YubiKey Already Registered\n\n' +
+                                  'This YubiKey is already registered and cannot be registered again.\n\n' +
+                                  '🔍 Each physical YubiKey can only be registered once per account.\n\n' +
+                                  '💡 Your options:\n' +
+                                  '• Use the existing registration (check your devices below)\n' +
+                                  '• Delete the existing registration first, then re-register\n' +
+                                  '• Use a different YubiKey for additional security\n' +
+                                  '• Set up backup codes as an alternative method';
+                } else if (error.name === 'ConstraintError') {
+                    errorMessage = '🚫 YubiKey Registration Constraint\n\n' +
+                                  'This YubiKey cannot be registered because it conflicts with existing security policies.\n\n' +
+                                  'This typically means:\n' +
+                                  '• The YubiKey is already registered to this account\n' +
+                                  '• The YubiKey is registered to another account on this system\n\n' +
+                                  '💡 Solutions:\n' +
+                                  '• Check your registered devices below\n' +
+                                  '• Use a different YubiKey\n' +
+                                  '• Contact your administrator if this is unexpected';
+                } else if (error.name === 'SecurityError') {
+                    errorMessage = '🔒 Security Error\n\n' +
+                                  'A security restriction prevented YubiKey registration.\n\n' +
+                                  '💡 Try these fixes:\n' +
+                                  '• Ensure you\'re accessing via HTTPS (https://)\n' +
+                                  '• Refresh the page and try again\n' +
+                                  '• Check that your browser supports WebAuthn\n' +
+                                  '• Try a different browser if the issue persists';
+                } else if (error.name === 'AbortError') {
+                    errorMessage = '⏱️ Registration Timeout\n\n' +
+                                  'YubiKey registration was cancelled or timed out.\n\n' +
+                                  '💡 To complete registration:\n' +
+                                  '• Make sure your YubiKey is connected\n' +
+                                  '• Touch the YubiKey when it blinks\n' +
+                                  '• Enter your PIN if prompted\n' +
+                                  '• Try again with more time';
+                } else if (error.name === 'NotSupportedError') {
+                    errorMessage = '❌ Not Supported\n\n' +
+                                  'Your browser or YubiKey doesn\'t support this registration method.\n\n' +
+                                  '💡 Solutions:\n' +
+                                  '• Try a modern browser (Chrome, Firefox, Edge, Safari)\n' +
+                                  '• Update your browser to the latest version\n' +
+                                  '• Ensure your YubiKey supports FIDO2/WebAuthn\n' +
+                                  '• Use backup codes as an alternative';
+                } else if (error.message && error.message.includes('credential')) {
+                    errorMessage = '🔑 YubiKey Credential Issue\n\n' +
+                                  'There was a problem with your YubiKey credentials.\n\n' +
+                                  'This often means the YubiKey is already registered.\n\n' +
+                                  '💡 Next steps:\n' +
+                                  '• Check your registered devices below\n' +
+                                  '• Try using a different YubiKey\n' +
+                                  '• Remove existing registration if you want to re-register\n\n' +
+                                  'Technical details: ' + error.message;
+                }
+                
+                // Display the enhanced error message
+                displayRegistrationError(errorMessage);
+                resetRegistration();
             }
         }
 
@@ -1065,6 +1222,249 @@
             document.querySelector('.add-key-btn').disabled = true;
             document.querySelector('.add-key-btn').title = 'WebAuthn not supported in this browser';
         }
+
+        // Enhanced error display function for YubiKey registration
+        function displayRegistrationError(message) {
+            // Create a styled error modal
+            const errorModal = document.createElement('div');
+            errorModal.className = 'error-modal-overlay';
+            errorModal.innerHTML = `
+                <div class="error-modal">
+                    <div class="error-header">
+                        <div class="error-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h3>YubiKey Registration Issue</h3>
+                    </div>
+                    <div class="error-content">
+                        <pre class="error-message">${message}</pre>
+                    </div>
+                    <div class="error-actions">
+                        <button class="btn btn-primary" onclick="scrollToDevices()">
+                            <i class="fas fa-check"></i>
+                            I Understand
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Add styles for the error modal
+            const errorStyles = document.createElement('style');
+            errorStyles.textContent = `
+                .error-modal-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.7);
+                    backdrop-filter: blur(8px);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10000;
+                    animation: fadeIn 0.3s ease-out;
+                }
+                
+                .error-modal {
+                    background: white;
+                    border-radius: var(--radius-2xl);
+                    max-width: 600px;
+                    width: 90%;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+                    animation: slideUp 0.3s ease-out;
+                }
+                
+                body.dark-mode .error-modal {
+                    background: var(--dark-surface);
+                    color: var(--dark-text-primary);
+                }
+                
+                .error-header {
+                    background: linear-gradient(135deg, #dc2626, #ef4444);
+                    color: white;
+                    padding: 2rem;
+                    text-align: center;
+                    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+                }
+                
+                .error-icon {
+                    font-size: 3rem;
+                    margin-bottom: 1rem;
+                }
+                
+                .error-header h3 {
+                    margin: 0;
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                }
+                
+                .error-content {
+                    padding: 2rem;
+                }
+                
+                .error-message {
+                    background: rgba(239, 68, 68, 0.1);
+                    border: 1px solid rgba(239, 68, 68, 0.2);
+                    border-radius: var(--radius-lg);
+                    padding: 1.5rem;
+                    margin: 0;
+                    white-space: pre-wrap;
+                    font-family: inherit;
+                    font-size: 0.95rem;
+                    line-height: 1.6;
+                    color: var(--gray-800);
+                }
+                
+                body.dark-mode .error-message {
+                    background: rgba(239, 68, 68, 0.2);
+                    color: var(--dark-text-primary);
+                }
+                
+                .error-actions {
+                    padding: 0 2rem 2rem;
+                    display: flex;
+                    gap: 1rem;
+                    justify-content: center;
+                }
+                
+                .error-actions .btn {
+                    flex: 1;
+                    max-width: 200px;
+                }
+                
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                
+                @keyframes slideUp {
+                    from { 
+                        opacity: 0;
+                        transform: translateY(50px) scale(0.95);
+                    }
+                    to { 
+                        opacity: 1;
+                        transform: translateY(0) scale(1);
+                    }
+                }
+            `;
+            
+            document.head.appendChild(errorStyles);
+            document.body.appendChild(errorModal);
+            
+            // Auto-focus the modal
+            errorModal.focus();
+        }
+
+        function closeErrorModal() {
+            const modal = document.querySelector('.error-modal-overlay');
+            if (modal) {
+                modal.style.animation = 'fadeOut 0.3s ease-in';
+                setTimeout(() => {
+                    modal.remove();
+                    // Also remove the styles
+                    const styles = document.querySelector('style:last-of-type');
+                    if (styles && styles.textContent.includes('.error-modal-overlay')) {
+                        styles.remove();
+                    }
+                    // Don't close the registration modal - user might want to try again or read more
+                }, 300);
+            }
+        }
+
+        function scrollToDevices() {
+            console.log('scrollToDevices called'); // Debug log
+            closeErrorModal(); // Close error modal first
+            
+            // Close and reset the registration modal that's still open
+            document.getElementById('addKeyModal').classList.remove('show');
+            resetModal(); // Reset to step 1
+            console.log('Closed registration modal'); // Debug log
+            
+            // Small delay to ensure modal is closed before scrolling
+            setTimeout(() => {
+                // Find the security keys section by looking for the h2 with "Security Keys" text
+                let devicesSection = null;
+                const mfaSections = document.querySelectorAll('.mfa-section');
+                
+                for (let section of mfaSections) {
+                    const h2 = section.querySelector('h2');
+                    if (h2 && h2.textContent.includes('Security Keys')) {
+                        devicesSection = section;
+                        break;
+                    }
+                }
+                
+                console.log('Found devices section:', devicesSection); // Debug log
+                
+                if (devicesSection) {
+                    // Simple scroll first
+                    devicesSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    console.log('Scrolled to section'); // Debug log
+                    
+                    // Add immediate visible highlight
+                    devicesSection.style.outline = '3px solid #0066cc';
+                    devicesSection.style.borderRadius = '12px';
+                    devicesSection.style.boxShadow = '0 0 20px rgba(0, 102, 204, 0.3)';
+                    devicesSection.style.transition = 'all 0.3s ease';
+                    devicesSection.style.backgroundColor = 'rgba(0, 102, 204, 0.05)';
+                    
+                    console.log('Applied highlighting'); // Debug log
+                    
+                    // Simple tooltip
+                    const tooltip = document.createElement('div');
+                    tooltip.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: #0066cc;
+                        color: white;
+                        padding: 12px 20px;
+                        border-radius: 8px;
+                        font-weight: 600;
+                        z-index: 9999;
+                        box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+                    `;
+                    tooltip.textContent = '↓ Your Security Keys Section';
+                    document.body.appendChild(tooltip);
+                    
+                    console.log('Added tooltip'); // Debug log
+                    
+                    // Reset highlighting after 3 seconds
+                    setTimeout(() => {
+                        devicesSection.style.outline = '';
+                        devicesSection.style.borderRadius = '';
+                        devicesSection.style.boxShadow = '';
+                        devicesSection.style.backgroundColor = '';
+                        if (tooltip.parentNode) {
+                            tooltip.remove();
+                        }
+                        console.log('Cleaned up effects'); // Debug log
+                    }, 3000);
+                    
+                } else {
+                    console.error('Could not find devices section');
+                    alert('Could not find the devices section. Please scroll down to see your registered security keys.');
+                }
+            }, 300); // Small delay to ensure modal closing animation completes
+        }
+
+        // Handle clicks outside error modal to close it
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('error-modal-overlay')) {
+                closeErrorModal(); // Only close error modal when clicking outside
+            }
+        });
+
+        // Handle escape key to close error modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.querySelector('.error-modal-overlay')) {
+                closeErrorModal(); // Only close error modal with Escape key
+            }
+        });
     </script>
 </body>
 </html> 

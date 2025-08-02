@@ -261,30 +261,44 @@ def mfa_register_complete(request):
         return JsonResponse({'error': 'WebAuthn not available'}, status=400)
     
     try:
+        # Log the request for debugging
+        logger.info(f"WebAuthn registration completion - User: {request.user.username}")
+        
         data = json.loads(request.body)
         credential = data.get('credential')
         device_name = data.get('deviceName', 'Security Key')
         
         if not credential:
+            logger.error("No credential provided in request")
             return JsonResponse({'error': 'No credential provided'}, status=400)
         
         # Get stored challenge
         challenge_b64 = request.session.get('registration_challenge')
+        registration_user_id = request.session.get('registration_user_id')
+        
         if not challenge_b64:
+            logger.error("No registration challenge found in session")
             return JsonResponse({'error': 'No registration challenge found'}, status=400)
         
         # Decode challenge from base64
         challenge = base64.b64decode(challenge_b64)
         
-        # Verify registration response
-        verification = verify_registration_response(
-            credential=credential,
-            expected_challenge=challenge,
-            expected_origin=f"https://{request.get_host()}" if request.is_secure() else f"http://{request.get_host()}",
-            expected_rp_id=getattr(settings, 'WEBAUTHN_RP_ID', request.get_host().split(':')[0]),
-        )
+        # Get WebAuthn verification parameters
+        expected_rp_id = getattr(settings, 'WEBAUTHN_RP_ID', request.get_host().split(':')[0])
+        expected_origin = getattr(settings, 'WEBAUTHN_ORIGIN', f"https://{request.get_host()}" if request.is_secure() else f"http://{request.get_host()}")
         
-        if verification.verified:
+        # Verify registration response
+        try:
+            verification = verify_registration_response(
+                credential=credential,
+                expected_challenge=challenge,
+                expected_origin=expected_origin,
+                expected_rp_id=expected_rp_id,
+            )
+            
+            # If we get here, verification was successful (no exception raised)
+            logger.info("WebAuthn registration verification successful")
+            
             # Store credential in database
             webauthn_credential = WebAuthnCredential.objects.create(
                 user=request.user,
@@ -308,37 +322,55 @@ def mfa_register_complete(request):
             
             # Clear session data
             del request.session['registration_challenge']
-            del request.session['registration_user_id']
+            if 'registration_user_id' in request.session:
+                del request.session['registration_user_id']
+            
+            logger.info(f"WebAuthn registration completed successfully for user {request.user.username}")
             
             return JsonResponse({
                 'success': True,
                 'message': f'Successfully registered {device_name}',
                 'credential_id': webauthn_credential.id
             })
-        else:
+            
+        except Exception as verification_error:
+            # WebAuthn verification failed
+            logger.error(f"WebAuthn registration verification failed: {str(verification_error)}")
+            
             # Log failed registration
             MFAAttempt.objects.create(
                 user=request.user,
                 attempt_type='registration',
                 success=False,
-                error_message='Registration verification failed',
+                error_message=f'WebAuthn verification failed: {str(verification_error)}',
                 ip_address=get_client_ip(request),
                 user_agent=request.META.get('HTTP_USER_AGENT', '')
             )
             
-            return JsonResponse({'error': 'Registration verification failed'}, status=400)
-            
+            return JsonResponse({
+                'error': f'Registration verification failed: {str(verification_error)}'
+            }, status=400)
+        
     except Exception as e:
         logger.error(f"Error completing registration: {str(e)}")
-        MFAAttempt.objects.create(
-            user=request.user,
-            attempt_type='registration',
-            success=False,
-            error_message=str(e),
-            ip_address=get_client_ip(request),
-            user_agent=request.META.get('HTTP_USER_AGENT', '')
-        )
-        return JsonResponse({'error': 'Registration failed'}, status=500)
+        logger.error(f"Exception type: {type(e).__name__}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        
+        # Try to log failed attempt if possible
+        try:
+            MFAAttempt.objects.create(
+                user=request.user,
+                attempt_type='registration',
+                success=False,
+                error_message=str(e),
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')
+            )
+        except Exception as log_error:
+            logger.error(f"Failed to log MFA attempt: {log_error}")
+            
+        return JsonResponse({'error': f'Registration failed: {str(e)}'}, status=500)
 
 def mfa_challenge(request):
     """MFA challenge page"""
@@ -366,13 +398,16 @@ def mfa_challenge(request):
 def mfa_authenticate_begin(request):
     """Begin WebAuthn authentication"""
     if not WEBAUTHN_AVAILABLE:
+        logger.error("WebAuthn not available")
         return JsonResponse({'error': 'WebAuthn not available'}, status=400)
     
     if not request.session.get('mfa_required'):
+        logger.error("MFA not required in session")
         return JsonResponse({'error': 'MFA not required'}, status=400)
     
     user_id = request.session.get('mfa_user_id')
     if not user_id:
+        logger.error("No user ID in session for MFA")
         return JsonResponse({'error': 'No user for MFA'}, status=400)
     
     try:
@@ -380,26 +415,48 @@ def mfa_authenticate_begin(request):
         credentials = user.webauthn_credentials.filter(is_active=True)
         
         if not credentials.exists():
+            logger.error("No registered credentials for user")
             return JsonResponse({'error': 'No registered credentials'}, status=400)
         
         # Generate authentication options
+        rp_id = getattr(settings, 'WEBAUTHN_RP_ID', request.get_host().split(':')[0])
+        
+        allow_credentials = []
+        for cred in credentials:
+            try:
+                decoded_id = base64.b64decode(cred.credential_id)
+                allow_credentials.append(
+                    PublicKeyCredentialDescriptor(id=decoded_id)
+                )
+            except Exception as decode_error:
+                logger.error(f"Failed to decode credential {cred.device_name}: {decode_error}")
+        
         authentication_options = generate_authentication_options(
-            rp_id=getattr(settings, 'WEBAUTHN_RP_ID', request.get_host().split(':')[0]),
-            allow_credentials=[
-                PublicKeyCredentialDescriptor(
-                    id=base64.b64decode(cred.credential_id)
-                ) for cred in credentials
-            ],
+            rp_id=rp_id,
+            allow_credentials=allow_credentials,
             user_verification=UserVerificationRequirement.PREFERRED,
         )
         
         # Store challenge in database (more secure than session for auth)
-        MFAChallenge.objects.filter(user=user, expires_at__lt=timezone.now()).delete()  # Cleanup
+        # Clean up expired challenges
+        MFAChallenge.objects.filter(user=user, expires_at__lt=timezone.now()).delete()
+        
+        # Clean up any existing challenges for this session (to avoid unique constraint violation)
+        session_key = request.session.session_key or ''
+        if session_key:
+            existing_challenges = MFAChallenge.objects.filter(session_key=session_key)
+            if existing_challenges.exists():
+                existing_challenges.delete()
+        
+        # Also clean up any existing challenges for this user (as additional safety)
+        user_challenges = MFAChallenge.objects.filter(user=user, challenge_type='webauthn')
+        if user_challenges.exists():
+            user_challenges.delete()
         
         mfa_challenge = MFAChallenge.objects.create(
             user=user,
             challenge=base64.b64encode(authentication_options.challenge).decode(),
-            session_key=request.session.session_key or '',
+            session_key=session_key,
             ip_address=get_client_ip(request),
             user_agent=request.META.get('HTTP_USER_AGENT', ''),
             challenge_type='webauthn',
@@ -407,37 +464,53 @@ def mfa_authenticate_begin(request):
         )
         
         # Convert to JSON-serializable format
-        options_json = {
-            'challenge': base64.b64encode(authentication_options.challenge).decode(),
-            'timeout': authentication_options.timeout,
-            'rpId': authentication_options.rp_id,
-            'allowCredentials': [
-                {
-                    'id': base64.b64encode(cred.id).decode(),
-                    'type': cred.type,
-                    'transports': cred.transports or []
-                } for cred in authentication_options.allow_credentials
-            ] if authentication_options.allow_credentials else [],
-            'userVerification': authentication_options.user_verification.value,
-        }
+        try:
+            options_json = {
+                'challenge': base64.b64encode(authentication_options.challenge).decode(),
+                'timeout': authentication_options.timeout,
+                'rpId': authentication_options.rp_id,
+                'allowCredentials': [
+                    {
+                        'id': base64.b64encode(cred.id).decode(),
+                        'type': cred.type,
+                        'transports': cred.transports or []
+                    } for cred in authentication_options.allow_credentials
+                ] if authentication_options.allow_credentials else [],
+                'userVerification': authentication_options.user_verification.value,
+            }
+            
+            logger.info(f"WebAuthn authentication options generated for user {user.username}")
+            
+            return JsonResponse({'options': options_json})
+            
+        except Exception as json_error:
+            logger.error(f"JSON conversion failed: {json_error}")
+            return JsonResponse({'error': f'JSON conversion failed: {str(json_error)}'}, status=500)
         
-        return JsonResponse({'options': options_json})
+    except User.DoesNotExist:
+        logger.error(f"User {user_id} does not exist")
+        return JsonResponse({'error': 'User not found'}, status=400)
         
     except Exception as e:
         logger.error(f"Error generating authentication options: {str(e)}")
-        return JsonResponse({'error': 'Failed to generate authentication options'}, status=500)
+        return JsonResponse({'error': f'Failed to generate authentication options: {str(e)}'}, status=500)
 
 @require_POST
 def mfa_authenticate_complete(request):
     """Complete WebAuthn authentication"""
+    import base64  # Import at function level to ensure availability
+    
     if not WEBAUTHN_AVAILABLE:
+        logger.error("WebAuthn not available")
         return JsonResponse({'error': 'WebAuthn not available'}, status=400)
     
     if not request.session.get('mfa_required'):
+        logger.error("MFA not required in session")
         return JsonResponse({'error': 'MFA not required'}, status=400)
     
     user_id = request.session.get('mfa_user_id')
     if not user_id:
+        logger.error("No user ID in session for MFA")
         return JsonResponse({'error': 'No user for MFA'}, status=400)
     
     try:
@@ -445,6 +518,7 @@ def mfa_authenticate_complete(request):
         credential_response = data.get('credential')
         
         if not credential_response:
+            logger.error("No credential provided")
             return JsonResponse({'error': 'No credential provided'}, status=400)
         
         user = User.objects.get(id=user_id)
@@ -457,31 +531,137 @@ def mfa_authenticate_complete(request):
         ).first()
         
         if not challenge_obj:
+            logger.error("No valid challenge found")
             return JsonResponse({'error': 'No valid challenge found'}, status=400)
         
-        # Find the credential
-        credential_id = base64.b64encode(base64.b64decode(credential_response['id'])).decode()
+        # Find the credential using various approaches
+        credential_id_from_response = credential_response['id']
         
-        try:
-            webauthn_credential = WebAuthnCredential.objects.get(
-                user=user,
-                credential_id=credential_id,
-                is_active=True
-            )
-        except WebAuthnCredential.DoesNotExist:
+        # Get all active credentials for the user
+        available_creds = WebAuthnCredential.objects.filter(user=user, is_active=True)
+        
+        # Function to normalize base64 strings for comparison
+        def normalize_base64(b64_str):
+            """Convert between URL-safe and standard base64, handle padding"""
+            variants = []
+            
+            # Original string
+            variants.append(b64_str)
+            
+            # URL-safe to standard conversion
+            standard = b64_str.replace('-', '+').replace('_', '/')
+            variants.append(standard)
+            
+            # Standard to URL-safe conversion  
+            url_safe = b64_str.replace('+', '-').replace('/', '_')
+            variants.append(url_safe)
+            
+            # Try adding padding if missing
+            for variant in [b64_str, standard, url_safe]:
+                # Add padding if needed
+                missing_padding = len(variant) % 4
+                if missing_padding:
+                    padded = variant + '=' * (4 - missing_padding)
+                    variants.append(padded)
+            
+            # Remove duplicates while preserving order
+            seen = set()
+            unique_variants = []
+            for v in variants:
+                if v not in seen:
+                    seen.add(v)
+                    unique_variants.append(v)
+                    
+            return unique_variants
+        
+        # Try to find the credential using various approaches
+        webauthn_credential = None
+        
+        # Approach 1: Direct comparison with variants
+        response_variants = normalize_base64(credential_id_from_response)
+        
+        for variant in response_variants:
+            try:
+                webauthn_credential = WebAuthnCredential.objects.get(
+                    user=user,
+                    credential_id=variant,
+                    is_active=True
+                )
+                break
+            except WebAuthnCredential.DoesNotExist:
+                continue
+        
+        # Approach 2: If no exact match, try prefix matching (in case of truncation)
+        if not webauthn_credential:
+            for cred in available_creds:
+                stored_variants = normalize_base64(cred.credential_id)
+                for stored_variant in stored_variants:
+                    for response_variant in response_variants:
+                        # Check if either is a prefix of the other
+                        if (response_variant.startswith(stored_variant[:len(response_variant)]) or 
+                            stored_variant.startswith(response_variant)):
+                            webauthn_credential = cred
+                            break
+                    if webauthn_credential:
+                        break
+                if webauthn_credential:
+                    break
+        
+        # Approach 3: If still no match, try binary comparison after base64 decode
+        if not webauthn_credential:
+            try:
+                # Try to decode the response credential ID
+                response_decoded = None
+                for variant in response_variants:
+                    try:
+                        response_decoded = base64.b64decode(variant)
+                        break
+                    except Exception:
+                        continue
+                
+                if response_decoded:
+                    # Compare with stored credentials
+                    for cred in available_creds:
+                        try:
+                            stored_decoded = base64.b64decode(cred.credential_id)
+                            if response_decoded == stored_decoded:
+                                webauthn_credential = cred
+                                break
+                        except Exception:
+                            continue
+                            
+            except Exception as e:
+                logger.error(f"Binary comparison failed: {e}")
+        
+        if not webauthn_credential:
+            logger.error(f"Credential not found for user {user.username}")
             return JsonResponse({'error': 'Credential not found'}, status=400)
         
-        # Verify authentication response
-        verification = verify_authentication_response(
-            credential=credential_response,
-            expected_challenge=base64.b64decode(challenge_obj.challenge),
-            expected_origin=f"https://{request.get_host()}" if request.is_secure() else f"http://{request.get_host()}",
-            expected_rp_id=getattr(settings, 'WEBAUTHN_RP_ID', request.get_host().split(':')[0]),
-            credential_public_key=base64.b64decode(webauthn_credential.public_key),
-            credential_current_sign_count=webauthn_credential.sign_count,
-        )
+        # Prepare verification parameters
+        expected_origin = getattr(settings, 'WEBAUTHN_ORIGIN', f"https://{request.get_host()}" if request.is_secure() else f"http://{request.get_host()}")
+        expected_rp_id = getattr(settings, 'WEBAUTHN_RP_ID', request.get_host().split(':')[0])
         
-        if verification.verified:
+        # Decode the stored challenge
+        try:
+            expected_challenge_bytes = base64.b64decode(challenge_obj.challenge)
+        except Exception as decode_error:
+            logger.error(f"Failed to decode stored challenge: {decode_error}")
+            return JsonResponse({'error': 'Invalid stored challenge'}, status=500)
+        
+        # Verify authentication response
+        try:
+            verification = verify_authentication_response(
+                credential=credential_response,
+                expected_challenge=expected_challenge_bytes,
+                expected_origin=expected_origin,
+                expected_rp_id=expected_rp_id,
+                credential_public_key=base64.b64decode(webauthn_credential.public_key),
+                credential_current_sign_count=webauthn_credential.sign_count,
+            )
+            
+            # If we get here, verification was successful (no exception raised)
+            logger.info(f"WebAuthn authentication successful for user {user.username}")
+            
             # Update credential sign count
             webauthn_credential.sign_count = verification.new_sign_count
             webauthn_credential.update_last_used()
@@ -517,32 +697,37 @@ def mfa_authenticate_complete(request):
                 'success': True,
                 'redirect': reverse('authentication:home')
             })
-        else:
+            
+        except Exception as verification_error:
+            # WebAuthn verification failed
+            logger.error(f"WebAuthn authentication verification failed for user {user.username}: {str(verification_error)}")
+            
             # Log failed authentication
             MFAAttempt.objects.create(
                 user=user,
                 credential=webauthn_credential,
                 attempt_type='webauthn',
                 success=False,
-                error_message='Authentication verification failed',
+                error_message=f'WebAuthn verification failed: {str(verification_error)}',
                 ip_address=get_client_ip(request),
                 user_agent=request.META.get('HTTP_USER_AGENT', '')
             )
             
-            return JsonResponse({'error': 'Authentication verification failed'}, status=400)
-            
+            return JsonResponse({
+                'error': f'Authentication verification failed: {str(verification_error)}'
+            }, status=400)
+        
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON decode error: {str(e)}")
+        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+        
+    except User.DoesNotExist:
+        logger.error(f"User {user_id} does not exist")
+        return JsonResponse({'error': 'User not found'}, status=400)
+        
     except Exception as e:
         logger.error(f"Error completing authentication: {str(e)}")
-        if 'user' in locals():
-            MFAAttempt.objects.create(
-                user=user,
-                attempt_type='webauthn',
-                success=False,
-                error_message=str(e),
-                ip_address=get_client_ip(request),
-                user_agent=request.META.get('HTTP_USER_AGENT', '')
-            )
-        return JsonResponse({'error': 'Authentication failed'}, status=500)
+        return JsonResponse({'error': f'Authentication failed: {str(e)}'}, status=500)
 
 @login_required
 def generate_backup_codes(request):
@@ -694,11 +879,16 @@ def logout_view(request):
             
             logger.info(f"Session keys after clearing: {list(request.session.keys())}")
             
-            # Redirect to SAML Single Logout which should contact ADFS
+            # Check if SAML SLS endpoint is available before redirecting
             try:
-                return redirect('/saml2/sls/')
-            except Exception as e:
-                logger.warning(f"SAML SLS redirect failed: {e}, falling back to regular logout")
+                from django.urls import reverse, NoReverseMatch
+                # Try to reverse the SAML SLS URL
+                sls_url = reverse('djangosaml2:saml2_sls')
+                logger.info(f"SAML SLS URL found: {sls_url}")
+                return redirect(sls_url)
+            except (NoReverseMatch, ImportError) as e:
+                logger.warning(f"SAML SLS not available ({e}), performing regular logout")
+                # Fall through to regular logout
                 
         except Exception as e:
             logger.error(f"Error during SAML logout process: {e}")
@@ -1719,7 +1909,3 @@ def saml_logout_view(request):
         # Force logout anyway
         logout(request)
         return redirect('authentication:login')
-
-def webauthn_test(request):
-    """Simple WebAuthn test page"""
-    return render(request, 'authentication/webauthn_test.html')

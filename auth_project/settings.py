@@ -232,14 +232,14 @@ if SAML_AVAILABLE and SAML_IMPORTS_AVAILABLE and not os.getenv('CI'):
                     },
                 'force_authn': True,  # Always force fresh authentication
                 'name_id_format_allow_create': True,
-                'want_response_signed': False,
-                'want_assertions_signed': False,
-                'want_assertions_or_response_signed': False,
-                'authn_requests_signed': False,
+                'want_response_signed': True,  # Require signed responses for security
+                'want_assertions_signed': True,  # Require signed assertions for security
+                'want_assertions_or_response_signed': True,  # At least one must be signed
+                'authn_requests_signed': False,  # We don't sign requests (can be enabled if needed)
                 'logout_requests_signed': False,
                 'allow_unsolicited': False,  # Disable IdP-initiated SSO to force fresh requests
-                'only_use_keys_in_metadata': False,  # Don't restrict to metadata keys
-                'disable_ssl_certificate_validation': True,  # For development
+                'only_use_keys_in_metadata': True,  # Use keys from metadata for security
+                'disable_ssl_certificate_validation': True,  # For development only
             },
         },
         'debug': DEBUG,
@@ -300,7 +300,7 @@ try:
     import webauthn
     WEBAUTHN_RP_ID = os.getenv('WEBAUTHN_RP_ID', 'localhost')  # Should match your domain
     WEBAUTHN_RP_NAME = os.getenv('WEBAUTHN_RP_NAME', 'SecureAuth')
-    WEBAUTHN_ORIGIN = os.getenv('WEBAUTHN_ORIGIN', 'http://localhost:8000')  # Full origin URL
+    WEBAUTHN_ORIGIN = os.getenv('WEBAUTHN_ORIGIN', 'https://localhost:8000')  # Default to HTTPS for development
     
     # For production, use your actual domain:
     # WEBAUTHN_RP_ID = 'yourdomain.com'

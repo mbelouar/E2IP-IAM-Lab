@@ -29,7 +29,7 @@ bash:
 
 # Local development commands
 runserver:
-	./venv/bin/python3 manage.py runserver 0.0.0.0:$(PORT)
+	./venv/bin/python3 manage.py runserver localhost:$(PORT)
 
 runserver-ssl:
 	./venv/bin/python3 manage.py runserver_plus --cert-file ssl/cert.pem --key-file ssl/key.pem 0.0.0.0:$(PORT)

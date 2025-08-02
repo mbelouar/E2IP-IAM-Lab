@@ -651,10 +651,8 @@
             methodElement.classList.add('active');
 
             if (method === 'webauthn') {
-                // Auto-start WebAuthn if it's the only method
-                {% if credentials.count == 1 and not backup_codes %}
-                setTimeout(startWebAuthn, 500);
-                {% endif %}
+                // WebAuthn method selected - user must click "Use Security Key" button
+                // Browser security requires direct user interaction for WebAuthn API calls
             } else if (method === 'backup') {
                 document.getElementById('backupForm').classList.add('active');
                 document.getElementById('backupCodeInput').focus();
