@@ -1101,7 +1101,7 @@
             border: 1px solid rgba(66, 133, 244, 0.15);
             border-radius: 10px;
             padding: 1rem;
-            margin: 1rem 0;
+            margin: 2rem 0;
             font-size: 0.875rem;
             color: var(--gray-600);
         }
@@ -1513,8 +1513,12 @@
             <div class="backup-codes-section">
                 {% if backup_codes_generated %}
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i>
-                        You have backup codes generated. Keep them safe and secure.
+                        <div class="alert-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="alert-content">
+                            You have backup codes generated. Keep them safe and secure.
+                        </div>
                     </div>
                 {% else %}
                     <div class="alert alert-warning">
