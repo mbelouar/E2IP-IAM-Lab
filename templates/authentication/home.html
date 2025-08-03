@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{% static 'css/login-enhancements.css' %}?v=2">
     <link rel="stylesheet" href="{% static 'css/background-enhancements.css' %}?v=2">
     <link rel="stylesheet" href="{% static 'css/header-enhancements.css' %}?v=2">
-    <link rel="stylesheet" href="{% static 'css/home-enhancements.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/home-enhancements.css' %}?v=5">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -96,6 +96,12 @@
             height: 5px;
             background: linear-gradient(135deg, #0066cc, #4285f4, #6366f1);
             border-radius: 28px 28px 0 0;
+        }
+
+        /* Quick Actions Hover Effect - High Specificity Override */
+        .quick-action-item:hover .quick-action-icon {
+            background: rgba(59, 130, 246, 0.1) !important;
+            transform: scale(1.1) !important;
         }
 
         .hero-section::after {
@@ -344,6 +350,13 @@
             font-size: 1.25rem;
             margin: 0 auto 0.75rem;
             box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .action-item:hover .action-icon {
+            background: rgba(59, 130, 246, 0.1);
+            transform: scale(1.1);
+            color: #3b82f6;
         }
 
         .action-item span {
@@ -1188,7 +1201,7 @@
                     <div class="security-grid">
                         <div class="security-item">
                             <div class="security-icon {% if mfa_enabled %}active{% else %}inactive{% endif %}">
-                                <i class="fas fa-key"></i>
+                                <i class="fas fa-mobile-alt"></i>
                             </div>
                             <div class="security-info">
                                 <div class="security-label">Multi-Factor Auth</div>
@@ -1197,7 +1210,7 @@
                         </div>
                         <div class="security-item">
                             <div class="security-icon {% if webauthn_credentials_count > 0 %}active{% else %}inactive{% endif %}">
-                                <i class="fas fa-usb"></i>
+                                <i class="fas fa-key"></i>
                             </div>
                             <div class="security-info">
                                 <div class="security-label">Security Keys</div>
