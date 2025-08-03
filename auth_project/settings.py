@@ -151,6 +151,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Active Directory Integration Settings
+AD_SERVER = os.getenv('AD_SERVER', 'ldap://your-ad-server.com')
+AD_DOMAIN = os.getenv('AD_DOMAIN', 'your-domain.com')
+AD_USERNAME = os.getenv('AD_USERNAME', 'service-account@your-domain.com')
+AD_PASSWORD = os.getenv('AD_PASSWORD', '')
+AD_SEARCH_BASE = os.getenv('AD_SEARCH_BASE', 'DC=your-domain,DC=com')
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]

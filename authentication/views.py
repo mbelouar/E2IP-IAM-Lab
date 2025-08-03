@@ -1942,6 +1942,204 @@ def show_saml_error(request, saml_response, error_message):
         <p><a href="/authentication/login/">Back to Login</a></p>
     """, content_type='text/html')
 
+@login_required
+def edit_profile(request):
+    """View for editing user profile information"""
+    if request.method == 'POST':
+        display_name = request.POST.get('display_name', '').strip()
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        
+        # Validate input
+        if not display_name or not first_name or not last_name:
+            messages.error(request, 'Display name, first name, and last name are required.')
+            return redirect('authentication:edit_profile')
+        
+        try:
+            # Update Django user model
+            user = request.user
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save()
+            
+            # Update Active Directory with display name and individual names
+            success = update_ad_user_info(user.username, display_name, first_name, last_name)
+            
+            if success:
+                messages.success(request, 'Profile updated successfully!')
+            else:
+                messages.warning(request, 'Profile updated locally, but there was an issue updating Active Directory.')
+            
+            return redirect('authentication:home')
+            
+        except Exception as e:
+            logger.error(f"Error updating profile for user {request.user.username}: {str(e)}")
+            messages.error(request, 'An error occurred while updating your profile.')
+            return redirect('authentication:edit_profile')
+    
+    # GET request - retrieve data from AD and show the form
+    try:
+        # Get current user info from Active Directory
+        ad_user_info = get_ad_user_info(request.user.username)
+        
+        # Use AD data if available, otherwise fall back to Django user data
+        if ad_user_info:
+            context = {
+                'user': request.user,
+                'ad_display_name': ad_user_info.get('displayName', ''),
+                'ad_first_name': ad_user_info.get('givenName', ''),
+                'ad_last_name': ad_user_info.get('sn', ''),
+                'ad_username': ad_user_info.get('sAMAccountName', request.user.username),
+            }
+        else:
+            # Fallback to Django user data
+            context = {
+                'user': request.user,
+                'ad_display_name': request.user.get_full_name(),
+                'ad_first_name': request.user.first_name,
+                'ad_last_name': request.user.last_name,
+                'ad_username': request.user.username,
+            }
+            
+    except Exception as e:
+        logger.error(f"Error retrieving AD user info for {request.user.username}: {str(e)}")
+        # Fallback to Django user data
+        context = {
+            'user': request.user,
+            'ad_display_name': request.user.get_full_name(),
+            'ad_first_name': request.user.first_name,
+            'ad_last_name': request.user.last_name,
+            'ad_username': request.user.username,
+        }
+    
+    return render(request, 'authentication/edit_profile.html', context)
+
+def get_ad_user_info(username):
+    """Retrieve user information from Active Directory"""
+    try:
+        import ldap3
+        from ldap3 import Server, Connection, ALL, NTLM
+        
+        # AD connection settings
+        AD_SERVER = getattr(settings, 'AD_SERVER', 'ldap://your-ad-server.com')
+        AD_DOMAIN = getattr(settings, 'AD_DOMAIN', 'your-domain.com')
+        AD_USERNAME = getattr(settings, 'AD_USERNAME', 'service-account@your-domain.com')
+        AD_PASSWORD = getattr(settings, 'AD_PASSWORD', '')
+        AD_SEARCH_BASE = getattr(settings, 'AD_SEARCH_BASE', 'DC=your-domain,DC=com')
+        
+        # Connect to AD
+        server = Server(AD_SERVER, get_info=ALL)
+        conn = Connection(
+            server,
+            user=f"{AD_DOMAIN}\\{AD_USERNAME}",
+            password=AD_PASSWORD,
+            authentication=NTLM,
+            auto_bind=True
+        )
+        
+        if not conn.bound:
+            logger.error("Failed to bind to Active Directory")
+            return None
+        
+        # Search for the user
+        search_filter = f"(&(objectClass=user)(sAMAccountName={username}))"
+        conn.search(
+            search_base=AD_SEARCH_BASE,
+            search_filter=search_filter,
+            attributes=['sAMAccountName', 'displayName', 'givenName', 'sn', 'cn', 'mail']
+        )
+        
+        if not conn.entries:
+            logger.warning(f"User {username} not found in Active Directory")
+            return None
+        
+        # Extract user information
+        user_entry = conn.entries[0]
+        user_info = {
+            'sAMAccountName': str(user_entry.sAMAccountName.value) if hasattr(user_entry, 'sAMAccountName') else username,
+            'displayName': str(user_entry.displayName.value) if hasattr(user_entry, 'displayName') and user_entry.displayName.value else '',
+            'givenName': str(user_entry.givenName.value) if hasattr(user_entry, 'givenName') and user_entry.givenName.value else '',
+            'sn': str(user_entry.sn.value) if hasattr(user_entry, 'sn') and user_entry.sn.value else '',
+            'cn': str(user_entry.cn.value) if hasattr(user_entry, 'cn') and user_entry.cn.value else '',
+            'mail': str(user_entry.mail.value) if hasattr(user_entry, 'mail') and user_entry.mail.value else '',
+        }
+        
+        logger.info(f"Successfully retrieved AD user info for {username}")
+        return user_info
+        
+    except ImportError:
+        logger.error("ldap3 library not available. Cannot retrieve from Active Directory.")
+        return None
+    except Exception as e:
+        logger.error(f"Error retrieving from Active Directory: {str(e)}")
+        return None
+
+
+def update_ad_user_info(username, display_name, first_name, last_name):
+    """Update user information in Active Directory"""
+    try:
+        import ldap3
+        from ldap3 import Server, Connection, ALL, NTLM
+        
+        # AD connection settings
+        AD_SERVER = getattr(settings, 'AD_SERVER', 'ldap://your-ad-server.com')
+        AD_DOMAIN = getattr(settings, 'AD_DOMAIN', 'your-domain.com')
+        AD_USERNAME = getattr(settings, 'AD_USERNAME', 'service-account@your-domain.com')
+        AD_PASSWORD = getattr(settings, 'AD_PASSWORD', '')
+        AD_SEARCH_BASE = getattr(settings, 'AD_SEARCH_BASE', 'DC=your-domain,DC=com')
+        
+        # Connect to AD
+        server = Server(AD_SERVER, get_info=ALL)
+        conn = Connection(
+            server,
+            user=f"{AD_DOMAIN}\\{AD_USERNAME}",
+            password=AD_PASSWORD,
+            authentication=NTLM,
+            auto_bind=True
+        )
+        
+        if not conn.bound:
+            logger.error("Failed to bind to Active Directory")
+            return False
+        
+        # Search for the user
+        search_filter = f"(&(objectClass=user)(sAMAccountName={username}))"
+        conn.search(
+            search_base=AD_SEARCH_BASE,
+            search_filter=search_filter,
+            attributes=['distinguishedName', 'displayName', 'cn', 'givenName', 'sn']
+        )
+        
+        if not conn.entries:
+            logger.error(f"User {username} not found in Active Directory")
+            return False
+        
+        user_dn = conn.entries[0].entry_dn
+        
+        # Update user attributes - use displayName, cn, givenName, and sn
+        changes = {
+            'displayName': [(ldap3.MODIFY_REPLACE, [display_name])],
+            'cn': [(ldap3.MODIFY_REPLACE, [display_name])],
+            'givenName': [(ldap3.MODIFY_REPLACE, [first_name])],
+            'sn': [(ldap3.MODIFY_REPLACE, [last_name])]
+        }
+        
+        success = conn.modify(user_dn, changes=changes)
+        
+        if success:
+            logger.info(f"Successfully updated AD user {username}: displayName={display_name}, givenName={first_name}, sn={last_name}")
+            return True
+        else:
+            logger.error(f"Failed to update AD user {username}: {conn.result}")
+            return False
+            
+    except ImportError:
+        logger.error("ldap3 library not available. Cannot update Active Directory.")
+        return False
+    except Exception as e:
+        logger.error(f"Error updating Active Directory: {str(e)}")
+        return False
+
 @csrf_exempt
 def saml_logout_view(request):
     """

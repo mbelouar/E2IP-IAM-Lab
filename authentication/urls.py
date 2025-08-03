@@ -29,4 +29,7 @@ urlpatterns = [
     path('mfa/backup-codes/', views.generate_backup_codes, name='generate_backup_codes'),
     path('mfa/backup-authenticate/', views.mfa_backup_authenticate, name='mfa_backup_authenticate'),
     path('mfa/delete-credential/<int:credential_id>/', views.delete_credential, name='delete_credential'),
+    
+    # Profile Management
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
 ]
