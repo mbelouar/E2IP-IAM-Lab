@@ -21,6 +21,7 @@ urlpatterns = [
     path('mfa/setup/', views.mfa_setup, name='mfa_setup'),
     path('mfa/enable/', views.mfa_enable, name='mfa_enable'),
     path('mfa/disable/', views.mfa_disable, name='mfa_disable'),
+    path('mfa/toggle/', views.mfa_toggle, name='mfa_toggle'),
     path('mfa/register/begin/', views.mfa_register_begin, name='mfa_register_begin'),
     path('mfa/register/complete/', views.mfa_register_complete, name='mfa_register_complete'),
     path('mfa/challenge/', views.mfa_challenge, name='mfa_challenge'),
@@ -32,4 +33,6 @@ urlpatterns = [
     
     # Profile Management
     path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('profile/change-password/', views.change_password, name='change_password'),
+    path('activities/', views.view_all_activities, name='view_all_activities'),
 ]

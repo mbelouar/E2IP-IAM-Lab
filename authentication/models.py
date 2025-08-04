@@ -166,3 +166,124 @@ class MFAAttempt(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.attempt_type} ({'Success' if self.success else 'Failed'})"
+
+class ActivityLog(models.Model):
+    """Log of user activities and actions"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='activity_logs')
+    
+    # Activity details
+    activity_type = models.CharField(max_length=50, choices=[
+        ('login', 'Login'),
+        ('logout', 'Logout'),
+        ('mfa_enabled', 'MFA Enabled'),
+        ('mfa_disabled', 'MFA Disabled'),
+        ('mfa_setup', 'MFA Setup'),
+        ('device_registered', 'Security Device Registered'),
+        ('device_removed', 'Security Device Removed'),
+        ('backup_codes_generated', 'Backup Codes Generated'),
+        ('backup_code_used', 'Backup Code Used'),
+        ('password_changed', 'Password Changed'),
+        ('profile_updated', 'Profile Updated'),
+        ('failed_login', 'Failed Login Attempt'),
+        ('failed_mfa', 'Failed MFA Attempt'),
+        ('session_started', 'Session Started'),
+        ('session_ended', 'Session Ended'),
+    ])
+    
+    description = models.TextField()
+    details = models.JSONField(default=dict, blank=True)  # Additional activity details
+    
+    # Request context
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(blank=True)
+    session_id = models.CharField(max_length=40, blank=True)
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', 'created_at']),
+            models.Index(fields=['activity_type', 'created_at']),
+            models.Index(fields=['ip_address', 'created_at']),
+        ]
+        verbose_name = 'Activity Log'
+        verbose_name_plural = 'Activity Logs'
+
+    def __str__(self):
+        return f"{self.user.username} - {self.get_activity_type_display()} ({self.created_at.strftime('%Y-%m-%d %H:%M')})"
+
+    @classmethod
+    def log_activity(cls, user, activity_type, description, **kwargs):
+        """Convenience method to log an activity"""
+        return cls.objects.create(
+            user=user,
+            activity_type=activity_type,
+            description=description,
+            details=kwargs.get('details', {}),
+            ip_address=kwargs.get('ip_address'),
+            user_agent=kwargs.get('user_agent'),
+            session_id=kwargs.get('session_id')
+        )
+
+    def get_icon_class(self):
+        """Get FontAwesome icon class for the activity type"""
+        icon_map = {
+            'login': 'fas fa-sign-in-alt',
+            'logout': 'fas fa-sign-out-alt',
+            'mfa_enabled': 'fas fa-shield-alt',
+            'mfa_disabled': 'fas fa-shield-alt',
+            'mfa_setup': 'fas fa-mobile-alt',
+            'device_registered': 'fas fa-key',
+            'device_removed': 'fas fa-trash',
+            'backup_codes_generated': 'fas fa-download',
+            'backup_code_used': 'fas fa-key',
+            'password_changed': 'fas fa-lock',
+            'profile_updated': 'fas fa-user-edit',
+            'failed_login': 'fas fa-exclamation-triangle',
+            'failed_mfa': 'fas fa-exclamation-triangle',
+            'session_started': 'fas fa-play',
+            'session_ended': 'fas fa-stop',
+        }
+        return icon_map.get(self.activity_type, 'fas fa-info-circle')
+
+    def get_status_class(self):
+        """Get CSS class for activity status"""
+        status_map = {
+            'login': 'success',
+            'logout': 'info',
+            'mfa_enabled': 'success',
+            'mfa_disabled': 'warning',
+            'mfa_setup': 'success',
+            'device_registered': 'success',
+            'device_removed': 'warning',
+            'backup_codes_generated': 'success',
+            'backup_code_used': 'info',
+            'password_changed': 'success',
+            'profile_updated': 'info',
+            'failed_login': 'error',
+            'failed_mfa': 'error',
+            'session_started': 'success',
+            'session_ended': 'info',
+        }
+        return status_map.get(self.activity_type, 'info')
+
+    def get_time_ago(self):
+        """Get human-readable time ago string"""
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        now = timezone.now()
+        diff = now - self.created_at
+        
+        if diff.days > 0:
+            return f"{diff.days} day{'s' if diff.days != 1 else ''} ago"
+        elif diff.seconds >= 3600:
+            hours = diff.seconds // 3600
+            return f"{hours} hour{'s' if hours != 1 else ''} ago"
+        elif diff.seconds >= 60:
+            minutes = diff.seconds // 60
+            return f"{minutes} minute{'s' if minutes != 1 else ''} ago"
+        else:
+            return "Just now"

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
@@ -24,7 +24,8 @@ from .models import (
     WebAuthnCredential, 
     MFABackupCode, 
     MFAChallenge, 
-    MFAAttempt
+    MFAAttempt,
+    ActivityLog
 )
 
 # WebAuthn imports
@@ -80,11 +81,15 @@ def home(request):
     mfa_enabled = mfa_preference.mfa_enabled if mfa_preference else False
     webauthn_credentials = request.user.webauthn_credentials.filter(is_active=True).count()
 
+    # Get recent activities (last 3 for home page)
+    recent_activities = request.user.activity_logs.all()[:3]
+
     context = {
         'saml_attributes': saml_attributes,
         'user_groups': user_groups,
         'mfa_enabled': mfa_enabled,
         'webauthn_credentials_count': webauthn_credentials,
+        'recent_activities': recent_activities,
     }
     return render(request, 'authentication/home.html', context)
 
@@ -114,6 +119,17 @@ def login_view(request):
             else:
                 # Standard login without MFA
                 login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                
+                # Log successful login
+                ActivityLog.log_activity(
+                    user=user,
+                    activity_type='login',
+                    description='User logged in successfully',
+                    ip_address=get_client_ip(request),
+                    user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                    session_id=request.session.session_key,
+                    details={'remember_me': remember_me, 'mfa_required': False}
+                )
             
             # Set session expiry based on remember me
             if not remember_me:
@@ -172,6 +188,68 @@ def mfa_disable(request):
     
     messages.warning(request, "Multi-Factor Authentication has been disabled for your account.")
     return redirect('authentication:mfa_setup')
+
+@login_required
+@require_POST
+def mfa_toggle(request):
+    """Toggle MFA status via AJAX"""
+    try:
+        preference, created = UserMFAPreference.objects.get_or_create(user=request.user)
+        
+        if preference.mfa_enabled:
+            # Disable MFA
+            preference.mfa_enabled = False
+            preference.save()
+            
+            # Log the activity
+            ActivityLog.log_activity(
+                user=request.user,
+                activity_type='mfa_disabled',
+                description='Multi-Factor Authentication was disabled',
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                session_id=request.session.session_key
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'mfa_enabled': False,
+                'message': 'Multi-Factor Authentication has been disabled.'
+            })
+        else:
+            # Enable MFA - check if user has credentials
+            if not request.user.webauthn_credentials.filter(is_active=True).exists():
+                return JsonResponse({
+                    'success': False,
+                    'error': 'You must register at least one security key before enabling MFA.',
+                    'redirect_url': reverse('authentication:mfa_setup')
+                }, status=400)
+            
+            preference.mfa_enabled = True
+            preference.save()
+            
+            # Log the activity
+            ActivityLog.log_activity(
+                user=request.user,
+                activity_type='mfa_enabled',
+                description='Multi-Factor Authentication was enabled',
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                session_id=request.session.session_key
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'mfa_enabled': True,
+                'message': 'Multi-Factor Authentication has been enabled.'
+            })
+            
+    except Exception as e:
+        logger.error(f"Error toggling MFA: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': 'An error occurred while updating MFA settings.'
+        }, status=500)
 
 @login_required
 def mfa_register_begin(request):
@@ -318,6 +396,17 @@ def mfa_register_complete(request):
                 success=True,
                 ip_address=get_client_ip(request),
                 user_agent=request.META.get('HTTP_USER_AGENT', '')
+            )
+            
+            # Log activity
+            ActivityLog.log_activity(
+                user=request.user,
+                activity_type='device_registered',
+                description=f'Security device "{device_name}" was registered',
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                session_id=request.session.session_key,
+                details={'device_name': device_name, 'device_type': webauthn_credential.device_type}
             )
             
             # Clear session data
@@ -679,6 +768,17 @@ def mfa_authenticate_complete(request):
             # Log the user in
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             
+            # Log activity
+            ActivityLog.log_activity(
+                user=user,
+                activity_type='login',
+                description='User logged in successfully with MFA',
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                session_id=request.session.session_key,
+                details={'remember_me': request.session.get('mfa_remember_me', False), 'mfa_required': True, 'device_name': webauthn_credential.device_name if webauthn_credential else 'Unknown'}
+            )
+            
             # Set session expiry based on remember me
             remember_me = request.session.get('mfa_remember_me', False)
             if not remember_me:
@@ -735,6 +835,17 @@ def generate_backup_codes(request):
     if request.method == 'POST':
         # Generate new backup codes
         codes = MFABackupCode.generate_codes_for_user(request.user)
+        
+        # Log activity
+        ActivityLog.log_activity(
+            user=request.user,
+            activity_type='backup_codes_generated',
+            description='New backup codes were generated',
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+            session_id=request.session.session_key,
+            details={'codes_count': len(codes)}
+        )
         
         messages.success(request, 
             "New backup codes have been generated. Please save them in a secure location. "
@@ -799,6 +910,17 @@ def mfa_backup_authenticate(request):
             user_agent=request.META.get('HTTP_USER_AGENT', '')
         )
         
+        # Log activity
+        ActivityLog.log_activity(
+            user=user,
+            activity_type='backup_code_used',
+            description='Backup code was used for authentication',
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+            session_id=request.session.session_key,
+            details={'code_used': backup_code}
+        )
+        
         # Log the user in
         login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         
@@ -834,10 +956,22 @@ def delete_credential(request, credential_id):
             is_active=True
         )
         
+        device_name = credential.device_name
         credential.is_active = False
         credential.save()
         
-        messages.success(request, f"Security key '{credential.device_name}' has been removed.")
+        # Log activity
+        ActivityLog.log_activity(
+            user=request.user,
+            activity_type='device_removed',
+            description=f'Security device "{device_name}" was removed',
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+            session_id=request.session.session_key,
+            details={'device_name': device_name, 'device_type': credential.device_type}
+        )
+        
+        messages.success(request, f"Security key '{device_name}' has been removed.")
         
     except WebAuthnCredential.DoesNotExist:
         messages.error(request, "Security key not found.")
@@ -847,6 +981,17 @@ def delete_credential(request, credential_id):
 # Keep all existing views below (SAML, logout, etc.)
 def logout_view(request):
     """View for user logout - aggressive session and cache clearing with SAML SLO"""
+    # Log logout activity if user is authenticated
+    if request.user.is_authenticated:
+        ActivityLog.log_activity(
+            user=request.user,
+            activity_type='logout',
+            description='User logged out',
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+            session_id=request.session.session_key
+        )
+    
     was_saml_authenticated = request.session.get('saml_authenticated', False)
     saml_name_id = request.session.get('saml_name_id', None)
     
@@ -1965,6 +2110,22 @@ def edit_profile(request):
             # Update Active Directory with display name and individual names
             success = update_ad_user_info(user.username, display_name, first_name, last_name)
             
+            # Log the profile update activity
+            ActivityLog.log_activity(
+                user=request.user,
+                activity_type='profile_updated',
+                description=f'Profile updated: {first_name} {last_name}',
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                session_id=request.session.session_key,
+                details={
+                    'display_name': display_name,
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'ad_update_success': success
+                }
+            )
+            
             if success:
                 messages.success(request, 'Profile updated successfully!')
             else:
@@ -2172,4 +2333,73 @@ def saml_logout_view(request):
         # Force logout anyway
         logout(request)
         return redirect('authentication:login')
-        return redirect('authentication:login')
+
+@login_required
+def change_password(request):
+    """View for changing user password"""
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        
+        # Validate input
+        if not current_password or not new_password or not confirm_password:
+            messages.error(request, 'All fields are required.')
+            return redirect('authentication:change_password')
+        
+        # Check if new password matches confirmation
+        if new_password != confirm_password:
+            messages.error(request, 'New password and confirmation password do not match.')
+            return redirect('authentication:change_password')
+        
+        # Validate current password
+        if not request.user.check_password(current_password):
+            messages.error(request, 'Current password is incorrect.')
+            return redirect('authentication:change_password')
+        
+        # Validate new password strength
+        if len(new_password) < 8:
+            messages.error(request, 'New password must be at least 8 characters long.')
+            return redirect('authentication:change_password')
+        
+        try:
+            # Update password
+            request.user.set_password(new_password)
+            request.user.save()
+            
+            # Update session to prevent logout
+            update_session_auth_hash(request, request.user)
+            
+            # Log the password change activity
+            ActivityLog.log_activity(
+                user=request.user,
+                activity_type='password_changed',
+                description='Password was changed successfully',
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                session_id=request.session.session_key,
+                details={'password_changed_at': str(timezone.now())}
+            )
+            
+            messages.success(request, 'Password changed successfully!')
+            return redirect('authentication:home')
+            
+        except Exception as e:
+            logger.error(f"Error changing password for user {request.user.username}: {str(e)}")
+            messages.error(request, 'An error occurred while changing your password.')
+            return redirect('authentication:change_password')
+    
+    # GET request - show the form
+    return render(request, 'authentication/change_password.html')
+
+@login_required
+def view_all_activities(request):
+    """View for displaying all recent activities"""
+    # Get last 10 activities
+    activities = request.user.activity_logs.all()[:10]
+    
+    context = {
+        'activities': activities,
+        'total_activities': request.user.activity_logs.count(),
+    }
+    return render(request, 'authentication/view_all_activities.html', context)

@@ -642,20 +642,28 @@
             font-size: 0.9rem;
         }
 
-        /* Dashboard Container */
-        .dashboard-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2.5rem;
+        /* Dashboard Grid Layout */
+        .dashboard-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
             margin-top: 3rem;
             margin-bottom: 2rem;
         }
 
-        .dashboard-left,
-        .dashboard-right {
-            display: flex;
-            flex-direction: column;
-            gap: 2.5rem;
+        .dashboard-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        /* Responsive grid */
+        @media (max-width: 1024px) {
+            .dashboard-row {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
         }
 
         /* Dashboard Cards */
@@ -1339,6 +1347,260 @@
         .admin-action:hover {
             transform: translateX(4px) scale(1.02);
         }
+
+        /* Settings Modal Styles */
+        .settings-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .settings-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .settings-modal-content {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95));
+            backdrop-filter: blur(30px);
+            border-radius: 24px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.25),
+                0 0 0 1px rgba(255, 255, 255, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        /* Dark mode styles for settings modal */
+        body.dark-mode .settings-modal-content {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.95));
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(71, 85, 105, 0.3),
+                inset 0 1px 0 rgba(148, 163, 184, 0.1);
+        }
+
+        .settings-modal.active .settings-modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 2rem 2rem 1rem 2rem;
+            border-bottom: 1px solid rgba(0, 102, 204, 0.1);
+        }
+
+        .settings-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .settings-header h3 i {
+            color: #0066cc;
+        }
+
+        /* Dark mode styles for settings header */
+        body.dark-mode .settings-header h3 {
+            color: #f8fafc;
+        }
+
+        body.dark-mode .settings-header {
+            border-bottom-color: rgba(71, 85, 105, 0.3);
+        }
+
+        .settings-content {
+            padding: 2rem;
+        }
+
+        .settings-section {
+            margin-bottom: 2rem;
+        }
+
+        .settings-section h4 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .settings-section h4 i {
+            color: #0066cc;
+        }
+
+        /* Dark mode styles for settings sections */
+        body.dark-mode .settings-section h4 {
+            color: #e2e8f0;
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 16px;
+            border: 1px solid rgba(0, 102, 204, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .setting-item:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 102, 204, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.1);
+        }
+
+        /* Dark mode styles for setting items */
+        body.dark-mode .setting-item {
+            background: rgba(30, 41, 59, 0.7);
+            border-color: rgba(71, 85, 105, 0.3);
+        }
+
+        body.dark-mode .setting-item:hover {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(100, 116, 139, 0.4);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .setting-info {
+            flex: 1;
+            margin-right: 1rem;
+        }
+
+        .setting-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .setting-description {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            line-height: 1.4;
+        }
+
+        /* Dark mode styles for setting text */
+        body.dark-mode .setting-title {
+            color: #f8fafc;
+        }
+
+        body.dark-mode .setting-description {
+            color: #94a3b8;
+        }
+
+        .setting-control {
+            flex-shrink: 0;
+        }
+
+        /* Toggle Switch Styles */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 32px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #e5e7eb;
+            transition: 0.3s ease;
+            border-radius: 32px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 4px;
+            bottom: 4px;
+            background: white;
+            transition: 0.3s ease;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(0, 102, 204, 0.2);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(28px);
+        }
+
+        .toggle-switch input:disabled + .toggle-slider {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .toggle-switch input:disabled + .toggle-slider:before {
+            opacity: 0.6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .settings-modal-content {
+                width: 95%;
+                margin: 1rem;
+            }
+
+            .settings-header,
+            .settings-content {
+                padding: 1.5rem;
+            }
+
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .setting-control {
+                align-self: flex-end;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1456,44 +1718,159 @@
                 </div>
                 <span>Apps</span>
             </div>
-            <div class="action-item" onclick="navigateTo('settings')">
+            <div class="action-item" onclick="openSettingsModal()">
                 <div class="action-icon">
                     <i class="fas fa-cog"></i>
-                        </div>
+                </div>
                 <span>Settings</span>
-                    </div>
+            </div>
                 </div>
 
         <!-- Main Dashboard Grid -->
-        <div class="dashboard-container">
-            <!-- Left Column -->
-            <div class="dashboard-left">
+        <div class="dashboard-grid">
+            <!-- Top Row -->
+            <div class="dashboard-row">
+                <!-- Recent Activity -->
+                <div class="dashboard-card activity-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                        <a href="{% url 'authentication:view_all_activities' %}" class="card-action">View All</a>
+                    </div>
+                    <div class="activity-list">
+                        {% if recent_activities %}
+                            {% for activity in recent_activities %}
+                            <div class="activity-item">
+                                <div class="activity-icon {{ activity.get_status_class }}">
+                                    <i class="{{ activity.get_icon_class }}"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">{{ activity.description }}</div>
+                                    <div class="activity-time">{{ activity.get_time_ago }}</div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="activity-item">
+                                <div class="activity-icon info">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">No recent activity</div>
+                                    <div class="activity-time">Your activity will appear here</div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="dashboard-card quick-access-card" id="quick-actions-section">
+                <div class="card-header">
+                        <h3><i class="fas fa-rocket"></i> Quick Actions</h3>
+                </div>
+                    <div class="quick-actions-grid">
+                        <a href="{% url 'authentication:edit_profile' %}" class="quick-action-item">
+                            <div class="quick-action-icon">
+                            <i class="fas fa-user-edit"></i>
+                        </div>
+                        <span>Edit Profile</span>
+                    </a>
+                                                <a href="{% url 'authentication:change_password' %}" class="quick-action-item">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-lock"></i>
+                        </div>
+                        <span>Change Password</span>
+                    </a>
+                        <a href="{% url 'authentication:mfa_setup' %}" class="quick-action-item">
+                            <div class="quick-action-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <span>{% if mfa_enabled %}MFA Settings{% else %}Setup MFA{% endif %}</span>
+                    </a>
+                        <a href="{% url 'authentication:generate_backup_codes' %}" class="quick-action-item">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-download"></i>
+                </div>
+                            <span>Backup Codes</span>
+                        </a>
+                </div>
+            </div>
+            </div>
+
+            <!-- Bottom Row -->
+            <div class="dashboard-row">
+                <!-- Applications -->
+                <div class="dashboard-card apps-card" id="applications-section">
+                    <div class="card-header">
+                        <h3><i class="fas fa-th-large"></i> Your Applications</h3>
+                        <a href="#" class="card-action">Manage</a>
+                    </div>
+                    <div class="apps-grid">
+                        <a href="#" class="app-item">
+                            <div class="app-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <span>Mail</span>
+                        </a>
+                        <a href="#" class="app-item">
+                            <div class="app-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <span>Calendar</span>
+                        </a>
+                        <a href="#" class="app-item">
+                            <div class="app-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <span>Documents</span>
+                        </a>
+                        <a href="#" class="app-item">
+                            <div class="app-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <span>Teams</span>
+                        </a>
+                        <a href="#" class="app-item">
+                            <div class="app-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <span>Analytics</span>
+                        </a>
+                        <a href="#" class="app-item add-app">
+                            <div class="app-icon">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <span>Add App</span>
+                        </a>
+                                    </div>
+            </div>
+
                 <!-- Security Overview -->
                 <div class="dashboard-card security-card">
                     <div class="card-header">
                         <h3><i class="fas fa-shield-alt"></i> Security Overview</h3>
                         <a href="{% url 'authentication:mfa_setup' %}" class="card-action">
                             {% if mfa_enabled %}Manage{% else %}Setup{% endif %}
-                    </a>
-                </div>
+                        </a>
+                    </div>
                     <div class="security-grid">
                         <div class="security-item">
                             <div class="security-icon {% if mfa_enabled %}active{% else %}inactive{% endif %}">
                                 <i class="fas fa-mobile-alt"></i>
-            </div>
+                            </div>
                             <div class="security-info">
                                 <div class="security-label">Multi-Factor Auth</div>
                                 <div class="security-status">{% if mfa_enabled %}Enabled{% else %}Not Setup{% endif %}</div>
-                </div>
-                    </div>
+                            </div>
+                        </div>
                         <div class="security-item">
                             <div class="security-icon {% if webauthn_credentials_count > 0 %}active{% else %}inactive{% endif %}">
                                 <i class="fas fa-key"></i>
-                </div>
+                            </div>
                             <div class="security-info">
                                 <div class="security-label">Security Keys</div>
                                 <div class="security-status">{{ webauthn_credentials_count }} registered</div>
-            </div>
+                            </div>
                         </div>
                         <div class="security-item">
                             <div class="security-icon active">
@@ -1505,151 +1882,32 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
         </div>
 
-            <!-- Recent Activity -->
-                <div class="dashboard-card activity-card">
-                <div class="card-header">
-                    <h3><i class="fas fa-history"></i> Recent Activity</h3>
-                        <a href="#" class="card-action">View All</a>
-                </div>
-                <div class="activity-list">
-                    <div class="activity-item">
-                        <div class="activity-icon success">
-                            <i class="fas fa-sign-in-alt"></i>
-                        </div>
-                            <div class="activity-content">
-                            <div class="activity-title">Successful Login</div>
-                            <div class="activity-time">Just now</div>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon info">
-                            <i class="fas fa-key"></i>
-                        </div>
-                            <div class="activity-content">
-                            <div class="activity-title">Password Updated</div>
-                            <div class="activity-time">2 hours ago</div>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon warning">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                            <div class="activity-content">
-                            <div class="activity-title">Failed Login Attempt</div>
-                            <div class="activity-time">Yesterday</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        {% if user.is_staff %}
+        <!-- Admin Panel - Full Width -->
+        <div class="dashboard-card admin-card">
+            <div class="card-header">
+                <h3><i class="fas fa-crown"></i> Admin Panel</h3>
             </div>
-
-            <!-- Right Column -->
-            <div class="dashboard-right">
-            <!-- Quick Access -->
-                <div class="dashboard-card quick-access-card" id="quick-actions-section">
-                <div class="card-header">
-                        <h3><i class="fas fa-rocket"></i> Quick Actions</h3>
-                </div>
-                    <div class="quick-actions-grid">
-                        <a href="#" class="quick-action-item">
-                            <div class="quick-action-icon">
-                            <i class="fas fa-user-edit"></i>
-                        </div>
-                        <span>Edit Profile</span>
-                    </a>
-                        <a href="#" class="quick-action-item">
-                            <div class="quick-action-icon">
-                            <i class="fas fa-lock"></i>
-                        </div>
-                        <span>Change Password</span>
-                    </a>
-                        <a href="{% url 'authentication:mfa_setup' %}" class="quick-action-item">
-                            <div class="quick-action-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <span>{% if mfa_enabled %}MFA Settings{% else %}Setup MFA{% endif %}</span>
-                    </a>
-                        <a href="#" class="quick-action-item">
-                            <div class="quick-action-icon">
-                                <i class="fas fa-download"></i>
-                </div>
-                            <span>Backup Codes</span>
-                        </a>
-                </div>
-            </div>
-
-                <!-- Applications -->
-            <div class="dashboard-card apps-card" id="applications-section">
-                <div class="card-header">
-                    <h3><i class="fas fa-th-large"></i> Your Applications</h3>
-                        <a href="#" class="card-action">Manage</a>
-                </div>
-                <div class="apps-grid">
-                    <a href="#" class="app-item">
-                        <div class="app-icon">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <span>Mail</span>
-                    </a>
-                    <a href="#" class="app-item">
-                        <div class="app-icon">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                        <span>Calendar</span>
-                    </a>
-                    <a href="#" class="app-item">
-                        <div class="app-icon">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <span>Documents</span>
-                    </a>
-                    <a href="#" class="app-item">
-                        <div class="app-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <span>Teams</span>
-                    </a>
-                    <a href="#" class="app-item">
-                        <div class="app-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <span>Analytics</span>
-                    </a>
-                        <a href="#" class="app-item add-app">
-                        <div class="app-icon">
-                            <i class="fas fa-plus"></i>
-                        </div>
-                        <span>Add App</span>
-                    </a>
-                </div>
-            </div>
-
-                {% if user.is_staff %}
-                <!-- Admin Panel -->
-                <div class="dashboard-card admin-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-crown"></i> Admin Panel</h3>
-        </div>
-                    <div class="admin-actions">
-                        <a href="{% url 'admin:index' %}" class="admin-action">
-                            <i class="fas fa-cog"></i>
-                            <span>Dashboard</span>
-                        </a>
-                        <a href="#" class="admin-action">
-                            <i class="fas fa-users"></i>
-                            <span>User Management</span>
-                        </a>
-                        <a href="#" class="admin-action">
-                            <i class="fas fa-server"></i>
-                            <span>System Status</span>
-                        </a>
-                    </div>
-                </div>
-                {% endif %}
+            <div class="admin-actions">
+                <a href="{% url 'admin:index' %}" class="admin-action">
+                    <i class="fas fa-cog"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="admin-action">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="#" class="admin-action">
+                    <i class="fas fa-server"></i>
+                    <span>System Status</span>
+                </a>
             </div>
         </div>
+        {% endif %}
 
         {% if request.session.saml_attributes %}
         <!-- SAML Identity Information -->
@@ -1813,7 +2071,7 @@
                     </div>
                 </a>
                 
-                <a href="#" class="profile-action">
+                <a href="{% url 'authentication:change_password' %}" class="profile-action">
                     <div class="action-icon">
                         <i class="fas fa-lock"></i>
                     </div>
@@ -1833,7 +2091,7 @@
                     </div>
                 </a>
                 
-                <a href="#" class="profile-action">
+                <a href="{% url 'authentication:generate_backup_codes' %}" class="profile-action">
                     <div class="action-icon">
                         <i class="fas fa-download"></i>
                     </div>
@@ -1852,5 +2110,151 @@
             </div>
         </div>
     </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="settings-modal">
+        <div class="settings-modal-content">
+            <div class="settings-header">
+                <h3><i class="fas fa-cog"></i> Settings</h3>
+                <button class="close-btn" onclick="closeSettingsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="settings-content">
+                <div class="settings-section">
+                    <h4><i class="fas fa-shield-alt"></i> Security Settings</h4>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Multi-Factor Authentication</div>
+                            <div class="setting-description">
+                                {% if mfa_enabled %}
+                                    Enhanced security is enabled for your account
+                                {% else %}
+                                    Add an extra layer of security to your account
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="mfa-toggle" {% if mfa_enabled %}checked{% endif %} onchange="toggleMFA()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% csrf_token %}
+    <script>
+        // Settings Modal Functions
+        function openSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // MFA Toggle Function
+        function toggleMFA() {
+            const toggle = document.getElementById('mfa-toggle');
+            const isEnabled = toggle.checked;
+            
+            // Show loading state
+            toggle.disabled = true;
+            
+            fetch('{% url "authentication:mfa_toggle" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update toggle state
+                    toggle.checked = data.mfa_enabled;
+                    
+                    // Show success message
+                    showToast(data.message, 'success');
+                    
+                    // Update the description
+                    const description = document.querySelector('.setting-description');
+                    if (data.mfa_enabled) {
+                        description.textContent = 'Enhanced security is enabled for your account';
+                    } else {
+                        description.textContent = 'Add an extra layer of security to your account';
+                    }
+                    
+                    // Update welcome container MFA badge
+                    const welcomeMfaBadge = document.querySelector('.security-status .status-badge span');
+                    if (welcomeMfaBadge) {
+                        welcomeMfaBadge.textContent = data.mfa_enabled ? 'MFA Active' : 'Setup MFA';
+                    }
+                    
+                    // Update welcome container badge classes
+                    const welcomeMfaBadgeContainer = document.querySelector('.security-status .status-badge');
+                    if (welcomeMfaBadgeContainer) {
+                        welcomeMfaBadgeContainer.classList.toggle('secure', data.mfa_enabled);
+                        welcomeMfaBadgeContainer.classList.toggle('warning', !data.mfa_enabled);
+                    }
+                    
+                    // Update security overview card MFA status (first security item)
+                    const securityOverviewMfaStatus = document.querySelector('.security-card .security-item:first-child .security-status');
+                    if (securityOverviewMfaStatus) {
+                        securityOverviewMfaStatus.textContent = data.mfa_enabled ? 'Enabled' : 'Not Setup';
+                    }
+                    
+                    // Update security overview card MFA icon (first security item)
+                    const securityOverviewMfaIcon = document.querySelector('.security-card .security-item:first-child .security-icon');
+                    if (securityOverviewMfaIcon) {
+                        securityOverviewMfaIcon.classList.toggle('active', data.mfa_enabled);
+                        securityOverviewMfaIcon.classList.toggle('inactive', !data.mfa_enabled);
+                    }
+                } else {
+                    // Revert toggle state
+                    toggle.checked = !isEnabled;
+                    
+                    if (data.redirect_url) {
+                        showToast(data.error, 'error');
+                        setTimeout(() => {
+                            window.location.href = data.redirect_url;
+                        }, 2000);
+                    } else {
+                        showToast(data.error, 'error');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                toggle.checked = !isEnabled;
+                showToast('An error occurred while updating MFA settings.', 'error');
+            })
+            .finally(() => {
+                toggle.disabled = false;
+            });
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('settings-modal');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeSettingsModal();
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
