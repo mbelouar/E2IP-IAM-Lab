@@ -153,14 +153,9 @@ def mfa_setup(request):
     preference, created = UserMFAPreference.objects.get_or_create(user=request.user)
     credentials = request.user.webauthn_credentials.filter(is_active=True)
     
-    # Get TOTP devices
-    from .models import TOTPDevice
-    totp_devices = request.user.totp_devices.filter(is_active=True)
-    
     context = {
         'mfa_enabled': preference.mfa_enabled,
         'credentials': credentials,
-        'totp_devices': totp_devices,
         'backup_codes_generated': preference.backup_codes_generated,
         'webauthn_available': WEBAUTHN_AVAILABLE,
     }
@@ -170,16 +165,11 @@ def mfa_setup(request):
 @require_POST
 def mfa_enable(request):
     """Enable MFA for user"""
-    from .models import TOTPDevice
-    
     preference, created = UserMFAPreference.objects.get_or_create(user=request.user)
     
-    # Check if user has at least one active credential (WebAuthn or TOTP)
-    has_webauthn = request.user.webauthn_credentials.filter(is_active=True).exists()
-    has_totp = request.user.totp_devices.filter(is_active=True, confirmed=True).exists()
-    
-    if not has_webauthn and not has_totp:
-        messages.error(request, "You must register at least one security key or authenticator app before enabling MFA.")
+    # Check if user has at least one active credential
+    if not request.user.webauthn_credentials.filter(is_active=True).exists():
+        messages.error(request, "You must register at least one security key before enabling MFA.")
         return redirect('authentication:mfa_setup')
     
     preference.mfa_enabled = True
@@ -204,8 +194,6 @@ def mfa_disable(request):
 def mfa_toggle(request):
     """Toggle MFA status via AJAX"""
     try:
-        from .models import TOTPDevice
-        
         preference, created = UserMFAPreference.objects.get_or_create(user=request.user)
         
         if preference.mfa_enabled:
@@ -230,13 +218,10 @@ def mfa_toggle(request):
             })
         else:
             # Enable MFA - check if user has credentials
-            has_webauthn = request.user.webauthn_credentials.filter(is_active=True).exists()
-            has_totp = request.user.totp_devices.filter(is_active=True, confirmed=True).exists()
-            
-            if not has_webauthn and not has_totp:
+            if not request.user.webauthn_credentials.filter(is_active=True).exists():
                 return JsonResponse({
                     'success': False,
-                    'error': 'You must register at least one security key or authenticator app before enabling MFA.',
+                    'error': 'You must register at least one security key before enabling MFA.',
                     'redirect_url': reverse('authentication:mfa_setup')
                 }, status=400)
             
@@ -492,14 +477,9 @@ def mfa_challenge(request):
     
     credentials = user.webauthn_credentials.filter(is_active=True)
     
-    # Get TOTP devices
-    from .models import TOTPDevice
-    totp_devices = user.totp_devices.filter(is_active=True, confirmed=True)
-    
     context = {
         'user': user,
         'credentials': credentials,
-        'totp_devices': totp_devices,
         'webauthn_available': WEBAUTHN_AVAILABLE,
     }
     return render(request, 'authentication/mfa_challenge.html', context)
@@ -1172,7 +1152,7 @@ def saml_error_view(request):
     <h2>Troubleshooting Steps:</h2>
     <ol>
         <li>Check ADFS Relying Party Trust configuration</li>
-        <li>Verify Entity ID matches: https://192.168.1.46:8000/saml2/metadata/</li>
+        <li>Verify Entity ID matches: https://192.168.64.1:8000/saml2/metadata/</li>
         <li>Check claim rules in ADFS</li>
         <li>Verify certificates are properly configured</li>
     </ol>
@@ -2423,305 +2403,3 @@ def view_all_activities(request):
         'total_activities': request.user.activity_logs.count(),
     }
     return render(request, 'authentication/view_all_activities.html', context)
-# TOTP (Authenticator App) views
-@login_required
-def totp_setup(request):
-    """Setup TOTP authenticator app"""
-    from .models import TOTPDevice
-    
-    # Check if user already has a TOTP device
-    existing_device = TOTPDevice.objects.filter(user=request.user, is_active=True).first()
-    if existing_device and existing_device.confirmed:
-        messages.info(request, "You already have an authenticator app configured.")
-        return redirect('authentication:mfa_setup')
-    
-    if request.method == 'POST':
-        device_name = request.POST.get('device_name', 'Authenticator App')
-        
-        # Create new TOTP device
-        device = TOTPDevice.create_for_user(request.user, device_name)
-        
-        # Generate QR code
-        qr_code = device.generate_qr_code()
-        
-        # Return JSON response for modal
-        return JsonResponse({
-            'success': True,
-            'device': {
-                'id': device.id,
-                'name': device.name,
-                'user': request.user.username,
-                'secret': device.secret
-            },
-            'qr_code': qr_code
-        })
-    
-    return render(request, 'authentication/totp_setup.html')
-
-@login_required 
-def totp_verify_setup(request):
-    """Verify TOTP setup with a test code"""
-    from .models import TOTPDevice
-    
-    if request.method == 'POST':
-        device_id = request.POST.get('device_id')
-        token = request.POST.get('token', '').strip()
-        
-        if not device_id:
-            return JsonResponse({'error': 'No device ID provided'}, status=400)
-        
-        try:
-            device = TOTPDevice.objects.get(id=device_id, user=request.user)
-        except TOTPDevice.DoesNotExist:
-            return JsonResponse({'error': 'TOTP device not found'}, status=400)
-        
-        if device.verify_token(token):
-            # Confirm the device
-            device.confirm_device()
-            device.update_last_used()
-            
-            # Log activity
-            ActivityLog.log_activity(
-                user=request.user,
-                activity_type='totp_setup',
-                description=f'TOTP authenticator "{device.name}" was set up successfully',
-                ip_address=get_client_ip(request),
-                user_agent=request.META.get('HTTP_USER_AGENT', ''),
-                session_id=request.session.session_key
-            )
-            
-            return JsonResponse({
-                'success': True,
-                'message': f"Authenticator app '{device.name}' has been successfully configured!"
-            })
-        else:
-            return JsonResponse({'error': 'Invalid verification code'}, status=400)
-    
-    # For GET requests (fallback to old behavior)
-    device_id = request.session.get('totp_device_id')
-    if not device_id:
-        messages.error(request, "No TOTP setup session found.")
-        return redirect('authentication:mfa_setup')
-    
-    try:
-        device = TOTPDevice.objects.get(id=device_id, user=request.user)
-    except TOTPDevice.DoesNotExist:
-        messages.error(request, "TOTP device not found.")
-        return redirect('authentication:mfa_setup')
-    
-    context = {
-        'device': device,
-    }
-    return render(request, 'authentication/totp_verify_setup.html', context)
-
-@login_required
-@require_POST 
-def totp_remove(request, device_id):
-    """Remove a TOTP device"""
-    from .models import TOTPDevice
-    
-    try:
-        device = TOTPDevice.objects.get(id=device_id, user=request.user)
-        device_name = device.name
-        device.delete()
-        
-        # Log activity
-        ActivityLog.log_activity(
-            user=request.user,
-            activity_type='totp_removed',
-            description=f'TOTP authenticator "{device_name}" was removed',
-            ip_address=get_client_ip(request),
-            user_agent=request.META.get('HTTP_USER_AGENT', ''),
-            session_id=request.session.session_key
-        )
-        
-        messages.success(request, f"Authenticator app '{device_name}' has been removed.")
-    except TOTPDevice.DoesNotExist:
-        messages.error(request, "TOTP device not found.")
-    
-    return redirect('authentication:mfa_setup')
-
-@login_required
-def totp_challenge(request):
-    """TOTP challenge page during login"""
-    from .models import TOTPDevice
-    
-    # Check if user has TOTP devices
-    totp_devices = TOTPDevice.objects.filter(user=request.user, is_active=True, confirmed=True)
-    if not totp_devices.exists():
-        messages.error(request, "No TOTP devices found.")
-        return redirect('authentication:login')
-    
-    if request.method == 'POST':
-        token = request.POST.get('token', '').strip()
-        
-        # Try to verify with any of the user's TOTP devices
-        for device in totp_devices:
-            if device.verify_token(token):
-                device.update_last_used()
-                
-                # Log successful MFA attempt
-                MFAAttempt.objects.create(
-                    user=request.user,
-                    totp_device=device,
-                    attempt_type='totp',
-                    success=True,
-                    ip_address=get_client_ip(request),
-                    user_agent=request.META.get('HTTP_USER_AGENT', '')
-                )
-                
-                # Mark user as fully authenticated
-                request.session['mfa_verified'] = True
-                request.session['mfa_method'] = 'totp'
-                
-                # Log activity
-                ActivityLog.log_activity(
-                    user=request.user,
-                    activity_type='login',
-                    description=f'Successful login with TOTP authenticator "{device.name}"',
-                    ip_address=get_client_ip(request),
-                    user_agent=request.META.get('HTTP_USER_AGENT', ''),
-                    session_id=request.session.session_key
-                )
-                
-                return redirect('authentication:home')
-        
-        # If we get here, the token was invalid
-        MFAAttempt.objects.create(
-            user=request.user,
-            attempt_type='totp',
-            success=False,
-            error_message='Invalid TOTP token',
-            ip_address=get_client_ip(request),
-            user_agent=request.META.get('HTTP_USER_AGENT', '')
-        )
-        
-        messages.error(request, "Invalid verification code. Please try again.")
-    
-    context = {
-        'totp_devices': totp_devices,
-    }
-    return render(request, 'authentication/totp_challenge.html', context)
-
-@login_required
-def totp_qr_code(request, device_id):
-    """Generate QR code for TOTP device"""
-    from .models import TOTPDevice
-    from django.http import HttpResponse
-    
-    try:
-        device = TOTPDevice.objects.get(id=device_id, user=request.user)
-        qr_code = device.generate_qr_code()
-        
-        # Extract base64 data
-        img_data = qr_code.split(',')[1]
-        img_bytes = base64.b64decode(img_data)
-        
-        response = HttpResponse(img_bytes, content_type='image/png')
-        response['Content-Disposition'] = f'inline; filename="totp-qr-{device.name}.png"'
-        return response
-        
-    except TOTPDevice.DoesNotExist:
-        messages.error(request, "TOTP device not found.")
-        return redirect('authentication:mfa_setup')
-
-@require_POST  
-def mfa_totp_authenticate(request):
-    """Authenticate using TOTP during MFA challenge"""
-    if not request.session.get('mfa_required'):
-        return JsonResponse({'error': 'MFA not required'}, status=400)
-    
-    user_id = request.session.get('mfa_user_id')  
-    if not user_id:
-        return JsonResponse({'error': 'No user for MFA'}, status=400)
-    
-    try:
-        from .models import TOTPDevice
-        
-        data = json.loads(request.body)
-        token = data.get('token', '').strip()
-        
-        if not token:
-            return JsonResponse({'error': 'No TOTP token provided'}, status=400)
-        
-        user = User.objects.get(id=user_id)
-        
-        # Get user's confirmed TOTP devices
-        totp_devices = user.totp_devices.filter(is_active=True, confirmed=True)
-        
-        if not totp_devices.exists():
-            return JsonResponse({'error': 'No TOTP devices found'}, status=400)
-        
-        # Try to verify with any of the user's TOTP devices
-        device_used = None
-        for device in totp_devices:
-            if device.verify_token(token):
-                device.update_last_used()
-                device_used = device
-                break
-        
-        if device_used:
-            # Log successful authentication
-            MFAAttempt.objects.create(
-                user=user,
-                totp_device=device_used,
-                attempt_type='totp',
-                success=True,
-                ip_address=get_client_ip(request),
-                user_agent=request.META.get('HTTP_USER_AGENT', '')
-            )
-            
-            # Log the user in
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            
-            # Log activity
-            ActivityLog.log_activity(
-                user=user,
-                activity_type='login',
-                description='User logged in successfully with TOTP authenticator',
-                ip_address=get_client_ip(request),
-                user_agent=request.META.get('HTTP_USER_AGENT', ''),
-                session_id=request.session.session_key,
-                details={'remember_me': request.session.get('mfa_remember_me', False), 'mfa_required': True, 'device_name': device_used.name}
-            )
-            
-            # Set session expiry based on remember me
-            remember_me = request.session.get('mfa_remember_me', False)
-            if not remember_me:
-                request.session.set_expiry(0)
-            
-            # Clean up MFA session data
-            del request.session['mfa_required']
-            del request.session['mfa_user_id']
-            if 'mfa_remember_me' in request.session:
-                del request.session['mfa_remember_me']
-            
-            return JsonResponse({
-                'success': True,
-                'redirect': reverse('authentication:home'),
-                'message': 'Successfully authenticated with TOTP'
-            })
-        else:
-            # Log failed authentication
-            MFAAttempt.objects.create(
-                user=user,
-                attempt_type='totp',
-                success=False,
-                error_message='Invalid TOTP token',
-                ip_address=get_client_ip(request),
-                user_agent=request.META.get('HTTP_USER_AGENT', '')
-            )
-            
-            return JsonResponse({'error': 'Invalid verification code'}, status=400)
-        
-    except json.JSONDecodeError as e:
-        logger.error(f"JSON decode error: {str(e)}")
-        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
-        
-    except User.DoesNotExist:
-        logger.error(f"User {user_id} does not exist")
-        return JsonResponse({'error': 'User not found'}, status=400)
-        
-    except Exception as e:
-        logger.error(f"Error with TOTP authentication: {str(e)}")
-        return JsonResponse({'error': 'Authentication failed'}, status=500)

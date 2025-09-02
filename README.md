@@ -85,7 +85,7 @@ requirements.txt            # Python dependencies
    make rebuild
    ```
 
-4. Access the application at http://localhost:8000/
+4. Access the application at http://192.168.64.1:8000/
 
 ### Manual Installation (Alternative)
 
@@ -127,13 +127,13 @@ requirements.txt            # Python dependencies
    python manage.py runserver
    ```
 
-7. Access the application at http://127.0.0.1:8000/
+7. Access the application at http://192.168.64.1:8000/
 
 ## Usage
 
-- **ADFS Login**: Visit http://127.0.0.1:8000/login/
-- **Dashboard**: After login, access http://127.0.0.1:8000/
-- **Admin Panel**: Visit http://127.0.0.1:8000/admin/
+- **ADFS Login**: Visit http://192.168.64.1:8000/login/
+- **Dashboard**: After login, access http://192.168.64.1:8000/
+- **Admin Panel**: Visit http://192.168.64.1:8000/admin/
 
 ## ADFS Integration (Planned)
 

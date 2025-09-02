@@ -88,7 +88,7 @@ docker run -p 8000:8000 secureauth:windows
 
 ## Accessing the Application
 
-The application will be available at `http://localhost:8000`
+The application will be available at `http://192.168.64.1:8000`
 
 ## CI/CD Integration
 

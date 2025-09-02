@@ -3,10 +3,6 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 import secrets
 import string
-import pyotp
-import qrcode
-from io import BytesIO
-import base64
 
 class UserMFAPreference(models.Model):
     """User's MFA preferences and settings"""
@@ -55,95 +51,6 @@ class WebAuthnCredential(models.Model):
         """Update the last used timestamp"""
         self.last_used = timezone.now()
         self.save(update_fields=['last_used'])
-
-class TOTPDevice(models.Model):
-    """TOTP (Time-based One-Time Password) device for authenticator apps"""
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='totp_devices')
-    name = models.CharField(max_length=100, default='Authenticator App')
-    secret = models.CharField(max_length=32)  # Base32 encoded secret
-    confirmed = models.BooleanField(default=False)  # Whether the device has been confirmed by the user
-    
-    # Timestamps
-    created_at = models.DateTimeField(auto_now_add=True)
-    last_used = models.DateTimeField(null=True, blank=True)
-    
-    # Security features
-    is_active = models.BooleanField(default=True)
-    
-    class Meta:
-        ordering = ['-created_at']
-        indexes = [
-            models.Index(fields=['user', 'is_active']),
-            models.Index(fields=['user', 'confirmed']),
-        ]
-
-    def __str__(self):
-        return f"{self.user.username} - {self.name} ({'Confirmed' if self.confirmed else 'Unconfirmed'})"
-
-    @classmethod
-    def create_for_user(cls, user, name='Authenticator App'):
-        """Create a new TOTP device for a user"""
-        secret = pyotp.random_base32()
-        device = cls.objects.create(
-            user=user,
-            name=name,
-            secret=secret
-        )
-        return device
-
-    def get_totp(self):
-        """Get TOTP instance for this device"""
-        return pyotp.TOTP(self.secret)
-
-    def verify_token(self, token):
-        """Verify a TOTP token"""
-        totp = self.get_totp()
-        
-        # Allow for clock skew - check current, previous, and next window
-        for window in [-1, 0, 1]:
-            if totp.verify(token, valid_window=window):
-                return True
-        return False
-
-    def generate_qr_code(self, issuer_name='SecureAuth'):
-        """Generate QR code for the TOTP secret"""
-        totp = self.get_totp()
-        provisioning_uri = totp.provisioning_uri(
-            name=self.user.username,
-            issuer_name=issuer_name
-        )
-        
-        # Generate QR code
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=6,
-            border=4,
-        )
-        qr.add_data(provisioning_uri)
-        qr.make(fit=True)
-        
-        # Create image
-        img = qr.make_image(fill_color="black", back_color="white")
-        
-        # Convert to base64 string
-        buffer = BytesIO()
-        img.save(buffer, format='PNG')
-        img_data = buffer.getvalue()
-        buffer.close()
-        
-        img_base64 = base64.b64encode(img_data).decode('utf-8')
-        return f"data:image/png;base64,{img_base64}"
-
-    def update_last_used(self):
-        """Update the last used timestamp"""
-        self.last_used = timezone.now()
-        self.save(update_fields=['last_used'])
-
-    def confirm_device(self):
-        """Mark the device as confirmed"""
-        self.confirmed = True
-        self.save(update_fields=['confirmed'])
 
 class MFABackupCode(models.Model):
     """Backup codes for MFA recovery"""
@@ -201,7 +108,6 @@ class MFAChallenge(models.Model):
     # Challenge metadata
     challenge_type = models.CharField(max_length=20, choices=[
         ('webauthn', 'WebAuthn/FIDO2'),
-        ('totp', 'TOTP'),
         ('backup', 'Backup Code')
     ], default='webauthn')
     
@@ -234,12 +140,10 @@ class MFAAttempt(models.Model):
     """Log of MFA authentication attempts"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mfa_attempts')
     credential = models.ForeignKey(WebAuthnCredential, on_delete=models.SET_NULL, null=True, blank=True)
-    totp_device = models.ForeignKey(TOTPDevice, on_delete=models.SET_NULL, null=True, blank=True)
     
     # Attempt details
     attempt_type = models.CharField(max_length=20, choices=[
         ('webauthn', 'WebAuthn/FIDO2'),
-        ('totp', 'TOTP'),
         ('backup', 'Backup Code'),
         ('registration', 'Device Registration')
     ])
@@ -276,8 +180,6 @@ class ActivityLog(models.Model):
         ('mfa_setup', 'MFA Setup'),
         ('device_registered', 'Security Device Registered'),
         ('device_removed', 'Security Device Removed'),
-        ('totp_setup', 'TOTP Authenticator Setup'),
-        ('totp_removed', 'TOTP Authenticator Removed'),
         ('backup_codes_generated', 'Backup Codes Generated'),
         ('backup_code_used', 'Backup Code Used'),
         ('password_changed', 'Password Changed'),
@@ -335,8 +237,6 @@ class ActivityLog(models.Model):
             'mfa_setup': 'fas fa-mobile-alt',
             'device_registered': 'fas fa-key',
             'device_removed': 'fas fa-trash',
-            'totp_setup': 'fas fa-mobile-alt',
-            'totp_removed': 'fas fa-trash',
             'backup_codes_generated': 'fas fa-download',
             'backup_code_used': 'fas fa-key',
             'password_changed': 'fas fa-lock',
@@ -358,8 +258,6 @@ class ActivityLog(models.Model):
             'mfa_setup': 'success',
             'device_registered': 'success',
             'device_removed': 'warning',
-            'totp_setup': 'success',
-            'totp_removed': 'warning',
             'backup_codes_generated': 'success',
             'backup_code_used': 'info',
             'password_changed': 'success',

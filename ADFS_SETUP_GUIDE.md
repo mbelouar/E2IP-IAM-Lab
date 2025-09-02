@@ -5,7 +5,7 @@
 You're getting this error when clicking "Continue with SSO":
 
 ```
-MSIS7007: The requested relying party trust 'http://192.168.1.46:8000/saml2/metadata/' is unspecified or unsupported.
+MSIS7007: The requested relying party trust 'http://192.168.64.1:8000/saml2/metadata/' is unspecified or unsupported.
 ```
 
 ## Root Cause
@@ -32,7 +32,7 @@ Your Django application isn't configured as a trusted relying party in ADFS.
 1. Select **Import data about the relying party from a file**
 2. Download your app's metadata first:
    ```bash
-   curl -o django_metadata.xml http://192.168.1.46:8000/saml2/metadata/
+   curl -o django_metadata.xml http://192.168.64.1:8000/saml2/metadata/
    ```
 3. Browse and select the downloaded `django_metadata.xml` file
 
@@ -43,9 +43,9 @@ Your Django application isn't configured as a trusted relying party in ADFS.
 3. **Profile**: Select **AD FS profile**
 4. **Certificate**: Skip (not required for testing)
 5. **URL**: Check **Enable support for the SAML 2.0 WebSSO protocol**
-   - Enter: `https://192.168.1.46:8000/custom-saml-acs/`
+   - Enter: `https://192.168.64.1:8000/custom-saml-acs/`
 6. **Identifiers**: Add relying party trust identifier:
-   - `http://192.168.1.46:8000/saml2/metadata/`
+   - `http://192.168.64.1:8000/saml2/metadata/`
 
 ### Step 4: Configure Claim Rules
 
@@ -81,12 +81,12 @@ Your Django application isn't configured as a trusted relying party in ADFS.
 ### 1. Check Relying Party Trust
 
 - Verify the trust appears in ADFS Management
-- Confirm the identifier matches: `http://192.168.1.46:8000/saml2/metadata/`
+- Confirm the identifier matches: `http://192.168.64.1:8000/saml2/metadata/`
 
 ### 2. Test SSO Flow
 
 1. Start your Django app: `./venv/bin/python manage.py runserver 0.0.0.0:8000`
-2. Navigate to: `http://192.168.1.46:8000/login/`
+2. Navigate to: `http://192.168.64.1:8000/login/`
 3. Click **Continue with SSO**
 4. Should redirect to ADFS login page without MSIS7007 error
 
@@ -102,7 +102,7 @@ tail -f django.log
 
 ### If Still Getting MSIS7007:
 
-1. **Double-check Entity ID**: Must exactly match `http://192.168.1.46:8000/saml2/metadata/`
+1. **Double-check Entity ID**: Must exactly match `http://192.168.64.1:8000/saml2/metadata/`
 2. **Restart ADFS Service**:
    ```powershell
    Restart-Service -Name "adfssrv"
@@ -142,9 +142,9 @@ Try different username formats:
 
 Your app is configured with:
 
-- **Entity ID**: `http://192.168.1.46:8000/saml2/metadata/`
-- **ACS URL**: `https://192.168.1.46:8000/custom-saml-acs/`
-- **SLS URL**: `http://192.168.1.46:8000/saml2/ls/`
-- **Metadata URL**: `http://192.168.1.46:8000/saml2/metadata/`
-- **ADFS Server**: `adfs.my-lab.local`
+- **Entity ID**: `http://192.168.64.1:8000/saml2/metadata/`
+- **ACS URL**: `https://192.168.64.1:8000/custom-saml-acs/`
+- **SLS URL**: `http://192.168.64.1:8000/saml2/ls/`
+- **Metadata URL**: `http://192.168.64.1:8000/saml2/metadata/`
+- **ADFS Server**: `192.168.64.3`
 - **ADFS Domain**: `my-lab.local`

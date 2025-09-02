@@ -1310,6 +1310,349 @@
             }
         }
 
+        /* TOTP Modal Styles */
+        .qr-code-section {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .qr-code-container {
+            text-align: center;
+        }
+
+        .qr-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 auto 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .qr-code-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid rgba(0, 102, 204, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .qr-code-wrapper {
+            background: var(--dark-surface-elevated);
+            border-color: rgba(0, 102, 204, 0.2);
+        }
+
+        .manual-entry {
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+
+        .manual-entry summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--primary-blue);
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .manual-entry-content {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0, 102, 204, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 102, 204, 0.1);
+        }
+
+        body.dark-mode .manual-entry-content {
+            background: rgba(0, 102, 204, 0.1);
+            border-color: rgba(0, 102, 204, 0.2);
+        }
+
+        .manual-entry-content p {
+            margin: 0.5rem 0;
+            font-size: 0.875rem;
+        }
+
+        .manual-entry-content code {
+            background: var(--gray-100);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            word-break: break-all;
+        }
+
+        body.dark-mode .manual-entry-content code {
+            background: var(--dark-surface);
+            color: var(--dark-text-primary);
+        }
+
+        .verification-section {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .verification-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 auto 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .verification-help {
+            margin: 1rem 0;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        body.dark-mode .verification-help {
+            color: var(--dark-text-secondary);
+        }
+
+        .verification-help p {
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        #totpVerificationCode {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.25rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Enhanced TOTP Modal Content Spacing */
+        #totpStep1Content,
+        #totpStep2Content,
+        #totpStep3Content {
+            padding: 1rem 2rem 1.5rem;
+        }
+
+        #totpStep1Content .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        #totpStep1Content .form-group label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 1rem;
+            padding-left: 0.25rem;
+        }
+
+        body.dark-mode #totpStep1Content .form-group label {
+            color: var(--dark-text-primary);
+        }
+
+        #totpStep1Content .form-group input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid rgba(66, 133, 244, 0.2);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            box-sizing: border-box;
+        }
+
+        #totpStep1Content .form-group input:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.1);
+            transform: translateY(-1px);
+        }
+
+        body.dark-mode #totpStep1Content .form-group input {
+            background: var(--dark-surface);
+            border-color: var(--dark-border);
+            color: var(--dark-text-primary);
+        }
+
+        /* Enhanced QR Code Section */
+        #totpStep2Content .qr-code-section {
+            padding: 1rem 2rem;
+        }
+
+        #totpStep2Content h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--gray-900);
+        }
+
+        body.dark-mode #totpStep2Content h3 {
+            color: var(--dark-text-primary);
+        }
+
+        #totpStep2Content p {
+            font-size: 1rem;
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        body.dark-mode #totpStep2Content p {
+            color: var(--dark-text-secondary);
+        }
+
+        /* Enhanced Verification Section */
+        #totpStep3Content .verification-section {
+            padding: 1rem 2rem;
+        }
+
+        #totpStep3Content h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--gray-900);
+        }
+
+        body.dark-mode #totpStep3Content h3 {
+            color: var(--dark-text-primary);
+        }
+
+        #totpStep3Content p {
+            font-size: 1rem;
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        body.dark-mode #totpStep3Content p {
+            color: var(--dark-text-secondary);
+        }
+
+        #totpStep3Content .form-group {
+            margin: 2rem 0;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #totpStep3Content .form-group label {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--gray-700);
+        }
+
+        body.dark-mode #totpStep3Content .form-group label {
+            color: var(--dark-text-primary);
+        }
+
+        #totpStep3Content .form-group input {
+            padding: 1rem 1.25rem;
+            border: 2px solid rgba(66, 133, 244, 0.2);
+            border-radius: 12px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5rem;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+
+        #totpStep3Content .form-group input:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* Enhanced Modal Actions */
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            padding: 0 2rem 0.5rem;
+        }
+
+        .modal-actions .btn {
+            padding: 0.875rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            min-width: 130px;
+        }
+
+        .modal-actions .btn-primary {
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+            color: white;
+            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+        }
+
+        .modal-actions .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+        }
+
+        .modal-actions .btn-secondary {
+            background: rgba(66, 133, 244, 0.1);
+            color: #0066cc;
+            border: 2px solid rgba(66, 133, 244, 0.2);
+        }
+
+        .modal-actions .btn-secondary:hover {
+            background: rgba(66, 133, 244, 0.15);
+            transform: translateY(-1px);
+        }
+
+        /* Enhanced Alert Styles for TOTP Modal */
+        #totpStep1Content .alert {
+            margin: 1.5rem 0;
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Loading spinner for QR code generation */
+        .qr-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 2rem;
+        }
+
+        .qr-loading .spinner {
+            width: 40px;
+            height: 40px;
+        }
+
+        .qr-loading p {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        body.dark-mode .qr-loading p {
+            color: var(--dark-text-secondary);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .mfa-container {
@@ -1327,6 +1670,14 @@
             
             .mfa-subtitle {
                 font-size: 0.875rem;
+            }
+
+            .qr-code-wrapper {
+                padding: 0.5rem;
+            }
+
+            .modal-content {
+                width: 95%;
             }
         }
     </style>
@@ -1541,6 +1892,66 @@
             {% endif %}
         </div>
 
+        <!-- TOTP Authenticator Section -->
+        <div class="mfa-section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="section-title">
+                    <h2>Authenticator Apps</h2>
+                    <p>Use Google Authenticator, Authy, or other TOTP apps for authentication</p>
+                </div>
+                <button class="add-key-btn" onclick="showTotpModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Authenticator
+                </button>
+            </div>
+
+            {% if totp_devices %}
+                <div class="credentials-list">
+                    {% for device in totp_devices %}
+                        <div class="credential-item">
+                            <div class="credential-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="credential-info">
+                                <div class="credential-name">{{ device.name }}</div>
+                                <div class="credential-details">
+                                    Added {{ device.created_at|date:"M d, Y" }}
+                                    {% if device.last_used %}
+                                        • Last used {{ device.last_used|timesince }} ago
+                                    {% else %}
+                                        • Never used
+                                    {% endif %}
+                                    {% if device.confirmed %}
+                                        • <span style="color: #10b981;">Confirmed</span>
+                                    {% else %}
+                                        • <span style="color: #f59e0b;">Pending confirmation</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="credential-actions">
+                                <form method="post" action="{% url 'authentication:totp_remove' device.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-small danger" onclick="return confirm('Are you sure you want to remove this authenticator app?')">
+                                        <i class="fas fa-trash"></i>
+                                        Remove
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>No Authenticator Apps Setup</h3>
+                    <p>Add your first authenticator app to get started with TOTP authentication.</p>
+                </div>
+            {% endif %}
+        </div>
+
         <!-- Backup Codes Section -->
         <div class="mfa-section">
             <div class="section-header">
@@ -1661,6 +2072,153 @@
 
                 <div class="modal-actions">
                     <button class="btn btn-primary" onclick="closeModal(); location.reload();">
+                        <i class="fas fa-check"></i>
+                        Perfect!
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add TOTP Authenticator Modal -->
+    <div id="addTotpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h2 class="modal-title">Add Authenticator App</h2>
+                <button class="modal-close" onclick="closeTotpModal()">&times;</button>
+            </div>
+            
+            <!-- Add helpful info box -->
+            <div class="info-box">
+                <div class="info-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <div class="info-content">
+                    <h4>📱 Compatible Apps</h4>
+                    <ul>
+                        <li><strong>Google Authenticator</strong> - Most popular choice</li>
+                        <li><strong>Authy</strong> - Cross-device sync available</li>
+                        <li><strong>Microsoft Authenticator</strong> - Integrates with Microsoft accounts</li>
+                        <li><strong>1Password</strong> - Built into password manager</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="progress-steps">
+                <div class="progress-step active" id="totpStep1">
+                    <div class="step-number">1</div>
+                    <span>Setup</span>
+                </div>
+                <div class="progress-step" id="totpStep2">
+                    <div class="step-number">2</div>
+                    <span>Scan QR</span>
+                </div>
+                <div class="progress-step" id="totpStep3">
+                    <div class="step-number">3</div>
+                    <span>Verify</span>
+                </div>
+            </div>
+
+            <div id="totpStep1Content">
+                <div class="form-group">
+                    <label for="totpDeviceName">Authenticator Name</label>
+                    <input type="text" id="totpDeviceName" placeholder="e.g., My Phone, Work Phone" required>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    Make sure you have an authenticator app installed on your device. We'll generate a QR code for you to scan.
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeTotpModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="startTotpSetup()">
+                        <i class="fas fa-qrcode"></i>
+                        Generate QR Code
+                    </button>
+                </div>
+            </div>
+
+            <div id="totpStep2Content" style="display: none;">
+                <div class="qr-code-section">
+                    <div class="qr-code-container">
+                        <div class="qr-icon">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <h3>Scan QR Code</h3>
+                        <p>Open your authenticator app and scan this QR code:</p>
+                        
+                        <div class="qr-code-wrapper">
+                            <div id="qrCodeDisplay"></div>
+                        </div>
+                        
+                        <div class="manual-entry">
+                            <details>
+                                <summary>Can't scan? Enter manually</summary>
+                                <div class="manual-entry-content">
+                                    <p><strong>Account:</strong> <span id="manualAccount"></span></p>
+                                    <p><strong>Key:</strong> <code id="manualKey"></code></p>
+                                    <button type="button" class="btn-small" onclick="copyManualKey()">
+                                        <i class="fas fa-copy"></i> Copy Key
+                                    </button>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeTotpModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="proceedToVerification()">
+                        <i class="fas fa-check"></i>
+                        I've Added It
+                    </button>
+                </div>
+            </div>
+
+            <div id="totpStep3Content" style="display: none;">
+                <div class="verification-section">
+                    <div class="verification-icon">
+                        <i class="fas fa-shield-check"></i>
+                    </div>
+                    <h3>Verify Setup</h3>
+                    <p>Enter the 6-digit code from your authenticator app to verify the setup:</p>
+                    
+                    <div class="form-group">
+                        <label for="totpVerificationCode">Verification Code</label>
+                        <input type="text" id="totpVerificationCode" placeholder="123456" maxlength="6" pattern="[0-9]{6}" required autocomplete="off">
+                    </div>
+
+                    <div class="verification-help">
+                        <p><i class="fas fa-clock"></i> Code refreshes every 30 seconds</p>
+                        <p><i class="fas fa-info-circle"></i> Enter the current code shown in your app</p>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="goBackToQrCode()">Go Back</button>
+                    <button class="btn btn-primary" onclick="verifyTotpSetup()">
+                        <i class="fas fa-check-circle"></i>
+                        Verify & Complete
+                    </button>
+                </div>
+            </div>
+
+            <!-- Success Step (Hidden initially) -->
+            <div id="totpStep4Content" style="display: none;">
+                <div class="success-content">
+                    <div class="success-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3>Authenticator Added Successfully!</h3>
+                    <p>Your authenticator app has been set up and is ready to use for secure authentication.</p>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="closeTotpModal(); location.reload();">
                         <i class="fas fa-check"></i>
                         Perfect!
                     </button>
@@ -2184,6 +2742,295 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && document.querySelector('.error-modal-overlay')) {
                 closeErrorModal(); // Only close error modal with Escape key
+            }
+        });
+
+        // TOTP Modal Functions
+        let currentTotpDevice = null;
+
+        function showTotpModal() {
+            document.getElementById('addTotpModal').classList.add('show');
+            resetTotpModal();
+        }
+
+        function closeTotpModal() {
+            document.getElementById('addTotpModal').classList.remove('show');
+            // Clean up any pending device if user cancels
+            if (currentTotpDevice && currentTotpDevice.id) {
+                // Optionally clean up unconfirmed device
+                cleanupUnconfirmedDevice(currentTotpDevice.id);
+            }
+            currentTotpDevice = null;
+        }
+
+        function resetTotpModal() {
+            // Reset steps
+            document.querySelectorAll('#addTotpModal .progress-step').forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            document.getElementById('totpStep1').classList.add('active');
+
+            // Show step 1 content
+            document.getElementById('totpStep1Content').style.display = 'block';
+            document.getElementById('totpStep2Content').style.display = 'none';
+            document.getElementById('totpStep3Content').style.display = 'none';
+            document.getElementById('totpStep4Content').style.display = 'none';
+
+            // Clear form
+            document.getElementById('totpDeviceName').value = '';
+            document.getElementById('totpVerificationCode').value = '';
+            
+            // Clear QR code display
+            document.getElementById('qrCodeDisplay').innerHTML = '';
+            document.getElementById('manualAccount').textContent = '';
+            document.getElementById('manualKey').textContent = '';
+        }
+
+        async function startTotpSetup() {
+            const deviceName = document.getElementById('totpDeviceName').value.trim();
+            if (!deviceName) {
+                alert('Please enter a name for your authenticator.');
+                return;
+            }
+
+            // Move to step 2
+            document.getElementById('totpStep1').classList.remove('active');
+            document.getElementById('totpStep1').classList.add('completed');
+            document.getElementById('totpStep2').classList.add('active');
+            document.getElementById('totpStep1Content').style.display = 'none';
+            document.getElementById('totpStep2Content').style.display = 'block';
+
+            // Show loading state
+            document.getElementById('qrCodeDisplay').innerHTML = `
+                <div class="qr-loading">
+                    <div class="spinner"></div>
+                    <p>Generating QR code...</p>
+                </div>
+            `;
+
+            try {
+                // Create TOTP device on server
+                const response = await fetch('{% url "authentication:totp_setup" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: `device_name=${encodeURIComponent(deviceName)}`
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create TOTP device');
+                }
+
+                const data = await response.json();
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Store device info
+                currentTotpDevice = data.device;
+                
+                // Display QR code
+                document.getElementById('qrCodeDisplay').innerHTML = `
+                    <img src="${data.qr_code}" alt="QR Code" style="max-width: 200px; height: auto;" />
+                `;
+                
+                // Set manual entry details
+                document.getElementById('manualAccount').textContent = data.device.user;
+                document.getElementById('manualKey').textContent = data.device.secret;
+
+            } catch (error) {
+                console.error('Error creating TOTP device:', error);
+                alert('Failed to generate QR code: ' + error.message);
+                // Go back to step 1
+                goBackToStep1();
+            }
+        }
+
+        function proceedToVerification() {
+            // Move to step 3
+            document.getElementById('totpStep2').classList.remove('active');
+            document.getElementById('totpStep2').classList.add('completed');
+            document.getElementById('totpStep3').classList.add('active');
+            document.getElementById('totpStep2Content').style.display = 'none';
+            document.getElementById('totpStep3Content').style.display = 'block';
+            
+            // Focus on verification input
+            document.getElementById('totpVerificationCode').focus();
+        }
+
+        function goBackToQrCode() {
+            // Move back to step 2
+            document.getElementById('totpStep3').classList.remove('active');
+            document.getElementById('totpStep2').classList.remove('completed');
+            document.getElementById('totpStep2').classList.add('active');
+            document.getElementById('totpStep3Content').style.display = 'none';
+            document.getElementById('totpStep2Content').style.display = 'block';
+        }
+
+        function goBackToStep1() {
+            // Reset to step 1
+            document.querySelectorAll('#addTotpModal .progress-step').forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            document.getElementById('totpStep1').classList.add('active');
+            
+            document.getElementById('totpStep2Content').style.display = 'none';
+            document.getElementById('totpStep3Content').style.display = 'none';
+            document.getElementById('totpStep1Content').style.display = 'block';
+        }
+
+        async function verifyTotpSetup() {
+            const verificationCode = document.getElementById('totpVerificationCode').value.trim();
+            if (!verificationCode || verificationCode.length !== 6) {
+                alert('Please enter a valid 6-digit code.');
+                return;
+            }
+
+            if (!currentTotpDevice || !currentTotpDevice.id) {
+                alert('No device to verify. Please start over.');
+                resetTotpModal();
+                return;
+            }
+
+            try {
+                // Verify the code
+                const response = await fetch('{% url "authentication:totp_verify_setup" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: `token=${encodeURIComponent(verificationCode)}&device_id=${currentTotpDevice.id}`
+                });
+
+                if (!response.ok) {
+                    throw new Error('Verification failed');
+                }
+
+                const data = await response.json();
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                if (data.success) {
+                    // Move to success step
+                    document.getElementById('totpStep3').classList.remove('active');
+                    document.getElementById('totpStep3').classList.add('completed');
+                    document.getElementById('totpStep3Content').style.display = 'none';
+                    document.getElementById('totpStep4Content').style.display = 'block';
+                } else {
+                    alert('Invalid verification code. Please try again.');
+                    document.getElementById('totpVerificationCode').value = '';
+                    document.getElementById('totpVerificationCode').focus();
+                }
+
+            } catch (error) {
+                console.error('Error verifying TOTP:', error);
+                alert('Verification failed: ' + error.message);
+                document.getElementById('totpVerificationCode').value = '';
+                document.getElementById('totpVerificationCode').focus();
+            }
+        }
+
+        function copyManualKey() {
+            const keyElement = document.getElementById('manualKey');
+            const key = keyElement.textContent;
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(key).then(() => {
+                    // Visual feedback
+                    const button = event.target;
+                    const originalText = button.innerHTML;
+                    button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    button.style.background = '#10b981';
+                    
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.style.background = '';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    fallbackCopyTextToClipboard(key);
+                });
+            } else {
+                fallbackCopyTextToClipboard(key);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    alert('Key copied to clipboard!');
+                } else {
+                    alert('Failed to copy key. Please copy manually: ' + text);
+                }
+            } catch (err) {
+                alert('Failed to copy key. Please copy manually: ' + text);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        async function cleanupUnconfirmedDevice(deviceId) {
+            try {
+                await fetch(`{% url "authentication:totp_remove" 0 %}`.replace('0', deviceId), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                });
+            } catch (error) {
+                console.error('Error cleaning up device:', error);
+            }
+        }
+
+        // Close TOTP modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('addTotpModal').classList.contains('show')) {
+                closeTotpModal();
+            }
+        });
+
+        // Close TOTP modal on background click
+        document.getElementById('addTotpModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeTotpModal();
+            }
+        });
+
+        // Auto-format verification code input
+        document.getElementById('totpVerificationCode').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+            if (value.length > 6) {
+                value = value.substring(0, 6);
+            }
+            e.target.value = value;
+            
+            // Auto-verify when 6 digits entered
+            if (value.length === 6) {
+                // Small delay to let user see the complete code
+                setTimeout(() => {
+                    verifyTotpSetup();
+                }, 500);
+            }
+        });
+
+        // Add ENTER key support for verification
+        document.getElementById('totpVerificationCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyTotpSetup();
             }
         });
     </script>

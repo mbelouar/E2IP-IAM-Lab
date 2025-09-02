@@ -75,7 +75,7 @@ html {
 
 body {
     font-family: var(--font-family-primary);
-    background: linear-gradient(135deg, var(--primary-blue) 0%, #1e3a8a 50%, var(--primary-blue-dark) 100%);
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -124,9 +124,10 @@ body.dark-mode {
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at 30% 30%, rgba(0, 102, 204, 0.4) 0%, transparent 70%),
-                radial-gradient(circle at 70% 70%, rgba(0, 68, 153, 0.4) 0%, transparent 70%);
-    opacity: 0.6;
+    background: radial-gradient(circle at 20% 20%, rgba(0, 0, 0, 0.03) 0%, transparent 60%),
+                radial-gradient(circle at 80% 80%, rgba(0, 0, 0, 0.02) 0%, transparent 60%),
+                radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.01) 0%, transparent 80%);
+    opacity: 0.4;
 }
 
 .floating-elements {

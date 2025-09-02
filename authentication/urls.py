@@ -29,7 +29,15 @@ urlpatterns = [
     path('mfa/authenticate/complete/', views.mfa_authenticate_complete, name='mfa_authenticate_complete'),
     path('mfa/backup-codes/', views.generate_backup_codes, name='generate_backup_codes'),
     path('mfa/backup-authenticate/', views.mfa_backup_authenticate, name='mfa_backup_authenticate'),
+    path('mfa/totp-authenticate/', views.mfa_totp_authenticate, name='mfa_totp_authenticate'),
     path('mfa/delete-credential/<int:credential_id>/', views.delete_credential, name='delete_credential'),
+    
+    # TOTP (Authenticator App) Management
+    path('mfa/totp/setup/', views.totp_setup, name='totp_setup'),
+    path('mfa/totp/verify/', views.totp_verify_setup, name='totp_verify_setup'),
+    path('mfa/totp/remove/<int:device_id>/', views.totp_remove, name='totp_remove'),
+    path('mfa/totp/challenge/', views.totp_challenge, name='totp_challenge'),
+    path('mfa/totp/qr/<int:device_id>/', views.totp_qr_code, name='totp_qr_code'),
     
     # Profile Management
     path('profile/edit/', views.edit_profile, name='edit_profile'),

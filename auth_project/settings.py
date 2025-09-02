@@ -39,7 +39,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '192.168.64.1,127.0.0.1,localhost').split(',')
 
 
 # Application definition
@@ -305,9 +305,9 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 WEBAUTHN_AVAILABLE = True
 try:
     import webauthn
-    WEBAUTHN_RP_ID = os.getenv('WEBAUTHN_RP_ID', 'localhost')  # Should match your domain
+    WEBAUTHN_RP_ID = os.getenv('WEBAUTHN_RP_ID', '192.168.64.1')  # Should match your domain
     WEBAUTHN_RP_NAME = os.getenv('WEBAUTHN_RP_NAME', 'SecureAuth')
-    WEBAUTHN_ORIGIN = os.getenv('WEBAUTHN_ORIGIN', 'https://localhost:8000')  # Default to HTTPS for development
+    WEBAUTHN_ORIGIN = os.getenv('WEBAUTHN_ORIGIN', 'https://192.168.64.1:8000')  # Default to HTTPS for development
     
     # For production, use your actual domain:
     # WEBAUTHN_RP_ID = 'yourdomain.com'
