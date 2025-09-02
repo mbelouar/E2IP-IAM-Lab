@@ -598,6 +598,117 @@
             color: var(--dark-text-primary);
         }
 
+        /* TOTP Form Styles */
+        .totp-form {
+            display: none;
+            margin-top: 1.5rem;
+        }
+
+        .totp-form.active {
+            display: block;
+        }
+
+        .totp-instruction {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(0, 102, 204, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 102, 204, 0.1);
+        }
+
+        body.dark-mode .totp-instruction {
+            background: rgba(0, 102, 204, 0.1);
+            border-color: rgba(0, 102, 204, 0.2);
+        }
+
+        .totp-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            margin: 0 auto 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .totp-instruction h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        body.dark-mode .totp-instruction h4 {
+            color: var(--dark-text-primary);
+        }
+
+        .totp-instruction p {
+            margin: 0;
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        body.dark-mode .totp-instruction p {
+            color: var(--dark-text-secondary);
+        }
+
+        .totp-input {
+            width: 100%;
+            padding: 1.25rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 1.5rem;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: var(--gray-50);
+            transition: all 0.3s ease;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+
+        .totp-input:focus {
+            border-color: var(--primary-blue);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+            background: white;
+            transform: translateY(-1px);
+        }
+
+        body.dark-mode .totp-input {
+            background: var(--dark-surface);
+            border-color: var(--dark-border);
+            color: var(--dark-text-primary);
+        }
+
+        .input-help {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        body.dark-mode .input-help {
+            color: var(--dark-text-secondary);
+        }
+
+        .input-help i {
+            color: var(--primary-blue);
+        }
+
         .credentials-list {
             margin-top: 1.5rem;
             background: rgba(0, 102, 204, 0.03);
@@ -1051,6 +1162,64 @@
                 </div>
                 {% endif %}
 
+                <!-- TOTP Authenticator Method -->
+                {% if totp_devices %}
+                <div class="auth-method" id="totpMethod" onclick="selectMethod('totp')">
+                    <div class="method-header">
+                        <div class="method-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="method-info">
+                            <h3>Authenticator App</h3>
+                            <p>Use your registered authenticator app (Google Authenticator, Authy, etc.) to generate a verification code.</p>
+                        </div>
+                    </div>
+                    <div class="method-content">
+                        <div class="credentials-list">
+                            <h4 style="margin: 0 0 1rem 0; color: var(--gray-700); font-size: 0.95rem;">Your Registered Apps:</h4>
+                            {% for device in totp_devices %}
+                            <div class="credential-item">
+                                <div class="credential-icon">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <div class="credential-name">{{ device.name }}</div>
+                                <div class="credential-status">
+                                    {% if device.confirmed %}
+                                        Ready
+                                    {% else %}
+                                        Pending
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="totp-form" id="totpForm">
+                            <div class="totp-instruction">
+                                <div class="totp-icon">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <h4>Enter verification code</h4>
+                                <p>Open your authenticator app and enter the 6-digit code shown:</p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <input type="text" id="totpCodeInput" class="totp-input" placeholder="123456" maxlength="6" pattern="[0-9]{6}" autocomplete="off">
+                                <div class="input-help">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Code refreshes every 30 seconds</span>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary" id="totpBtn" onclick="submitTotpCode()">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Verify Code</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
                 <!-- Backup Code Method -->
                 <div class="auth-method" id="backupMethod" onclick="selectMethod('backup')">
                     <div class="method-header">
@@ -1090,6 +1259,14 @@
                         <span>Touch your key when it blinks or browser prompts</span>
                     </li>
                     <li class="help-item">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Open your authenticator app to find the 6-digit code</span>
+                    </li>
+                    <li class="help-item">
+                        <i class="fas fa-clock"></i>
+                        <span>TOTP codes refresh every 30 seconds - use the current one</span>
+                    </li>
+                    <li class="help-item">
                         <i class="fas fa-file-code"></i>
                         <span>Backup codes are 10-character alphanumeric codes</span>
                     </li>
@@ -1118,31 +1295,6 @@
     <script src="{% static 'js/login.js' %}"></script>
     <script>
         let selectedMethod = null;
-
-        function selectMethod(method) {
-            // Clear previous selections
-            document.querySelectorAll('.auth-method').forEach(el => {
-                el.classList.remove('active');
-            });
-            document.querySelectorAll('.webauthn-prompt, .backup-code-form').forEach(el => {
-                el.classList.remove('active');
-            });
-
-            // Select new method
-            selectedMethod = method;
-            const methodElement = document.getElementById(method + 'Method');
-            methodElement.classList.add('active');
-
-            if (method === 'webauthn') {
-                // WebAuthn method selected - user must click "Use Security Key" button
-                // Browser security requires direct user interaction for WebAuthn API calls
-            } else if (method === 'backup') {
-                document.getElementById('backupForm').classList.add('active');
-                setTimeout(() => {
-                    document.getElementById('backupCodeInput').focus();
-                }, 100);
-            }
-        }
 
         async function startWebAuthn() {
             const btn = document.getElementById('webauthnBtn');
@@ -1267,6 +1419,66 @@
             btn.classList.remove('loading');
             btn.innerHTML = '<i class="fas fa-key"></i> <span>Use Security Key</span>';
             prompt.classList.remove('active');
+        }
+
+        async function submitTotpCode() {
+            const input = document.getElementById('totpCodeInput');
+            const btn = document.getElementById('totpBtn');
+            const code = input.value.trim();
+
+            if (!code) {
+                showError('Please enter a verification code.');
+                input.focus();
+                return;
+            }
+
+            if (code.length !== 6) {
+                showError('Verification codes are exactly 6 digits long.');
+                input.focus();
+                return;
+            }
+
+            btn.classList.add('loading');
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> <span>Verifying...</span> <div class="spinner"></div>';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('{% url "authentication:mfa_totp_authenticate" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value || getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        token: code
+                    })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Update progress step
+                updateProgressStep(3);
+
+                // Success - redirect
+                showSuccess(data.message || 'Authentication successful! Redirecting to your dashboard...');
+                setTimeout(() => {
+                    window.location.href = data.redirect || '{% url "authentication:home" %}';
+                }, 1500);
+
+            } catch (error) {
+                console.error('TOTP code error:', error);
+                showError('Authentication failed: ' + error.message);
+                
+                // Reset form
+                btn.classList.remove('loading');
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> <span>Verify Code</span>';
+                btn.disabled = false;
+                input.value = '';
+                input.focus();
+            }
         }
 
         async function submitBackupCode() {
@@ -1430,6 +1642,56 @@
             csrfInput.name = 'csrfmiddlewaretoken';
             csrfInput.value = getCookie('csrftoken');
             document.body.appendChild(csrfInput);
+        }
+
+        // Auto-format verification code input
+        document.getElementById('totpCodeInput').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+            if (value.length > 6) {
+                value = value.substring(0, 6);
+            }
+            e.target.value = value;
+            
+            // Auto-submit when 6 digits entered
+            if (value.length === 6) {
+                // Small delay to let user see the complete code
+                setTimeout(() => {
+                    submitTotpCode();
+                }, 500);
+            }
+        });
+
+        // Add ENTER key support for TOTP verification
+        document.getElementById('totpCodeInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                submitTotpCode();
+            }
+        });
+
+        // Handle method deselection for TOTP
+        function selectMethod(method) {
+            // Clear all active states
+            document.querySelectorAll('.auth-method').forEach(m => m.classList.remove('active'));
+            document.querySelectorAll('.webauthn-prompt, .totp-form, .backup-code-form').forEach(f => f.classList.remove('active'));
+            
+            // Activate selected method
+            document.getElementById(method + 'Method').classList.add('active');
+            
+            if (method === 'webauthn') {
+                // WebAuthn method selected - user must click "Use Security Key" button
+                // Browser security requires direct user interaction for WebAuthn API calls
+            } else if (method === 'totp') {
+                document.getElementById('totpForm').classList.add('active');
+                setTimeout(() => {
+                    document.getElementById('totpCodeInput').focus();
+                }, 100);
+            } else if (method === 'backup') {
+                document.getElementById('backupForm').classList.add('active');
+                setTimeout(() => {
+                    document.getElementById('backupCodeInput').focus();
+                }, 100);
+            }
         }
     </script>
 </body>
