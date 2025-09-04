@@ -1737,7 +1737,7 @@
                         <a href="#" class="card-action">Manage</a>
                     </div>
                     <div class="apps-grid">
-                        <a href="#" class="app-item">
+                        <a href="#" class="app-item" onclick="openGmail()">
                             <div class="app-icon">
                                 <i class="fas fa-envelope"></i>
                             </div>
@@ -1998,6 +1998,86 @@
                     quickActionsSection.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.1)';
                 }, 1000);
             }
+        }
+
+        // Gmail Integration Function
+        function openGmail() {
+            // Get user email from SAML attributes (passed as JSON)
+            const samlAttributes = JSON.parse('{{ saml_attributes_json|escapejs }}');
+            
+            // Try different email attribute names that might come from AD
+            let userEmail = null;
+            const emailKeys = [
+                'mail',
+                'email', 
+                'userPrincipalName',
+                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress',
+                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name',
+                'http://schemas.microsoft.com/ws/2008/06/identity/claims/emailaddress'
+            ];
+            
+            // Find the first available email attribute
+            for (const key of emailKeys) {
+                if (samlAttributes[key] && samlAttributes[key].length > 0) {
+                    userEmail = samlAttributes[key][0] || samlAttributes[key];
+                    break;
+                }
+            }
+            
+            if (userEmail) {
+                // Extract the email part if it's in UPN format (user@domain.com)
+                const email = userEmail.includes('@') ? userEmail : `${userEmail}@gmail.com`;
+                
+                // Open Gmail with the user's email
+                const gmailUrl = `https://mail.google.com/mail/u/0/#inbox`;
+                window.open(gmailUrl, '_blank');
+                
+                // Log for debugging
+                console.log('Opening Gmail for user:', email);
+                
+                // Show helpful message
+                showToast(`Opening Gmail for ${email}`, 'info');
+            } else {
+                // Fallback: open Gmail without specific user
+                alert('Email address not found in your profile. Please contact your administrator to configure your email in Active Directory.');
+                const gmailUrl = `https://mail.google.com/mail/u/0/#inbox`;
+                window.open(gmailUrl, '_blank');
+            }
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'info' ? '#3b82f6' : '#10b981'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 1000;
+                font-weight: 500;
+                animation: slideIn 0.3s ease-out;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Add slide-in animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
         }
 
         // Profile Overlay Functions

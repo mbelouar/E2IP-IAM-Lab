@@ -86,6 +86,7 @@ def home(request):
 
     context = {
         'saml_attributes': saml_attributes,
+        'saml_attributes_json': json.dumps(saml_attributes),  # Add this line
         'user_groups': user_groups,
         'mfa_enabled': mfa_enabled,
         'webauthn_credentials_count': webauthn_credentials,
