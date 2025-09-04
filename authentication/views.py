@@ -377,12 +377,18 @@ def mfa_setup(request):
     from .models import TOTPDevice
     totp_devices = request.user.totp_devices.filter(is_active=True)
     
+    # Check if user has any active credentials (WebAuthn or TOTP)
+    has_webauthn = credentials.exists()
+    has_totp = totp_devices.filter(confirmed=True).exists()
+    has_any_credentials = has_webauthn or has_totp
+    
     context = {
         'mfa_enabled': preference.mfa_enabled,
         'credentials': credentials,
         'totp_devices': totp_devices,
         'backup_codes_generated': preference.backup_codes_generated,
         'webauthn_available': WEBAUTHN_AVAILABLE,
+        'has_any_credentials': has_any_credentials,  # Add this for template logic
     }
     return render(request, 'authentication/mfa_setup.html', context)
 

@@ -2102,7 +2102,7 @@
                     {% else %}
                         <form method="post" action="{% url 'authentication:mfa_enable' %}" style="display: inline;">
                             {% csrf_token %}
-                            <button type="submit" class="status-toggle" {% if not credentials %}disabled title="Add at least one security key first"{% endif %}>
+                            <button type="submit" class="status-toggle" {% if not has_any_credentials %}disabled title="Add at least one security key or authenticator app first"{% endif %}>
                                 Enable MFA
                             </button>
                         </form>
