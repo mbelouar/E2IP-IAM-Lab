@@ -918,21 +918,21 @@
 
                     <div class="form-group">
                         <label for="login" class="form-label">
-                            <i class="fas fa-user-circle" style="margin-right: 0.5rem; color: #3b82f6;"></i>
-                            Login
+                            <i class="fas fa-envelope" style="margin-right: 0.5rem; color: #3b82f6;"></i>
+                            Email Address
                         </label>
                         <input 
-                            type="text" 
+                            type="email" 
                             id="login" 
                             name="login" 
                             class="form-input" 
-                            value="{{ ad_username }}" 
-                            placeholder="Enter your login username"
+                            value="{{ ad_email|default:ad_username }}" 
+                            placeholder="Enter your email address"
                             disabled
                         >
                         <small style="color: #64748b; font-size: 0.85rem; margin-top: 0.25rem; display: block;">
                             <i class="fas fa-info-circle" style="margin-right: 0.25rem;"></i>
-                            Login username cannot be changed from this interface
+                            Email address from Active Directory (read-only)
                         </small>
                     </div>
 

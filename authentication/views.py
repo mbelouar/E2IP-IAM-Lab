@@ -2181,6 +2181,7 @@ def edit_profile(request):
                 'ad_first_name': ad_user_info.get('givenName', ''),
                 'ad_last_name': ad_user_info.get('sn', ''),
                 'ad_username': ad_user_info.get('sAMAccountName', request.user.username),
+                'ad_email': ad_user_info.get('mail', ''),
             }
         else:
             # Fallback to Django user data
@@ -2190,6 +2191,7 @@ def edit_profile(request):
                 'ad_first_name': request.user.first_name,
                 'ad_last_name': request.user.last_name,
                 'ad_username': request.user.username,
+                'ad_email': request.user.email if hasattr(request.user, 'email') else '',
             }
             
     except Exception as e:
@@ -2201,6 +2203,7 @@ def edit_profile(request):
             'ad_first_name': request.user.first_name,
             'ad_last_name': request.user.last_name,
             'ad_username': request.user.username,
+            'ad_email': request.user.email if hasattr(request.user, 'email') else '',
         }
     
     return render(request, 'authentication/edit_profile.html', context)
