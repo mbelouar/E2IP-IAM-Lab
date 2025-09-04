@@ -917,22 +917,22 @@
 
 
                     <div class="form-group">
-                        <label for="login" class="form-label">
+                        <label for="email" class="form-label">
                             <i class="fas fa-envelope" style="margin-right: 0.5rem; color: #3b82f6;"></i>
                             Email Address
                         </label>
                         <input 
                             type="email" 
-                            id="login" 
-                            name="login" 
+                            id="email" 
+                            name="email" 
                             class="form-input" 
                             value="{{ ad_email|default:ad_username }}" 
                             placeholder="Enter your email address"
-                            disabled
+                            required
                         >
                         <small style="color: #64748b; font-size: 0.85rem; margin-top: 0.25rem; display: block;">
                             <i class="fas fa-info-circle" style="margin-right: 0.25rem;"></i>
-                            Email address from Active Directory (read-only)
+                            Email address from Active Directory
                         </small>
                     </div>
 

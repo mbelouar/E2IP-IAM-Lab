@@ -2124,10 +2124,18 @@ def edit_profile(request):
         display_name = request.POST.get('display_name', '').strip()
         first_name = request.POST.get('first_name', '').strip()
         last_name = request.POST.get('last_name', '').strip()
+        email = request.POST.get('email', '').strip()
         
         # Validate input
-        if not display_name or not first_name or not last_name:
-            messages.error(request, 'Display name, first name, and last name are required.')
+        if not display_name or not first_name or not last_name or not email:
+            messages.error(request, 'Display name, first name, last name, and email are required.')
+            return redirect('authentication:edit_profile')
+        
+        # Validate email format
+        import re
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_pattern, email):
+            messages.error(request, 'Please enter a valid email address.')
             return redirect('authentication:edit_profile')
         
         try:
@@ -2135,16 +2143,17 @@ def edit_profile(request):
             user = request.user
             user.first_name = first_name
             user.last_name = last_name
+            user.email = email
             user.save()
             
-            # Update Active Directory with display name and individual names
-            success = update_ad_user_info(user.username, display_name, first_name, last_name)
+            # Update Active Directory with display name, individual names, and email
+            success = update_ad_user_info(user.username, display_name, first_name, last_name, email)
             
             # Log the profile update activity
             ActivityLog.log_activity(
                 user=request.user,
                 activity_type='profile_updated',
-                description=f'Profile updated: {first_name} {last_name}',
+                description=f'Profile updated: {first_name} {last_name} ({email})',
                 ip_address=get_client_ip(request),
                 user_agent=request.META.get('HTTP_USER_AGENT', ''),
                 session_id=request.session.session_key,
@@ -2152,6 +2161,7 @@ def edit_profile(request):
                     'display_name': display_name,
                     'first_name': first_name,
                     'last_name': last_name,
+                    'email': email,
                     'ad_update_success': success
                 }
             )
@@ -2212,7 +2222,7 @@ def get_ad_user_info(username):
     """Retrieve user information from Active Directory"""
     try:
         import ldap3
-        from ldap3 import Server, Connection, ALL, NTLM
+        from ldap3 import Server, Connection, ALL, NTLM, SIMPLE
         
         # AD connection settings
         AD_SERVER = getattr(settings, 'AD_SERVER', 'ldap://your-ad-server.com')
@@ -2221,41 +2231,87 @@ def get_ad_user_info(username):
         AD_PASSWORD = getattr(settings, 'AD_PASSWORD', '')
         AD_SEARCH_BASE = getattr(settings, 'AD_SEARCH_BASE', 'DC=your-domain,DC=com')
         
-        # Connect to AD
+        # Connect to AD with fallback authentication methods
         server = Server(AD_SERVER, get_info=ALL)
-        conn = Connection(
-            server,
-            user=f"{AD_DOMAIN}\\{AD_USERNAME}",
-            password=AD_PASSWORD,
-            authentication=NTLM,
-            auto_bind=True
-        )
+        
+        # Try SIMPLE authentication first (more compatible)
+        conn = None
+        try:
+            conn = Connection(
+                server,
+                user=f"{AD_USERNAME}",
+                password=AD_PASSWORD,
+                authentication=SIMPLE,
+                auto_bind=True
+            )
+        except Exception as e:
+            logger.warning(f"SIMPLE authentication failed: {str(e)}. Trying NTLM...")
+            # Fallback to NTLM with MD4 disabled
+            try:
+                conn = Connection(
+                    server,
+                    user=f"{AD_DOMAIN}\\{AD_USERNAME}",
+                    password=AD_PASSWORD,
+                    authentication=NTLM,
+                    auto_bind=True,
+                    receive_timeout=30
+                )
+            except Exception as e2:
+                logger.warning(f"NTLM authentication also failed: {str(e2)}. Trying with UPN format...")
+                # Try with UPN format (user@domain.com)
+                conn = Connection(
+                    server,
+                    user=f"{AD_USERNAME}",
+                    password=AD_PASSWORD,
+                    authentication=SIMPLE,
+                    auto_bind=True
+                )
         
         if not conn.bound:
             logger.error("Failed to bind to Active Directory")
             return None
         
-        # Search for the user
-        search_filter = f"(&(objectClass=user)(sAMAccountName={username}))"
-        conn.search(
-            search_base=AD_SEARCH_BASE,
-            search_filter=search_filter,
-            attributes=['sAMAccountName', 'displayName', 'givenName', 'sn', 'cn', 'mail']
-        )
+        # Search for the user - try multiple search methods
+        search_filters = [
+            f"(&(objectClass=user)(sAMAccountName={username}))",  # Search by sAMAccountName
+            f"(&(objectClass=user)(mail={username}))",  # Search by email
+            f"(&(objectClass=user)(userPrincipalName={username}))",  # Search by UPN
+            f"(&(objectClass=user)(cn={username}))",  # Search by common name
+        ]
         
-        if not conn.entries:
-            logger.warning(f"User {username} not found in Active Directory")
+        user_entry = None
+        search_method = None
+        
+        for i, search_filter in enumerate(search_filters):
+            try:
+                conn.search(
+                    search_base=AD_SEARCH_BASE,
+                    search_filter=search_filter,
+                    attributes=['sAMAccountName', 'displayName', 'givenName', 'sn', 'cn', 'mail', 'userPrincipalName']
+                )
+                
+                if conn.entries:
+                    user_entry = conn.entries[0]
+                    search_method = ['sAMAccountName', 'mail', 'userPrincipalName', 'cn'][i]
+                    logger.info(f"Found user {username} using {search_method} search")
+                    break
+            except Exception as e:
+                logger.warning(f"Search method {i+1} failed: {str(e)}")
+                continue
+        
+        if not user_entry:
+            logger.warning(f"User {username} not found in Active Directory using any search method")
             return None
         
         # Extract user information
-        user_entry = conn.entries[0]
         user_info = {
-            'sAMAccountName': str(user_entry.sAMAccountName.value) if hasattr(user_entry, 'sAMAccountName') else username,
+            'sAMAccountName': str(user_entry.sAMAccountName.value) if hasattr(user_entry, 'sAMAccountName') and user_entry.sAMAccountName.value else username,
             'displayName': str(user_entry.displayName.value) if hasattr(user_entry, 'displayName') and user_entry.displayName.value else '',
             'givenName': str(user_entry.givenName.value) if hasattr(user_entry, 'givenName') and user_entry.givenName.value else '',
             'sn': str(user_entry.sn.value) if hasattr(user_entry, 'sn') and user_entry.sn.value else '',
             'cn': str(user_entry.cn.value) if hasattr(user_entry, 'cn') and user_entry.cn.value else '',
             'mail': str(user_entry.mail.value) if hasattr(user_entry, 'mail') and user_entry.mail.value else '',
+            'userPrincipalName': str(user_entry.userPrincipalName.value) if hasattr(user_entry, 'userPrincipalName') and user_entry.userPrincipalName.value else '',
         }
         
         logger.info(f"Successfully retrieved AD user info for {username}")
@@ -2265,15 +2321,20 @@ def get_ad_user_info(username):
         logger.error("ldap3 library not available. Cannot retrieve from Active Directory.")
         return None
     except Exception as e:
-        logger.error(f"Error retrieving from Active Directory: {str(e)}")
+        error_msg = str(e)
+        if "MD4" in error_msg or "unsupported hash type" in error_msg:
+            logger.error(f"Active Directory connection failed due to MD4 hash compatibility issue: {error_msg}")
+            logger.info("This is likely due to an older AD server or incompatible cryptographic libraries. Consider updating your AD server or using a different authentication method.")
+        else:
+            logger.error(f"Error retrieving from Active Directory: {error_msg}")
         return None
 
 
-def update_ad_user_info(username, display_name, first_name, last_name):
+def update_ad_user_info(username, display_name, first_name, last_name, email=None):
     """Update user information in Active Directory"""
     try:
         import ldap3
-        from ldap3 import Server, Connection, ALL, NTLM
+        from ldap3 import Server, Connection, ALL, NTLM, SIMPLE
         
         # AD connection settings
         AD_SERVER = getattr(settings, 'AD_SERVER', 'ldap://your-ad-server.com')
@@ -2282,46 +2343,97 @@ def update_ad_user_info(username, display_name, first_name, last_name):
         AD_PASSWORD = getattr(settings, 'AD_PASSWORD', '')
         AD_SEARCH_BASE = getattr(settings, 'AD_SEARCH_BASE', 'DC=your-domain,DC=com')
         
-        # Connect to AD
+        # Connect to AD with fallback authentication methods
         server = Server(AD_SERVER, get_info=ALL)
-        conn = Connection(
-            server,
-            user=f"{AD_DOMAIN}\\{AD_USERNAME}",
-            password=AD_PASSWORD,
-            authentication=NTLM,
-            auto_bind=True
-        )
+        
+        # Try SIMPLE authentication first (more compatible)
+        conn = None
+        try:
+            conn = Connection(
+                server,
+                user=f"{AD_USERNAME}",
+                password=AD_PASSWORD,
+                authentication=SIMPLE,
+                auto_bind=True
+            )
+        except Exception as e:
+            logger.warning(f"SIMPLE authentication failed: {str(e)}. Trying NTLM...")
+            # Fallback to NTLM with MD4 disabled
+            try:
+                conn = Connection(
+                    server,
+                    user=f"{AD_DOMAIN}\\{AD_USERNAME}",
+                    password=AD_PASSWORD,
+                    authentication=NTLM,
+                    auto_bind=True,
+                    receive_timeout=30
+                )
+            except Exception as e2:
+                logger.warning(f"NTLM authentication also failed: {str(e2)}. Trying with UPN format...")
+                # Try with UPN format (user@domain.com)
+                conn = Connection(
+                    server,
+                    user=f"{AD_USERNAME}",
+                    password=AD_PASSWORD,
+                    authentication=SIMPLE,
+                    auto_bind=True
+                )
         
         if not conn.bound:
             logger.error("Failed to bind to Active Directory")
             return False
         
-        # Search for the user
-        search_filter = f"(&(objectClass=user)(sAMAccountName={username}))"
-        conn.search(
-            search_base=AD_SEARCH_BASE,
-            search_filter=search_filter,
-            attributes=['distinguishedName', 'displayName', 'cn', 'givenName', 'sn']
-        )
+        # Search for the user - try multiple search methods
+        search_filters = [
+            f"(&(objectClass=user)(sAMAccountName={username}))",  # Search by sAMAccountName
+            f"(&(objectClass=user)(mail={username}))",  # Search by email
+            f"(&(objectClass=user)(userPrincipalName={username}))",  # Search by UPN
+            f"(&(objectClass=user)(cn={username}))",  # Search by common name
+        ]
         
-        if not conn.entries:
-            logger.error(f"User {username} not found in Active Directory")
+        user_entry = None
+        search_method = None
+        
+        for i, search_filter in enumerate(search_filters):
+            try:
+                conn.search(
+                    search_base=AD_SEARCH_BASE,
+                    search_filter=search_filter,
+                    attributes=['distinguishedName', 'displayName', 'cn', 'givenName', 'sn', 'sAMAccountName', 'mail', 'userPrincipalName']
+                )
+                
+                if conn.entries:
+                    user_entry = conn.entries[0]
+                    search_method = ['sAMAccountName', 'mail', 'userPrincipalName', 'cn'][i]
+                    logger.info(f"Found user {username} using {search_method} search for update")
+                    break
+            except Exception as e:
+                logger.warning(f"Search method {i+1} failed: {str(e)}")
+                continue
+        
+        if not user_entry:
+            logger.error(f"User {username} not found in Active Directory using any search method")
             return False
         
-        user_dn = conn.entries[0].entry_dn
+        user_dn = user_entry.entry_dn
         
-        # Update user attributes - use displayName, cn, givenName, and sn
+        # Update user attributes - use displayName, givenName, sn, and mail
+        # Note: cn (Common Name) is part of RDN and cannot be modified directly
         changes = {
             'displayName': [(ldap3.MODIFY_REPLACE, [display_name])],
-            'cn': [(ldap3.MODIFY_REPLACE, [display_name])],
             'givenName': [(ldap3.MODIFY_REPLACE, [first_name])],
             'sn': [(ldap3.MODIFY_REPLACE, [last_name])]
         }
         
+        # Add email update if provided
+        if email:
+            changes['mail'] = [(ldap3.MODIFY_REPLACE, [email])]
+        
         success = conn.modify(user_dn, changes=changes)
         
         if success:
-            logger.info(f"Successfully updated AD user {username}: displayName={display_name}, givenName={first_name}, sn={last_name}")
+            email_info = f", mail={email}" if email else ""
+            logger.info(f"Successfully updated AD user {username}: displayName={display_name}, givenName={first_name}, sn={last_name}{email_info}")
             return True
         else:
             logger.error(f"Failed to update AD user {username}: {conn.result}")
@@ -2331,7 +2443,12 @@ def update_ad_user_info(username, display_name, first_name, last_name):
         logger.error("ldap3 library not available. Cannot update Active Directory.")
         return False
     except Exception as e:
-        logger.error(f"Error updating Active Directory: {str(e)}")
+        error_msg = str(e)
+        if "MD4" in error_msg or "unsupported hash type" in error_msg:
+            logger.error(f"Active Directory update failed due to MD4 hash compatibility issue: {error_msg}")
+            logger.info("This is likely due to an older AD server or incompatible cryptographic libraries. Consider updating your AD server or using a different authentication method.")
+        else:
+            logger.error(f"Error updating Active Directory: {error_msg}")
         return False
 
 @csrf_exempt
