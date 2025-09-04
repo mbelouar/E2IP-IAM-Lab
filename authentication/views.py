@@ -382,6 +382,9 @@ def mfa_setup(request):
     has_totp = totp_devices.filter(confirmed=True).exists()
     has_any_credentials = has_webauthn or has_totp
     
+    # Check if we should auto-trigger backup codes generation
+    auto_trigger_backup = request.GET.get('action') == 'backup_codes'
+    
     context = {
         'mfa_enabled': preference.mfa_enabled,
         'credentials': credentials,
@@ -389,6 +392,7 @@ def mfa_setup(request):
         'backup_codes_generated': preference.backup_codes_generated,
         'webauthn_available': WEBAUTHN_AVAILABLE,
         'has_any_credentials': has_any_credentials,  # Add this for template logic
+        'auto_trigger_backup': auto_trigger_backup,  # Add this for auto-triggering
     }
     return render(request, 'authentication/mfa_setup.html', context)
 
@@ -1081,6 +1085,10 @@ def generate_backup_codes(request):
     if request.method == 'POST':
         # Generate new backup codes (4 codes)
         codes = MFABackupCode.generate_codes_for_user(request.user, count=4)
+        
+        # Debug: Verify the preference was updated
+        preference = UserMFAPreference.objects.get(user=request.user)
+        logger.info(f"Backup codes generated for user {request.user.username}. backup_codes_generated: {preference.backup_codes_generated}")
         
         # Log activity
         ActivityLog.log_activity(
@@ -2791,12 +2799,24 @@ def change_password(request):
 @login_required
 def view_all_activities(request):
     """View for displaying all recent activities"""
-    # Get last 10 activities
-    activities = request.user.activity_logs.all()[:10]
+    # Get last 20 activities for better display
+    activities = request.user.activity_logs.all()[:20]
+    
+    # Calculate additional stats
+    total_activities = request.user.activity_logs.count()
+    security_activities = request.user.activity_logs.filter(
+        activity_type__in=['mfa_enabled', 'mfa_disabled', 'device_registered', 'device_removed', 
+                          'backup_codes_generated', 'backup_code_used', 'password_changed']
+    ).count()
+    
+    # Get recent activity types for filtering
+    recent_types = request.user.activity_logs.values_list('activity_type', flat=True).distinct()[:10]
     
     context = {
         'activities': activities,
-        'total_activities': request.user.activity_logs.count(),
+        'total_activities': total_activities,
+        'security_activities': security_activities,
+        'recent_types': recent_types,
     }
     return render(request, 'authentication/view_all_activities.html', context)
 # TOTP (Authenticator App) views

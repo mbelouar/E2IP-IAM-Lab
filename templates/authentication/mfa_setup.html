@@ -2636,7 +2636,7 @@
                 <div class="modal-divider"></div>
 
                 <div class="modal-actions">
-                    <button class="btn btn-success" onclick="closeBackupModal(); location.reload();">
+                    <button class="btn btn-success" onclick="handleBackupDone()">
                         <i class="fas fa-check"></i>
                         Done
                     </button>
@@ -2658,6 +2658,12 @@
     </footer>
 
     <script src="{% static 'js/login.js' %}"></script>
+    
+    <!-- Auto-trigger backup codes variable -->
+    <script>
+        var autoTriggerBackup = {% if auto_trigger_backup %}true{% else %}false{% endif %};
+    </script>
+    
     <script>
         // WebAuthn Registration Functions
         let registrationOptions = null;
@@ -3734,6 +3740,28 @@
                 closeBackupModal();
             }
         });
+
+        // Auto-trigger backup codes modal if requested
+        if (autoTriggerBackup) {
+            document.addEventListener('DOMContentLoaded', function() {
+                // Small delay to ensure page is fully loaded
+                setTimeout(function() {
+                    showBackupModal();
+                }, 500);
+            });
+        }
+
+        // Handle backup codes done button
+        function handleBackupDone() {
+            // Close the modal first
+            closeBackupModal();
+            
+            // Add a small delay to ensure the modal closes completely
+            setTimeout(function() {
+                // Redirect to MFA setup page without auto-trigger to get fresh data
+                window.location.href = '{% url "authentication:mfa_setup" %}';
+            }, 100);
+        }
     </script>
 </body>
 </html> 

@@ -1800,7 +1800,7 @@
                         </div>
                         <span>{% if mfa_enabled %}MFA Settings{% else %}Setup MFA{% endif %}</span>
                     </a>
-                        <a href="{% url 'authentication:generate_backup_codes' %}" class="quick-action-item">
+                        <a href="{% url 'authentication:mfa_setup' %}?action=backup_codes" class="quick-action-item">
                             <div class="quick-action-icon">
                                 <i class="fas fa-download"></i>
                 </div>
@@ -2171,13 +2171,13 @@
                     </div>
                 </a>
                 
-                <a href="{% url 'authentication:generate_backup_codes' %}" class="profile-action">
+                <a href="{% url 'authentication:mfa_setup' %}?action=backup_codes" class="profile-action">
                     <div class="action-icon">
                         <i class="fas fa-download"></i>
                     </div>
                     <div class="action-content">
                         <span class="action-title">Backup Codes</span>
-                        <span class="action-subtitle">Download your backup codes</span>
+                        <span class="action-subtitle">Generate your backup codes</span>
                     </div>
                 </a>
             </div>
