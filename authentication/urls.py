@@ -4,11 +4,17 @@ from . import views
 app_name = 'authentication'
 
 urlpatterns = [
-    # Basic authentication
-    path('', views.login_view, name='login'),
+    # Authentication choice and basic authentication
+    path('', views.auth_choice, name='auth_choice'),
     path('login/', views.login_view, name='login'),
     path('home/', views.home, name='home'),
     path('logout/', views.logout_view, name='logout'),
+    
+    # Standard Authentication
+    path('standard/login/', views.standard_login, name='standard_login'),
+    path('standard/register/', views.standard_register, name='standard_register'),
+    path('standard/password-reset/', views.password_reset_request, name='password_reset_request'),
+    path('standard/password-reset/<int:user_id>/<str:token>/', views.password_reset_confirm, name='password_reset_confirm'),
     
     # SAML authentication
     path('adfs-login/', views.adfs_login, name='adfs_login'),

@@ -94,8 +94,15 @@ def home(request):
     }
     return render(request, 'authentication/home.html', context)
 
-def login_view(request):
-    """View for user login - using our SecureAuth template"""
+def auth_choice(request):
+    """Authentication method choice page"""
+    if request.user.is_authenticated:
+        return redirect('authentication:home')
+    
+    return render(request, 'authentication/auth_choice.html')
+
+def standard_login(request):
+    """Standard Django authentication login"""
     if request.user.is_authenticated:
         return redirect('authentication:home')
     
@@ -125,11 +132,11 @@ def login_view(request):
                 ActivityLog.log_activity(
                     user=user,
                     activity_type='login',
-                    description='User logged in successfully',
+                    description='User logged in successfully via standard authentication',
                     ip_address=get_client_ip(request),
                     user_agent=request.META.get('HTTP_USER_AGENT', ''),
                     session_id=request.session.session_key,
-                    details={'remember_me': remember_me, 'mfa_required': False}
+                    details={'remember_me': remember_me, 'mfa_required': False, 'auth_method': 'standard'}
                 )
             
             # Set session expiry based on remember me
@@ -141,7 +148,219 @@ def login_view(request):
         else:
             messages.error(request, "Invalid username or password.")
     
-    return render(request, 'authentication/login.html')
+    return render(request, 'authentication/standard_login.html')
+
+def login_view(request):
+    """Legacy login view - redirects to auth choice"""
+    return redirect('authentication:auth_choice')
+
+def standard_register(request):
+    """User registration for standard authentication"""
+    if request.user.is_authenticated:
+        return redirect('authentication:home')
+    
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        password1 = request.POST.get('password1', '')
+        password2 = request.POST.get('password2', '')
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        
+        # Validation
+        errors = []
+        
+        if not username:
+            errors.append('Username is required.')
+        elif len(username) < 3:
+            errors.append('Username must be at least 3 characters long.')
+        elif User.objects.filter(username=username).exists():
+            errors.append('Username already exists.')
+        
+        if not email:
+            errors.append('Email is required.')
+        elif User.objects.filter(email=email).exists():
+            errors.append('Email already exists.')
+        else:
+            # Validate email format
+            import re
+            email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+            if not re.match(email_pattern, email):
+                errors.append('Please enter a valid email address.')
+        
+        if not password1:
+            errors.append('Password is required.')
+        elif len(password1) < 8:
+            errors.append('Password must be at least 8 characters long.')
+        elif password1 != password2:
+            errors.append('Passwords do not match.')
+        
+        if not first_name:
+            errors.append('First name is required.')
+        
+        if not last_name:
+            errors.append('Last name is required.')
+        
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+        else:
+            try:
+                # Create user
+                user = User.objects.create_user(
+                    username=username,
+                    email=email,
+                    password=password1,
+                    first_name=first_name,
+                    last_name=last_name
+                )
+                
+                # Log registration activity
+                # Note: During registration, there might not be a session yet
+                session_key = request.session.session_key or 'registration'
+                ActivityLog.log_activity(
+                    user=user,
+                    activity_type='user_registered',
+                    description='User registered via standard authentication',
+                    ip_address=get_client_ip(request),
+                    user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                    session_id=session_key,
+                    details={'auth_method': 'standard', 'email': email}
+                )
+                
+                messages.success(request, 'Account created successfully! You can now log in.')
+                return redirect('authentication:standard_login')
+                
+            except Exception as e:
+                logger.error(f"Error creating user: {str(e)}")
+                messages.error(request, 'An error occurred while creating your account. Please try again.')
+    
+    return render(request, 'authentication/standard_register.html')
+
+def password_reset_request(request):
+    """Password reset request"""
+    if request.user.is_authenticated:
+        return redirect('authentication:home')
+    
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip()
+        
+        if not email:
+            messages.error(request, 'Email address is required.')
+        else:
+            try:
+                user = User.objects.get(email=email)
+                
+                # Generate reset token (simple implementation)
+                import secrets
+                import hashlib
+                token = secrets.token_urlsafe(32)
+                
+                # Store token in session (in production, use database or cache)
+                request.session[f'password_reset_token_{user.id}'] = token
+                request.session[f'password_reset_user_{user.id}'] = user.id
+                request.session[f'password_reset_expiry_{user.id}'] = str(timezone.now() + timedelta(hours=1))
+                
+                # Log password reset request
+                # Note: During password reset request, there might not be a session yet
+                session_key = request.session.session_key or 'password_reset_request'
+                ActivityLog.log_activity(
+                    user=user,
+                    activity_type='password_reset_requested',
+                    description='Password reset requested',
+                    ip_address=get_client_ip(request),
+                    user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                    session_id=session_key,
+                    details={'email': email, 'auth_method': 'standard'}
+                )
+                
+                messages.success(request, f'Password reset instructions have been sent to {email}. Please check your email.')
+                return redirect('authentication:standard_login')
+                
+            except User.DoesNotExist:
+                messages.error(request, 'No account found with that email address.')
+            except Exception as e:
+                logger.error(f"Error processing password reset request: {str(e)}")
+                messages.error(request, 'An error occurred. Please try again.')
+    
+    return render(request, 'authentication/password_reset_request.html')
+
+def password_reset_confirm(request, user_id, token):
+    """Password reset confirmation"""
+    if request.user.is_authenticated:
+        return redirect('authentication:home')
+    
+    # Verify token
+    stored_token = request.session.get(f'password_reset_token_{user_id}')
+    stored_user_id = request.session.get(f'password_reset_user_{user_id}')
+    stored_expiry = request.session.get(f'password_reset_expiry_{user_id}')
+    
+    if not stored_token or not stored_user_id or not stored_expiry:
+        messages.error(request, 'Invalid or expired password reset link.')
+        return redirect('authentication:password_reset_request')
+    
+    # Check expiry
+    try:
+        expiry_time = timezone.datetime.fromisoformat(stored_expiry)
+        if timezone.now() > expiry_time:
+            messages.error(request, 'Password reset link has expired.')
+            return redirect('authentication:password_reset_request')
+    except:
+        messages.error(request, 'Invalid password reset link.')
+        return redirect('authentication:password_reset_request')
+    
+    if stored_token != token or int(stored_user_id) != int(user_id):
+        messages.error(request, 'Invalid password reset link.')
+        return redirect('authentication:password_reset_request')
+    
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        messages.error(request, 'User not found.')
+        return redirect('authentication:password_reset_request')
+    
+    if request.method == 'POST':
+        password1 = request.POST.get('password1', '')
+        password2 = request.POST.get('password2', '')
+        
+        if not password1:
+            messages.error(request, 'Password is required.')
+        elif len(password1) < 8:
+            messages.error(request, 'Password must be at least 8 characters long.')
+        elif password1 != password2:
+            messages.error(request, 'Passwords do not match.')
+        else:
+            try:
+                # Update password
+                user.set_password(password1)
+                user.save()
+                
+                # Clear reset tokens
+                for key in list(request.session.keys()):
+                    if key.startswith(f'password_reset_{user_id}'):
+                        del request.session[key]
+                
+                # Log password reset
+                # Note: During password reset confirm, there might not be a session yet
+                session_key = request.session.session_key or 'password_reset_confirm'
+                ActivityLog.log_activity(
+                    user=user,
+                    activity_type='password_reset_completed',
+                    description='Password reset completed',
+                    ip_address=get_client_ip(request),
+                    user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                    session_id=session_key,
+                    details={'auth_method': 'standard'}
+                )
+                
+                messages.success(request, 'Password has been reset successfully. You can now log in.')
+                return redirect('authentication:standard_login')
+                
+            except Exception as e:
+                logger.error(f"Error resetting password: {str(e)}")
+                messages.error(request, 'An error occurred while resetting your password. Please try again.')
+    
+    return render(request, 'authentication/password_reset_confirm.html', {'user': user})
 
 # MFA Views
 @login_required
