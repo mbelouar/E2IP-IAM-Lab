@@ -2703,10 +2703,31 @@ def saml_logout_view(request):
         logout(request)
         return redirect('authentication:login')
 
+def is_ad_user(request):
+    """Check if the current user is from Active Directory (SAML)"""
+    # Check for SAML authentication indicators
+    is_saml_authenticated = request.session.get('saml_authenticated', False)
+    auth_method = request.session.get('authentication_method', '')
+    
+    # Also check if user has no password set (indicating AD user)
+    has_password = request.user.has_usable_password() if request.user.is_authenticated else False
+    
+    return is_saml_authenticated or auth_method == 'saml' or not has_password
+
 @login_required
 def change_password(request):
     """View for changing user password"""
+    # Check if user is from AD - restrict password changes for AD users
+    if is_ad_user(request):
+        # Log the detection for debugging
+        logger.info(f"AD user detected: {request.user.username}, has_password: {request.user.has_usable_password()}, saml_authenticated: {request.session.get('saml_authenticated', False)}, auth_method: {request.session.get('authentication_method', '')}")
+    
+    # Continue to render the template - it will show appropriate content based on user type
+    
     if request.method == 'POST':
+        # Prevent AD users from processing password change requests
+        if is_ad_user(request):
+            return render(request, 'authentication/change_password.html')
         current_password = request.POST.get('current_password')
         new_password = request.POST.get('new_password')
         confirm_password = request.POST.get('confirm_password')
