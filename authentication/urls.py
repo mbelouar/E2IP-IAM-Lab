@@ -43,4 +43,12 @@ urlpatterns = [
     path('profile/edit/', views.edit_profile, name='edit_profile'),
     path('profile/change-password/', views.change_password, name='change_password'),
     path('activities/', views.view_all_activities, name='view_all_activities'),
+    
+    # Document Management
+    path('documents/', views.documents_list, name='documents_list'),
+    path('documents/upload/', views.document_upload, name='document_upload'),
+    path('documents/<int:document_id>/', views.document_detail, name='document_detail'),
+    path('documents/<int:document_id>/download/', views.document_download, name='document_download'),
+    path('documents/<int:document_id>/delete/', views.document_delete, name='document_delete'),
+    path('documents/<int:document_id>/update/', views.document_update, name='document_update'),
 ]

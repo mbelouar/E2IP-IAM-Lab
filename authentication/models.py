@@ -1,12 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.validators import FileExtensionValidator
 import secrets
 import string
 import pyotp
 import qrcode
 from io import BytesIO
 import base64
+import os
 
 class UserMFAPreference(models.Model):
     """User's MFA preferences and settings"""
@@ -286,6 +288,11 @@ class ActivityLog(models.Model):
         ('failed_mfa', 'Failed MFA Attempt'),
         ('session_started', 'Session Started'),
         ('session_ended', 'Session Ended'),
+        ('document_uploaded', 'Document Uploaded'),
+        ('document_downloaded', 'Document Downloaded'),
+        ('document_accessed', 'Document Accessed'),
+        ('document_updated', 'Document Updated'),
+        ('document_deleted', 'Document Deleted'),
     ])
     
     description = models.TextField()
@@ -345,6 +352,11 @@ class ActivityLog(models.Model):
             'failed_mfa': 'fas fa-exclamation-triangle',
             'session_started': 'fas fa-play',
             'session_ended': 'fas fa-stop',
+            'document_uploaded': 'fas fa-upload',
+            'document_downloaded': 'fas fa-download',
+            'document_accessed': 'fas fa-eye',
+            'document_updated': 'fas fa-edit',
+            'document_deleted': 'fas fa-trash',
         }
         return icon_map.get(self.activity_type, 'fas fa-info-circle')
 
@@ -368,6 +380,11 @@ class ActivityLog(models.Model):
             'failed_mfa': 'error',
             'session_started': 'success',
             'session_ended': 'info',
+            'document_uploaded': 'success',
+            'document_downloaded': 'info',
+            'document_accessed': 'info',
+            'document_updated': 'info',
+            'document_deleted': 'warning',
         }
         return status_map.get(self.activity_type, 'info')
 
@@ -389,3 +406,162 @@ class ActivityLog(models.Model):
             return f"{minutes} minute{'s' if minutes != 1 else ''} ago"
         else:
             return "Just now"
+
+def user_document_upload_path(instance, filename):
+    """Generate upload path for user documents"""
+    # Create user-specific directory: documents/user_id/filename
+    return f"documents/{instance.user.id}/{filename}"
+
+class Document(models.Model):
+    """User documents for private storage"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='documents')
+    
+    # Document details
+    title = models.CharField(max_length=200, help_text="Document title or name")
+    description = models.TextField(blank=True, help_text="Optional description of the document")
+    
+    # File information
+    file = models.FileField(
+        upload_to=user_document_upload_path,
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt', 
+                                 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff',
+                                 'xls', 'xlsx', 'ppt', 'pptx', 'csv',
+                                 'zip', 'rar', '7z', 'tar', 'gz']
+            )
+        ],
+        help_text="Upload your document (PDF, Word, Excel, PowerPoint, Images, etc.)"
+    )
+    
+    # File metadata
+    file_size = models.PositiveIntegerField(help_text="File size in bytes")
+    file_type = models.CharField(max_length=50, help_text="MIME type of the file")
+    original_filename = models.CharField(max_length=255, help_text="Original filename")
+    
+    # Document categories
+    CATEGORY_CHOICES = [
+        ('personal', 'Personal'),
+        ('work', 'Work'),
+        ('financial', 'Financial'),
+        ('legal', 'Legal'),
+        ('medical', 'Medical'),
+        ('education', 'Education'),
+        ('other', 'Other'),
+    ]
+    category = models.CharField(
+        max_length=20, 
+        choices=CATEGORY_CHOICES, 
+        default='personal',
+        help_text="Document category"
+    )
+    
+    # Privacy and security
+    is_private = models.BooleanField(default=True, help_text="Document is private to the user")
+    is_encrypted = models.BooleanField(default=False, help_text="Document is encrypted")
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    last_accessed = models.DateTimeField(null=True, blank=True)
+    
+    # Tags for organization
+    tags = models.CharField(max_length=500, blank=True, help_text="Comma-separated tags")
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', 'created_at']),
+            models.Index(fields=['user', 'category']),
+            models.Index(fields=['user', 'is_private']),
+        ]
+        verbose_name = 'Document'
+        verbose_name_plural = 'Documents'
+
+    def __str__(self):
+        return f"{self.user.username} - {self.title}"
+
+    def save(self, *args, **kwargs):
+        """Override save to set file metadata"""
+        if self.file:
+            # Set file size
+            self.file_size = self.file.size
+            
+            # Set file type
+            import mimetypes
+            self.file_type = mimetypes.guess_type(self.file.name)[0] or 'application/octet-stream'
+            
+            # Set original filename
+            self.original_filename = os.path.basename(self.file.name)
+        
+        super().save(*args, **kwargs)
+
+    def get_file_extension(self):
+        """Get file extension"""
+        return os.path.splitext(self.original_filename)[1].lower()
+
+    def get_file_icon(self):
+        """Get FontAwesome icon class based on file type"""
+        extension = self.get_file_extension()
+        icon_map = {
+            '.pdf': 'fas fa-file-pdf',
+            '.doc': 'fas fa-file-word',
+            '.docx': 'fas fa-file-word',
+            '.txt': 'fas fa-file-alt',
+            '.rtf': 'fas fa-file-alt',
+            '.odt': 'fas fa-file-alt',
+            '.jpg': 'fas fa-file-image',
+            '.jpeg': 'fas fa-file-image',
+            '.png': 'fas fa-file-image',
+            '.gif': 'fas fa-file-image',
+            '.bmp': 'fas fa-file-image',
+            '.tiff': 'fas fa-file-image',
+            '.xls': 'fas fa-file-excel',
+            '.xlsx': 'fas fa-file-excel',
+            '.ppt': 'fas fa-file-powerpoint',
+            '.pptx': 'fas fa-file-powerpoint',
+            '.csv': 'fas fa-file-csv',
+            '.zip': 'fas fa-file-archive',
+            '.rar': 'fas fa-file-archive',
+            '.7z': 'fas fa-file-archive',
+            '.tar': 'fas fa-file-archive',
+            '.gz': 'fas fa-file-archive',
+        }
+        return icon_map.get(extension, 'fas fa-file')
+
+    def get_file_size_display(self):
+        """Get human-readable file size"""
+        size = self.file_size
+        for unit in ['B', 'KB', 'MB', 'GB']:
+            if size < 1024.0:
+                return f"{size:.1f} {unit}"
+            size /= 1024.0
+        return f"{size:.1f} TB"
+
+    def get_category_display_color(self):
+        """Get color class for category display"""
+        color_map = {
+            'personal': 'blue',
+            'work': 'green',
+            'financial': 'yellow',
+            'legal': 'purple',
+            'medical': 'red',
+            'education': 'indigo',
+            'other': 'gray',
+        }
+        return color_map.get(self.category, 'gray')
+
+    def update_last_accessed(self):
+        """Update last accessed timestamp"""
+        self.last_accessed = timezone.now()
+        self.save(update_fields=['last_accessed'])
+
+    def get_tags_list(self):
+        """Get tags as a list"""
+        if self.tags:
+            return [tag.strip() for tag in self.tags.split(',') if tag.strip()]
+        return []
+
+    def set_tags_list(self, tags_list):
+        """Set tags from a list"""
+        self.tags = ', '.join(tags_list)

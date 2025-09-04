@@ -2734,3 +2734,275 @@ def mfa_totp_authenticate(request):
     except Exception as e:
         logger.error(f"Error with TOTP authentication: {str(e)}")
         return JsonResponse({'error': 'Authentication failed'}, status=500)
+
+# Document Management Views
+from django.core.files.storage import default_storage
+from django.core.paginator import Paginator
+from django.db.models import Q
+from .models import Document
+
+@login_required
+def documents_list(request):
+    """Display user's documents with filtering and search"""
+    # Get filter parameters
+    category = request.GET.get('category', '')
+    search = request.GET.get('search', '')
+    sort_by = request.GET.get('sort', '-created_at')
+    
+    # Get user's documents
+    documents = Document.objects.filter(user=request.user, is_private=True)
+    
+    # Apply filters
+    if category:
+        documents = documents.filter(category=category)
+    
+    if search:
+        documents = documents.filter(
+            Q(title__icontains=search) |
+            Q(description__icontains=search) |
+            Q(original_filename__icontains=search) |
+            Q(tags__icontains=search)
+        )
+    
+    # Apply sorting
+    documents = documents.order_by(sort_by)
+    
+    # Pagination
+    paginator = Paginator(documents, 12)  # 12 documents per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Get category choices for filter dropdown
+    category_choices = Document.CATEGORY_CHOICES
+    
+    context = {
+        'documents': page_obj,
+        'category_choices': category_choices,
+        'current_category': category,
+        'current_search': search,
+        'current_sort': sort_by,
+        'total_documents': documents.count(),
+    }
+    
+    return render(request, 'authentication/documents_list.html', context)
+
+@login_required
+def document_upload(request):
+    """Handle document upload"""
+    if request.method == 'POST':
+        try:
+            # Get form data
+            title = request.POST.get('title', '').strip()
+            description = request.POST.get('description', '').strip()
+            category = request.POST.get('category', 'personal')
+            tags = request.POST.get('tags', '').strip()
+            file = request.FILES.get('file')
+            
+            # Validate required fields
+            if not title:
+                return JsonResponse({'error': 'Title is required'}, status=400)
+            
+            if not file:
+                return JsonResponse({'error': 'File is required'}, status=400)
+            
+            # Check file size (max 50MB)
+            max_size = 50 * 1024 * 1024  # 50MB
+            if file.size > max_size:
+                return JsonResponse({'error': 'File size too large. Maximum size is 50MB.'}, status=400)
+            
+            # Create document
+            document = Document.objects.create(
+                user=request.user,
+                title=title,
+                description=description,
+                category=category,
+                tags=tags,
+                file=file
+            )
+            
+            # Log activity
+            ActivityLog.log_activity(
+                user=request.user,
+                activity_type='document_uploaded',
+                description=f'Uploaded document: {title}',
+                ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                session_id=request.session.session_key,
+                details={
+                    'document_id': document.id,
+                    'file_name': document.original_filename,
+                    'file_size': document.file_size,
+                    'file_type': document.file_type,
+                    'category': category
+                }
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Document uploaded successfully',
+                'document': {
+                    'id': document.id,
+                    'title': document.title,
+                    'file_size': document.get_file_size_display(),
+                    'file_type': document.file_type,
+                    'category': document.get_category_display(),
+                    'created_at': document.created_at.strftime('%Y-%m-%d %H:%M')
+                }
+            })
+            
+        except Exception as e:
+            logger.error(f"Error uploading document: {str(e)}")
+            return JsonResponse({'error': 'Failed to upload document'}, status=500)
+    
+    # GET request - show upload form
+    context = {
+        'category_choices': Document.CATEGORY_CHOICES,
+    }
+    return render(request, 'authentication/document_upload.html', context)
+
+@login_required
+def document_detail(request, document_id):
+    """View document details and download"""
+    try:
+        document = Document.objects.get(id=document_id, user=request.user, is_private=True)
+        
+        # Update last accessed
+        document.update_last_accessed()
+        
+        # Log activity
+        ActivityLog.log_activity(
+            user=request.user,
+            activity_type='document_accessed',
+            description=f'Accessed document: {document.title}',
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+            session_id=request.session.session_key,
+            details={'document_id': document.id}
+        )
+        
+        context = {
+            'document': document,
+        }
+        return render(request, 'authentication/document_detail.html', context)
+        
+    except Document.DoesNotExist:
+        messages.error(request, 'Document not found or access denied.')
+        return redirect('authentication:documents_list')
+
+@login_required
+def document_download(request, document_id):
+    """Download document file"""
+    try:
+        document = Document.objects.get(id=document_id, user=request.user, is_private=True)
+        
+        # Update last accessed
+        document.update_last_accessed()
+        
+        # Log activity
+        ActivityLog.log_activity(
+            user=request.user,
+            activity_type='document_downloaded',
+            description=f'Downloaded document: {document.title}',
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+            session_id=request.session.session_key,
+            details={'document_id': document.id}
+        )
+        
+        # Return file response
+        response = HttpResponse(document.file.read(), content_type=document.file_type)
+        response['Content-Disposition'] = f'attachment; filename="{document.original_filename}"'
+        return response
+        
+    except Document.DoesNotExist:
+        return HttpResponse('Document not found', status=404)
+
+@login_required
+@require_POST
+def document_delete(request, document_id):
+    """Delete document"""
+    try:
+        document = Document.objects.get(id=document_id, user=request.user, is_private=True)
+        
+        # Log activity before deletion
+        ActivityLog.log_activity(
+            user=request.user,
+            activity_type='document_deleted',
+            description=f'Deleted document: {document.title}',
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+            session_id=request.session.session_key,
+            details={'document_id': document.id, 'file_name': document.original_filename}
+        )
+        
+        # Delete file from storage
+        if document.file:
+            document.file.delete(save=False)
+        
+        # Delete document record
+        document.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Document deleted successfully'
+        })
+        
+    except Document.DoesNotExist:
+        return JsonResponse({'error': 'Document not found'}, status=404)
+    except Exception as e:
+        logger.error(f"Error deleting document: {str(e)}")
+        return JsonResponse({'error': 'Failed to delete document'}, status=500)
+
+@login_required
+@require_POST
+def document_update(request, document_id):
+    """Update document metadata"""
+    try:
+        document = Document.objects.get(id=document_id, user=request.user, is_private=True)
+        
+        # Get form data
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        category = request.POST.get('category', 'personal')
+        tags = request.POST.get('tags', '').strip()
+        
+        # Validate required fields
+        if not title:
+            return JsonResponse({'error': 'Title is required'}, status=400)
+        
+        # Update document
+        document.title = title
+        document.description = description
+        document.category = category
+        document.tags = tags
+        document.save()
+        
+        # Log activity
+        ActivityLog.log_activity(
+            user=request.user,
+            activity_type='document_updated',
+            description=f'Updated document: {title}',
+            ip_address=get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+            session_id=request.session.session_key,
+            details={'document_id': document.id}
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Document updated successfully',
+            'document': {
+                'id': document.id,
+                'title': document.title,
+                'description': document.description,
+                'category': document.get_category_display(),
+                'tags': document.tags,
+                'updated_at': document.updated_at.strftime('%Y-%m-%d %H:%M')
+            }
+        })
+        
+    except Document.DoesNotExist:
+        return JsonResponse({'error': 'Document not found'}, status=404)
+    except Exception as e:
+        logger.error(f"Error updating document: {str(e)}")
+        return JsonResponse({'error': 'Failed to update document'}, status=500)

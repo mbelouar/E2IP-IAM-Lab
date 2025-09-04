@@ -1,0 +1,919 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Documents - SecureAuth Portal</title>
+    <meta name="description" content="Manage your private documents securely">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%230066cc'/><stop offset='100%' stop-color='%233385d6'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23grad)'/><path d='M50 25c-8.284 0-15 6.716-15 15v5h-5c-2.761 0-5 2.239-5 5v25c0 2.761 2.239 5 5 5h40c2.761 0 5-2.239 5-5V50c0-2.761-2.239-5-5-5h-5v-5c0-8.284-6.716-15-15-15zm0 6c5.523 0 10 4.477 10 10v5H40v-5c0-5.523 4.477-10 10-10z' fill='white'/></svg>">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/login-enhancements.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/background-enhancements.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/header-enhancements.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/home-enhancements.css' %}?v=5">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Header Background - Match other pages */
+        .header {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 1rem 2rem !important;
+            background: rgba(0, 0, 0, 0.1) !important;
+            backdrop-filter: blur(10px) !important;
+            position: relative !important;
+            z-index: 50 !important;
+        }
+
+        .header .header-left {
+            flex-shrink: 0 !important;
+        }
+
+        .header .utility-controls {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.75rem !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Header Background Color Fix - Override with high specificity */
+        .header .system-status {
+            background: rgba(30, 41, 59, 0.5) !important;
+            border: 1px solid rgba(100, 116, 139, 0.3) !important;
+            color: #e2e8f0 !important;
+        }
+
+        .header .system-status:hover {
+            background: rgba(30, 41, 59, 0.7) !important;
+        }
+
+        .header .utility-btn {
+            background: rgba(30, 41, 59, 0.5) !important;
+            border: 1px solid rgba(100, 116, 139, 0.3) !important;
+            color: #e2e8f0 !important;
+        }
+
+        .header .utility-btn:hover {
+            background: rgba(30, 41, 59, 0.7) !important;
+        }
+
+        /* Main Content */
+        .documents-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95));
+            backdrop-filter: blur(30px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 102, 204, 0.08);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #0066cc, #4285f4, #6366f1);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0 0 0.5rem 0;
+            color: var(--gray-900);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-title i {
+            color: #0066cc;
+            font-size: 2rem;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: var(--gray-600);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* Dark mode styles */
+        body.dark-mode .page-header {
+            background: linear-gradient(135deg, rgba(26, 32, 44, 0.98), rgba(30, 41, 59, 0.95));
+            border-color: rgba(0, 102, 204, 0.15);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(0, 102, 204, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .page-title {
+            color: var(--dark-text-primary);
+        }
+
+        body.dark-mode .page-subtitle {
+            color: var(--dark-text-secondary);
+        }
+
+        /* Controls Bar */
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .controls-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* Search and Filter Controls */
+        .search-box {
+            position: relative;
+            min-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid rgba(0, 102, 204, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(0, 102, 204, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .sort-select {
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(0, 102, 204, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sort-select:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        /* Upload Button */
+        .upload-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3);
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.4);
+            color: white;
+        }
+
+        /* Dark mode styles for controls */
+        body.dark-mode .search-box input,
+        body.dark-mode .filter-select,
+        body.dark-mode .sort-select {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(100, 116, 139, 0.3);
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .search-box input:focus,
+        body.dark-mode .filter-select:focus,
+        body.dark-mode .sort-select:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+
+        /* Documents Grid */
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .document-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 102, 204, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .document-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+        }
+
+        .document-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 102, 204, 0.15);
+        }
+
+        .document-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .document-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .document-icon.pdf { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .document-icon.word { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+        .document-icon.excel { background: linear-gradient(135deg, #059669, #047857); }
+        .document-icon.powerpoint { background: linear-gradient(135deg, #ea580c, #c2410c); }
+        .document-icon.image { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+        .document-icon.archive { background: linear-gradient(135deg, #6b7280, #4b5563); }
+        .document-icon.default { background: linear-gradient(135deg, #0066cc, #4285f4); }
+
+        .document-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .document-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0 0 0.25rem 0;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+
+        .document-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .document-size {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+            background: rgba(0, 102, 204, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+        }
+
+        .document-category {
+            font-size: 0.8rem;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .category-personal { background: #3b82f6; }
+        .category-work { background: #10b981; }
+        .category-financial { background: #f59e0b; }
+        .category-legal { background: #8b5cf6; }
+        .category-medical { background: #ef4444; }
+        .category-education { background: #6366f1; }
+        .category-other { background: #6b7280; }
+
+        .document-description {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            line-height: 1.4;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .document-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid rgba(0, 102, 204, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--gray-700);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 102, 204, 0.1);
+            border-color: rgba(0, 102, 204, 0.3);
+            color: #0066cc;
+        }
+
+        .action-btn.download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-color: transparent;
+        }
+
+        .action-btn.download:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+        }
+
+        .action-btn.delete {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            border-color: transparent;
+        }
+
+        .action-btn.delete:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+        }
+
+        /* Dark mode styles for document cards */
+        body.dark-mode .document-card {
+            background: rgba(26, 32, 44, 0.9);
+            border-color: rgba(0, 102, 204, 0.2);
+        }
+
+        body.dark-mode .document-title {
+            color: var(--dark-text-primary);
+        }
+
+        body.dark-mode .document-description {
+            color: var(--dark-text-secondary);
+        }
+
+        body.dark-mode .action-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(100, 116, 139, 0.3);
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .action-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 102, 204, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+            color: var(--gray-600);
+            margin: 0 0 2rem 0;
+        }
+
+        /* Dark mode styles for empty state */
+        body.dark-mode .empty-state {
+            background: rgba(26, 32, 44, 0.9);
+            border-color: rgba(0, 102, 204, 0.2);
+        }
+
+        body.dark-mode .empty-state h3 {
+            color: var(--dark-text-primary);
+        }
+
+        body.dark-mode .empty-state p {
+            color: var(--dark-text-secondary);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination a,
+        .pagination span {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid rgba(0, 102, 204, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--gray-700);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .pagination a:hover {
+            background: rgba(0, 102, 204, 0.1);
+            border-color: rgba(0, 102, 204, 0.3);
+            color: #0066cc;
+        }
+
+        .pagination .current {
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* Dark mode styles for pagination */
+        body.dark-mode .pagination a,
+        body.dark-mode .pagination span {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(100, 116, 139, 0.3);
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .pagination a:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .documents-content {
+                padding: 1rem;
+            }
+
+            .page-header {
+                padding: 1.5rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .controls-left,
+            .controls-right {
+                justify-content: center;
+            }
+
+            .search-box {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .documents-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .document-card {
+                padding: 1rem;
+            }
+
+            .document-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 102, 204, 0.1);
+            border-left: 4px solid #0066cc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Enhanced Background -->
+    <div class="background-wrapper">
+        <div class="background-grid"></div>
+        <div class="background-overlay"></div>
+        <div class="circuit-lines"></div>
+        <div class="floating-elements">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <a href="{% url 'authentication:home' %}" class="header-logo">
+                <div class="header-logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <div class="company-info">
+                    <div class="company-name">SecureAuth</div>
+                    <div class="company-tagline">Enterprise Access Portal</div>
+                </div>
+            </a>
+            <div class="system-status">
+                <div class="status-indicator"></div>
+                <span>User: {{ user.username }}</span>
+            </div>
+        </div>
+        <div class="utility-controls">
+            <button id="themeToggle" class="utility-btn" aria-label="Toggle dark mode">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+            <a href="{% url 'authentication:home' %}" class="utility-btn" aria-label="Back to Home">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                </svg>
+            </a>
+            <a href="{% url 'authentication:logout' %}" class="utility-btn" aria-label="Log out">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <path d="M16 17l5-5-5-5"></path>
+                    <path d="M21 12H9"></path>
+                </svg>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="documents-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-file-alt"></i>
+                My Documents
+            </h1>
+            <p class="page-subtitle">
+                Manage your private documents securely. All files are encrypted and only accessible by you.
+            </p>
+        </div>
+
+        <!-- Controls Bar -->
+        <div class="controls-bar">
+            <div class="controls-left">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search documents..." value="{{ current_search }}">
+                </div>
+                <select class="filter-select" id="categoryFilter">
+                    <option value="">All Categories</option>
+                    {% for value, label in category_choices %}
+                        <option value="{{ value }}" {% if current_category == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <select class="sort-select" id="sortSelect">
+                    <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>Newest First</option>
+                    <option value="created_at" {% if current_sort == 'created_at' %}selected{% endif %}>Oldest First</option>
+                    <option value="title" {% if current_sort == 'title' %}selected{% endif %}>Title A-Z</option>
+                    <option value="-title" {% if current_sort == '-title' %}selected{% endif %}>Title Z-A</option>
+                    <option value="-file_size" {% if current_sort == '-file_size' %}selected{% endif %}>Largest First</option>
+                    <option value="file_size" {% if current_sort == 'file_size' %}selected{% endif %}>Smallest First</option>
+                </select>
+            </div>
+            <div class="controls-right">
+                <a href="{% url 'authentication:document_upload' %}" class="upload-btn">
+                    <i class="fas fa-plus"></i>
+                    Upload Document
+                </a>
+            </div>
+        </div>
+
+        <!-- Documents Grid -->
+        {% if documents %}
+            <div class="documents-grid">
+                {% for document in documents %}
+                    <div class="document-card" data-document-id="{{ document.id }}">
+                        <div class="document-header">
+                            <div class="document-icon {{ document.get_file_extension|slice:'1:' }}">
+                                <i class="{{ document.get_file_icon }}"></i>
+                            </div>
+                            <div class="document-info">
+                                <h3 class="document-title">{{ document.title }}</h3>
+                                <div class="document-meta">
+                                    <span class="document-size">{{ document.get_file_size_display }}</span>
+                                    <span class="document-category category-{{ document.category }}">{{ document.get_category_display }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if document.description %}
+                            <p class="document-description">{{ document.description }}</p>
+                        {% endif %}
+                        
+                        <div class="document-actions">
+                            <a href="{% url 'authentication:document_detail' document.id %}" class="action-btn">
+                                <i class="fas fa-eye"></i>
+                                View
+                            </a>
+                            <a href="{% url 'authentication:document_download' document.id %}" class="action-btn download">
+                                <i class="fas fa-download"></i>
+                                Download
+                            </a>
+                            <button class="action-btn delete" onclick="deleteDocument({{ document.id }})">
+                                <i class="fas fa-trash"></i>
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if documents.has_other_pages %}
+                <div class="pagination">
+                    {% if documents.has_previous %}
+                        <a href="?page=1{% if current_category %}&category={{ current_category }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">&laquo; First</a>
+                        <a href="?page={{ documents.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">Previous</a>
+                    {% endif %}
+                    
+                    <span class="current">
+                        Page {{ documents.number }} of {{ documents.paginator.num_pages }}
+                    </span>
+                    
+                    {% if documents.has_next %}
+                        <a href="?page={{ documents.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">Next</a>
+                        <a href="?page={{ documents.paginator.num_pages }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">Last &raquo;</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <i class="fas fa-file-alt"></i>
+                <h3>No documents yet</h3>
+                <p>Upload your first document to get started. All files are stored securely and privately.</p>
+                <a href="{% url 'authentication:document_upload' %}" class="upload-btn">
+                    <i class="fas fa-plus"></i>
+                    Upload Your First Document
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <script src="{% static 'js/login.js' %}"></script>
+    <script>
+        // Initialize interactive elements when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if the initInteractiveElements function exists and call it
+            if (typeof initInteractiveElements === 'function') {
+                initInteractiveElements();
+            }
+            
+            // Initialize document management functionality
+            initDocumentManagement();
+        });
+
+        function initDocumentManagement() {
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            const categoryFilter = document.getElementById('categoryFilter');
+            const sortSelect = document.getElementById('sortSelect');
+            
+            let searchTimeout;
+            
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    applyFilters();
+                }, 300);
+            });
+            
+            categoryFilter.addEventListener('change', applyFilters);
+            sortSelect.addEventListener('change', applyFilters);
+            
+            function applyFilters() {
+                const params = new URLSearchParams();
+                
+                if (searchInput.value.trim()) {
+                    params.set('search', searchInput.value.trim());
+                }
+                if (categoryFilter.value) {
+                    params.set('category', categoryFilter.value);
+                }
+                if (sortSelect.value) {
+                    params.set('sort', sortSelect.value);
+                }
+                
+                const url = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+                window.location.href = url;
+            }
+        }
+
+        function deleteDocument(documentId) {
+            if (confirm('Are you sure you want to delete this document? This action cannot be undone.')) {
+                fetch(`/documents/${documentId}/delete/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the document card from the DOM
+                        const documentCard = document.querySelector(`[data-document-id="${documentId}"]`);
+                        if (documentCard) {
+                            documentCard.style.transition = 'all 0.3s ease';
+                            documentCard.style.transform = 'scale(0.8)';
+                            documentCard.style.opacity = '0';
+                            setTimeout(() => {
+                                documentCard.remove();
+                            }, 300);
+                        }
+                        
+                        // Show success message
+                        showToast(data.message, 'success');
+                    } else {
+                        showToast(data.error || 'Failed to delete document', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('An error occurred while deleting the document', 'error');
+                });
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 1000;
+                font-weight: 500;
+                max-width: 300px;
+                word-wrap: break-word;
+            `;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            // Remove toast after 3 seconds
+            setTimeout(() => {
+                toast.style.transition = 'all 0.3s ease';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+    </script>
+
+    {% csrf_token %}
+</body>
+</html>
