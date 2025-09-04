@@ -853,8 +853,8 @@ def mfa_authenticate_complete(request):
 def generate_backup_codes(request):
     """Generate backup codes for the user"""
     if request.method == 'POST':
-        # Generate new backup codes
-        codes = MFABackupCode.generate_codes_for_user(request.user)
+        # Generate new backup codes (4 codes)
+        codes = MFABackupCode.generate_codes_for_user(request.user, count=4)
         
         # Log activity
         ActivityLog.log_activity(
@@ -867,6 +867,15 @@ def generate_backup_codes(request):
             details={'codes_count': len(codes)}
         )
         
+        # Check if this is an AJAX request (from modal)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+            return JsonResponse({
+                'success': True,
+                'codes': codes,  # codes is already a list of strings
+                'message': 'Backup codes generated successfully'
+            })
+        
+        # Traditional form submission
         messages.success(request, 
             "New backup codes have been generated. Please save them in a secure location. "
             "These codes can only be used once each."

@@ -182,7 +182,8 @@
             display: flex;
             gap: 1rem;
             justify-content: center;
-            margin-top: 2rem;
+            margin: 3rem 0 2rem 0;
+            padding: 1.5rem 0;
         }
 
         .btn {
@@ -238,7 +239,7 @@
 
         .generate-section {
             text-align: center;
-            padding: 3rem 2rem;
+            padding: 3rem 2rem 2rem 2rem;
         }
 
         .generate-icon {
@@ -532,7 +533,7 @@
                         </div>
                     </div>
 
-                    <form method="post">
+                    <form method="post" style="margin-top: 2rem;">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-warning">
                             <i class="fas fa-plus"></i>
