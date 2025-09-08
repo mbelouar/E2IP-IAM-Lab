@@ -58,6 +58,27 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
+def get_ad_user_context(user):
+    """Get Active Directory user context for templates"""
+    try:
+        ad_user_info = get_ad_user_info(user.username)
+        if ad_user_info:
+            return {
+                'ad_email': ad_user_info.get('mail', ''),
+                'ad_display_name': ad_user_info.get('displayName', ''),
+            }
+        else:
+            return {
+                'ad_email': user.email if hasattr(user, 'email') else '',
+                'ad_display_name': user.get_full_name(),
+            }
+    except Exception as e:
+        logger.error(f"Error retrieving AD user info for {user.username}: {str(e)}")
+        return {
+            'ad_email': user.email if hasattr(user, 'email') else '',
+            'ad_display_name': user.get_full_name(),
+        }
+
 # Original views (keeping existing functionality)
 @login_required
 def home(request):
@@ -84,6 +105,9 @@ def home(request):
     # Get recent activities (last 3 for home page)
     recent_activities = request.user.activity_logs.all()[:3]
 
+    # Get current user info from Active Directory for consistent display
+    ad_context = get_ad_user_context(request.user)
+
     context = {
         'saml_attributes': saml_attributes,
         'saml_attributes_json': json.dumps(saml_attributes),  # Add this line
@@ -91,6 +115,7 @@ def home(request):
         'mfa_enabled': mfa_enabled,
         'webauthn_credentials_count': webauthn_credentials,
         'recent_activities': recent_activities,
+        **ad_context,  # Include AD email and display name
     }
     return render(request, 'authentication/home.html', context)
 
@@ -385,6 +410,9 @@ def mfa_setup(request):
     # Check if we should auto-trigger backup codes generation
     auto_trigger_backup = request.GET.get('action') == 'backup_codes'
     
+    # Get AD context for consistent email display
+    ad_context = get_ad_user_context(request.user)
+    
     context = {
         'mfa_enabled': preference.mfa_enabled,
         'credentials': credentials,
@@ -393,6 +421,7 @@ def mfa_setup(request):
         'webauthn_available': WEBAUTHN_AVAILABLE,
         'has_any_credentials': has_any_credentials,  # Add this for template logic
         'auto_trigger_backup': auto_trigger_backup,  # Add this for auto-triggering
+        **ad_context,  # Include AD email and display name
     }
     return render(request, 'authentication/mfa_setup.html', context)
 
@@ -2905,7 +2934,10 @@ def totp_setup(request):
             'qr_code': qr_code
         })
     
-    return render(request, 'authentication/totp_setup.html')
+    # Get AD context for consistent email display
+    ad_context = get_ad_user_context(request.user)
+    
+    return render(request, 'authentication/totp_setup.html', ad_context)
 
 @login_required 
 def totp_verify_setup(request):
@@ -2958,8 +2990,12 @@ def totp_verify_setup(request):
         messages.error(request, "TOTP device not found.")
         return redirect('authentication:mfa_setup')
     
+    # Get AD context for consistent email display
+    ad_context = get_ad_user_context(request.user)
+    
     context = {
         'device': device,
+        **ad_context,  # Include AD email and display name
     }
     return render(request, 'authentication/totp_verify_setup.html', context)
 

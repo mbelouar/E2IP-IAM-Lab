@@ -1750,7 +1750,7 @@
             </a>
             <div class="system-status">
                 <div class="status-indicator"></div>
-                <span>User: {{ saml_attributes.displayName.0|default:request.user.username }}</span>
+                <span>User: {{ ad_display_name|default:request.user.username }} ({{ ad_email|default:request.user.username }})</span>
             </div>
         </div>
         <div class="utility-controls">
@@ -2167,12 +2167,18 @@
                     }
                 }
                 
-                // If still no email found, try to use Django user's email as fallback
+                // If still no email found, try to use AD email first, then Django user's email as fallback
                 if (!userEmail) {
-                    const djangoUserEmail = '{{ user.email|default:"" }}';
-                    if (djangoUserEmail && djangoUserEmail.trim()) {
-                        userEmail = djangoUserEmail.trim();
-                        console.log('Using Django user email as fallback:', userEmail);
+                    const adUserEmail = '{{ ad_email|default:"" }}';
+                    if (adUserEmail && adUserEmail.trim()) {
+                        userEmail = adUserEmail.trim();
+                        console.log('Using AD email:', userEmail);
+                    } else {
+                        const djangoUserEmail = '{{ user.email|default:"" }}';
+                        if (djangoUserEmail && djangoUserEmail.trim()) {
+                            userEmail = djangoUserEmail.trim();
+                            console.log('Using Django user email as fallback:', userEmail);
+                        }
                     }
                 }
                 
@@ -2286,14 +2292,11 @@
                 </div>
                 <div class="profile-info">
                     <div class="user-name">
-                        <h3>{{ user.get_full_name|default:user.username }}</h3>
-                        {% if user.get_full_name and user.username != user.get_full_name %}
-                            <span class="username">@{{ user.username }}</span>
-                        {% endif %}
+                        <h3>{{ ad_display_name|default:user.get_full_name|default:user.username }}</h3>
                     </div>
                     <div class="user-email">
                         <i class="fas fa-envelope"></i>
-                        <span>{{ user.email }}</span>
+                        <span>{{ ad_email|default:user.email }}</span>
                     </div>
                     {% if user.is_staff %}
                         <div class="user-badge">
