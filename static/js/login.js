@@ -70,8 +70,10 @@ function initializeApp() {
     // Create floating elements for background
     createFloatingElements();
     
-    // Show welcome message
-    showWelcomeMessage();
+    // Show welcome message only on login page and home page
+    if (window.location.pathname.includes('login') || window.location.pathname.includes('auth_choice') || window.location.pathname === '/' || window.location.pathname.includes('home')) {
+        showWelcomeMessage();
+    }
 }
 
 // Theme management
@@ -273,8 +275,136 @@ function logoClick() {
 }
 
 function showHelp() {
-    showToast('Need Help?', 'Contact IT support at support@example.com or call ext. 1234 for assistance with login issues.', 'info');
+    // Remove existing modal if any
+    const existingModal = document.getElementById('helpModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Create help modal content
+    const modalHTML = `
+        <div id="helpModal" class="help-modal" style="display: block;">
+            <div class="help-modal-content">
+                <div class="help-modal-header">
+                    <h2 class="help-modal-title">
+                        <i class="fas fa-question-circle"></i>
+                        Need Help?
+                    </h2>
+                    <button class="help-modal-close" onclick="closeHelpModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="help-modal-body">
+                    <div class="help-section">
+                        <h3><i class="fas fa-headset"></i> Contact Support</h3>
+                        <div class="help-options">
+                            <div class="help-option">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <strong>Email Support</strong>
+                                    <p>support@secureauth.com</p>
+                                </div>
+                            </div>
+                            <div class="help-option">
+                                <i class="fas fa-phone"></i>
+                                <div>
+                                    <strong>Phone Support</strong>
+                                    <p>+1 (555) 123-4567</p>
+                                </div>
+                            </div>
+                            <div class="help-option">
+                                <i class="fas fa-clock"></i>
+                                <div>
+                                    <strong>Support Hours</strong>
+                                    <p>Monday - Friday: 8:00 AM - 6:00 PM EST</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h3><i class="fas fa-book"></i> Documentation & Resources</h3>
+                        <div class="help-links">
+                            <a href="#" class="help-link" onclick="showToast('Documentation', 'User guide and documentation coming soon!', 'info')">
+                                <i class="fas fa-file-alt"></i>
+                                User Guide
+                            </a>
+                            <a href="#" class="help-link" onclick="showToast('FAQ', 'Frequently Asked Questions coming soon!', 'info')">
+                                <i class="fas fa-question"></i>
+                                FAQ
+                            </a>
+                            <a href="#" class="help-link" onclick="showToast('Tutorials', 'Video tutorials coming soon!', 'info')">
+                                <i class="fas fa-play-circle"></i>
+                                Video Tutorials
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h3><i class="fas fa-tools"></i> Quick Actions</h3>
+                        <div class="help-actions">
+                            <button class="help-action-btn" onclick="showPasswordResetHelp()">
+                                <i class="fas fa-key"></i>
+                                Reset Password
+                            </button>
+                            <button class="help-action-btn" onclick="showMFAHelp()">
+                                <i class="fas fa-shield-alt"></i>
+                                MFA Setup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add modal to page
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Add smooth animation
+    const modal = document.getElementById('helpModal');
+    modal.style.opacity = '0';
+    setTimeout(() => {
+        modal.style.opacity = '1';
+        modal.classList.add('show');
+    }, 10);
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeHelpModal();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal) {
+            closeHelpModal();
+        }
+    });
 }
+
+function closeHelpModal() {
+    const modal = document.getElementById('helpModal');
+    if (modal) {
+        modal.classList.remove('show');
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.remove();
+        }, 300);
+    }
+}
+
+function showPasswordResetHelp() {
+    closeHelpModal();
+    showToast('Password Reset', 'To reset your password, click "Forgot Password" on the login page or contact support for assistance.', 'info');
+}
+
+function showMFAHelp() {
+    closeHelpModal();
+    showToast('MFA Setup', 'Multi-Factor Authentication adds extra security. Go to your profile settings to set up MFA with your mobile device.', 'info');
+}
+
 
 function showWelcomeMessage() {
     setTimeout(() => {
