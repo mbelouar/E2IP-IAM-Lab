@@ -22,6 +22,7 @@ urlpatterns = [
     path('saml-acs/', views.custom_saml_acs, name='saml_acs'),
     path('custom-saml-acs/', views.custom_saml_acs, name='custom_saml_acs'),  # Backward compatibility
     path('saml-logout/', views.saml_logout_view, name='saml_logout'),
+    path('clear-saml-session/', views.clear_saml_session, name='clear_saml_session'),
     
     # MFA Setup and Management
     path('mfa/setup/', views.mfa_setup, name='mfa_setup'),

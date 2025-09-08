@@ -176,8 +176,34 @@ def standard_login(request):
     return render(request, 'authentication/standard_login.html')
 
 def login_view(request):
-    """Legacy login view - redirects to auth choice"""
-    return redirect('authentication:auth_choice')
+    """Main login view - handles both auth choice and direct login"""
+    if request.user.is_authenticated:
+        return redirect('authentication:home')
+    
+    # If this is a POST request, handle login directly
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        remember_me = request.POST.get('rememberMe') == 'on'
+        
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            
+            # Handle remember me functionality
+            if remember_me:
+                request.session.set_expiry(1209600)  # 2 weeks
+            else:
+                request.session.set_expiry(0)
+            
+            return redirect('authentication:home')
+        else:
+            messages.error(request, "Invalid username or password.")
+            return render(request, 'authentication/login.html')
+    
+    # For GET requests, show the auth choice page
+    return render(request, 'authentication/auth_choice.html')
 
 def standard_register(request):
     """User registration for standard authentication"""
@@ -2798,6 +2824,18 @@ def saml_logout_view(request):
         # Force logout anyway
         logout(request)
         return redirect('authentication:login')
+
+def clear_saml_session(request):
+    """Clear SAML session data manually"""
+    # Clear SAML-related session data
+    saml_keys = ['saml_authenticated', 'saml_name_id', 'saml2_session', 'authentication_method']
+    for key in saml_keys:
+        if key in request.session:
+            del request.session[key]
+    
+    request.session.save()
+    
+    return HttpResponse("SAML Session Cleared")
 
 def is_ad_user(request):
     """Check if the current user is from Active Directory (SAML)"""
