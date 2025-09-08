@@ -60,6 +60,122 @@
             background: rgba(30, 41, 59, 0.7) !important;
         }
 
+        /* Light Mode Styles for Home Page */
+        body:not(.dark-mode) {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+        }
+
+        body:not(.dark-mode) .header {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px) !important;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+        }
+
+        body:not(.dark-mode) .header .system-status {
+            background: rgba(59, 130, 246, 0.1) !important;
+            border: 1px solid rgba(59, 130, 246, 0.3) !important;
+            color: #1e40af !important;
+        }
+
+        body:not(.dark-mode) .header .system-status:hover {
+            background: rgba(59, 130, 246, 0.2) !important;
+        }
+
+        body:not(.dark-mode) .header .utility-btn {
+            background: rgba(59, 130, 246, 0.1) !important;
+            border: 1px solid rgba(59, 130, 246, 0.3) !important;
+            color: #1e40af !important;
+        }
+
+        body:not(.dark-mode) .header .utility-btn:hover {
+            background: rgba(59, 130, 246, 0.2) !important;
+        }
+
+        body:not(.dark-mode) .header .company-name {
+            color: #1e293b !important;
+        }
+
+        body:not(.dark-mode) .header .company-tagline {
+            color: #64748b !important;
+        }
+
+        /* Light Mode Hero Section */
+        body:not(.dark-mode) .hero-section {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+
+        body:not(.dark-mode) .hero-title {
+            color: #1e293b;
+        }
+
+        body:not(.dark-mode) .hero-subtitle {
+            color: #64748b;
+        }
+
+        /* Light Mode Cards */
+        body:not(.dark-mode) .dashboard-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        body:not(.dark-mode) .dashboard-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: #3b82f6;
+        }
+
+        body:not(.dark-mode) .dashboard-card h3 {
+            color: #1e293b;
+        }
+
+        body:not(.dark-mode) .dashboard-card p {
+            color: #64748b;
+        }
+
+        /* Light Mode Buttons */
+        body:not(.dark-mode) .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+
+        body:not(.dark-mode) .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.4);
+        }
+
+        body:not(.dark-mode) .btn-secondary {
+            background: rgba(248, 250, 252, 0.8);
+            color: #1e293b;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        body:not(.dark-mode) .btn-secondary:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            color: #1d4ed8;
+        }
+
+        /* Light Mode Footer */
+        body:not(.dark-mode) .footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        body:not(.dark-mode) .footer p,
+        body:not(.dark-mode) .footer a {
+            color: #64748b;
+        }
+
+        body:not(.dark-mode) .footer a:hover {
+            color: #3b82f6;
+        }
+
         /* Enhanced Home Content */
         .home-content {
             max-width: 1200px;
@@ -1942,6 +2058,7 @@
 
     <script src="{% static 'js/login.js' %}"></script>
     <script src="{% static 'js/home.js' %}"></script>
+    <script src="{% static 'js/footer.js' %}"></script>
     <script>
         // Initialize interactive elements when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
@@ -2002,44 +2119,92 @@
 
         // Gmail Integration Function
         function openGmail() {
-            // Get user email from SAML attributes (passed as JSON)
-            const samlAttributes = JSON.parse('{{ saml_attributes_json|escapejs }}');
-            
-            // Try different email attribute names that might come from AD
-            let userEmail = null;
-            const emailKeys = [
-                'mail',
-                'email', 
-                'userPrincipalName',
-                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress',
-                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name',
-                'http://schemas.microsoft.com/ws/2008/06/identity/claims/emailaddress'
-            ];
-            
-            // Find the first available email attribute
-            for (const key of emailKeys) {
-                if (samlAttributes[key] && samlAttributes[key].length > 0) {
-                    userEmail = samlAttributes[key][0] || samlAttributes[key];
-                    break;
+            try {
+                // Get user email from SAML attributes (passed as JSON)
+                const samlAttributes = JSON.parse('{{ saml_attributes_json|escapejs }}');
+                
+                // Debug: Log all available SAML attributes
+                console.log('Available SAML attributes:', samlAttributes);
+                console.log('SAML attributes keys:', Object.keys(samlAttributes));
+                
+                // Try different email attribute names that might come from AD
+                let userEmail = null;
+                const emailKeys = [
+                    'mail',
+                    'email', 
+                    'userPrincipalName',
+                    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress',
+                    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name',
+                    'http://schemas.microsoft.com/ws/2008/06/identity/claims/emailaddress',
+                    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn',
+                    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier',
+                    'http://schemas.microsoft.com/identity/claims/objectidentifier',
+                    'http://schemas.microsoft.com/ws/2008/06/identity/claims/primarysid'
+                ];
+                
+                // Find the first available email attribute
+                for (const key of emailKeys) {
+                    if (samlAttributes[key]) {
+                        // Handle both array and string values
+                        const value = Array.isArray(samlAttributes[key]) ? samlAttributes[key][0] : samlAttributes[key];
+                        if (value && value.trim()) {
+                            userEmail = value.trim();
+                            console.log(`Found email in attribute '${key}':`, userEmail);
+                            break;
+                        }
+                    }
                 }
-            }
-            
-            if (userEmail) {
-                // Extract the email part if it's in UPN format (user@domain.com)
-                const email = userEmail.includes('@') ? userEmail : `${userEmail}@gmail.com`;
                 
-                // Open Gmail with the user's email
-                const gmailUrl = `https://mail.google.com/mail/u/0/#inbox`;
-                window.open(gmailUrl, '_blank');
+                // If no email found in standard keys, try to find any attribute that looks like an email
+                if (!userEmail) {
+                    for (const [key, value] of Object.entries(samlAttributes)) {
+                        const emailValue = Array.isArray(value) ? value[0] : value;
+                        if (emailValue && typeof emailValue === 'string' && emailValue.includes('@')) {
+                            userEmail = emailValue.trim();
+                            console.log(`Found email-like value in attribute '${key}':`, userEmail);
+                            break;
+                        }
+                    }
+                }
                 
-                // Log for debugging
-                console.log('Opening Gmail for user:', email);
+                // If still no email found, try to use Django user's email as fallback
+                if (!userEmail) {
+                    const djangoUserEmail = '{{ user.email|default:"" }}';
+                    if (djangoUserEmail && djangoUserEmail.trim()) {
+                        userEmail = djangoUserEmail.trim();
+                        console.log('Using Django user email as fallback:', userEmail);
+                    }
+                }
                 
-                // Show helpful message
-                showToast(`Opening Gmail for ${email}`, 'info');
-            } else {
-                // Fallback: open Gmail without specific user
-                alert('Email address not found in your profile. Please contact your administrator to configure your email in Active Directory.');
+                if (userEmail) {
+                    // Ensure the email has a proper format
+                    let email = userEmail;
+                    if (!email.includes('@')) {
+                        // If no @ symbol, assume it's a username and add @gmail.com
+                        email = `${email}@gmail.com`;
+                    }
+                    
+                    // Open Gmail with the user's email
+                    const gmailUrl = `https://mail.google.com/mail/u/0/#inbox`;
+                    window.open(gmailUrl, '_blank');
+                    
+                    // Log for debugging
+                    console.log('Opening Gmail for user:', email);
+                    
+                    // Show helpful message
+                    showToast(`Opening Gmail for ${email}`, 'success');
+                } else {
+                    // Fallback: open Gmail without specific user
+                    console.warn('No email found in SAML attributes:', samlAttributes);
+                    console.log('Available attributes:', Object.keys(samlAttributes));
+                    showToast('Email not found in your profile. Opening Gmail...', 'warning');
+                    const gmailUrl = `https://mail.google.com/mail/u/0/#inbox`;
+                    window.open(gmailUrl, '_blank');
+                }
+            } catch (error) {
+                console.error('Error opening Gmail:', error);
+                showToast('Error opening Gmail. Please try again.', 'error');
+                // Still try to open Gmail as fallback
                 const gmailUrl = `https://mail.google.com/mail/u/0/#inbox`;
                 window.open(gmailUrl, '_blank');
             }
@@ -2051,13 +2216,14 @@
             const toast = document.createElement('div');
             toast.style.cssText = `
                 position: fixed;
-                top: 20px;
+                bottom: 20px;
                 right: 20px;
-                background: ${type === 'info' ? '#3b82f6' : '#10b981'};
-                color: white;
+                background: white;
+                color: #374151;
                 padding: 1rem 1.5rem;
                 border-radius: 8px;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                border: 1px solid #e5e7eb;
                 z-index: 1000;
                 font-weight: 500;
                 animation: slideIn 0.3s ease-out;
@@ -2069,8 +2235,8 @@
             const style = document.createElement('style');
             style.textContent = `
                 @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
+                    from { transform: translateY(100%); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
                 }
             `;
             document.head.appendChild(style);

@@ -48,6 +48,7 @@ urlpatterns = [
     # Profile Management
     path('profile/edit/', views.edit_profile, name='edit_profile'),
     path('profile/change-password/', views.change_password, name='change_password'),
+    path('debug/csrf/', views.debug_csrf, name='debug_csrf'),
     path('activities/', views.view_all_activities, name='view_all_activities'),
     
     # Document Management
@@ -57,4 +58,7 @@ urlpatterns = [
     path('documents/<int:document_id>/download/', views.document_download, name='document_download'),
     path('documents/<int:document_id>/delete/', views.document_delete, name='document_delete'),
     path('documents/<int:document_id>/update/', views.document_update, name='document_update'),
+    
+    # Admin/Database Views
+    path('admin/users/', views.user_database_view, name='user_database'),
 ]

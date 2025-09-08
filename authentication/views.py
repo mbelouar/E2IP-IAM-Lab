@@ -2354,6 +2354,20 @@ def show_saml_error(request, saml_response, error_message):
 def edit_profile(request):
     """View for editing user profile information"""
     if request.method == 'POST':
+        # Debug CSRF token
+        csrf_token_post = request.POST.get('csrfmiddlewaretoken', 'NOT_FOUND')
+        csrf_token_cookie = request.META.get('CSRF_COOKIE', 'NOT_FOUND')
+        session_key = request.session.session_key
+        
+        logger.info(f"CSRF token from POST: {csrf_token_post}")
+        logger.info(f"CSRF token from cookies: {csrf_token_cookie}")
+        logger.info(f"User session key: {session_key}")
+        
+        # Check if CSRF token is missing or invalid
+        if not csrf_token_post or csrf_token_post == 'NOT_FOUND':
+            logger.error("CSRF token missing from POST data")
+            messages.error(request, 'Security token missing. Please refresh the page and try again.')
+            return redirect('authentication:edit_profile')
         display_name = request.POST.get('display_name', '').strip()
         first_name = request.POST.get('first_name', '').strip()
         last_name = request.POST.get('last_name', '').strip()
@@ -2450,6 +2464,45 @@ def edit_profile(request):
         }
     
     return render(request, 'authentication/edit_profile.html', context)
+
+@login_required
+def debug_csrf(request):
+    """Debug view to check CSRF token status"""
+    from django.middleware.csrf import get_token
+    from django.template.loader import render_to_string
+    
+    csrf_token = get_token(request)
+    session_key = request.session.session_key
+    
+    if request.method == 'POST':
+        post_token = request.POST.get('csrfmiddlewaretoken', 'NOT_FOUND')
+        cookie_token = request.META.get('CSRF_COOKIE', 'NOT_FOUND')
+        tokens_match = post_token == cookie_token
+        
+        return HttpResponse(f"""
+        <h2>CSRF Test - POST Successful!</h2>
+        <p><strong>CSRF Token from POST:</strong> {post_token}</p>
+        <p><strong>CSRF Token from Cookie:</strong> {cookie_token}</p>
+        <p><strong>Tokens Match:</strong> {tokens_match}</p>
+        <p><a href="/authentication/debug/csrf/">Test Again</a> | <a href="/authentication/profile/edit/">Back to Edit Profile</a></p>
+        """, content_type='text/html')
+    
+    return HttpResponse(f"""
+    <h2>CSRF Debug Information</h2>
+    <p><strong>CSRF Token:</strong> {csrf_token}</p>
+    <p><strong>Session Key:</strong> {session_key}</p>
+    <p><strong>CSRF Cookie:</strong> {request.META.get('CSRF_COOKIE', 'NOT_FOUND')}</p>
+    <p><strong>User:</strong> {request.user.username}</p>
+    <p><strong>Is Authenticated:</strong> {request.user.is_authenticated}</p>
+    
+    <h3>Test CSRF Token</h3>
+    <form method="post">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{csrf_token}">
+        <button type="submit">Test CSRF Token</button>
+    </form>
+    
+    <p><a href="/authentication/profile/edit/">Back to Edit Profile</a></p>
+    """, content_type='text/html')
 
 def get_ad_user_info(username):
     """Retrieve user information from Active Directory"""
@@ -3393,3 +3446,52 @@ def document_update(request, document_id):
     except Exception as e:
         logger.error(f"Error updating document: {str(e)}")
         return JsonResponse({'error': 'Failed to update document'}, status=500)
+
+@login_required
+def user_database_view(request):
+    """Display all users in the database in a table format"""
+    # Only allow staff users to view this
+    if not request.user.is_staff:
+        messages.error(request, 'You do not have permission to view this page.')
+        return redirect('authentication:home')
+    
+    # Get all users with their related data
+    users = User.objects.all().order_by('id')
+    
+    # Get additional user data
+    user_data = []
+    for user in users:
+        # Get MFA preference
+        try:
+            mfa_pref = user.mfa_preference
+            mfa_enabled = mfa_pref.mfa_enabled
+        except:
+            mfa_enabled = False
+        
+        # Get TOTP devices count
+        totp_devices = user.totp_devices.filter(is_active=True).count()
+        
+        # Get WebAuthn credentials count
+        webauthn_creds = user.webauthn_credentials.filter(is_active=True).count()
+        
+        # Get last login
+        last_login = user.last_login.strftime('%Y-%m-%d %H:%M:%S') if user.last_login else 'Never'
+        
+        # Get date joined
+        date_joined = user.date_joined.strftime('%Y-%m-%d %H:%M:%S')
+        
+        user_data.append({
+            'user': user,
+            'mfa_enabled': mfa_enabled,
+            'totp_devices': totp_devices,
+            'webauthn_creds': webauthn_creds,
+            'last_login': last_login,
+            'date_joined': date_joined,
+        })
+    
+    context = {
+        'user_data': user_data,
+        'total_users': users.count(),
+    }
+    
+    return render(request, 'authentication/user_database.html', context)

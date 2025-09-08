@@ -7,24 +7,27 @@
 
 .header-logo {
     display: flex !important;
-    align-items: center !important;
-    gap: var(--space-md) !important;
+    align-items: flex-start !important;
+    gap: var(--space-sm) !important;
+    padding-top: 4px !important;
 }
 
 .header-logo-icon {
-    width: 43px !important;
-    height: 47px !important;
+    width: 40px !important;
+    height: 40px !important;
     background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light)) !important;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    box-shadow: 0 5px 15px rgba(0, 102, 204, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
     position: relative !important;
     overflow: hidden !important;
     transition: all 0.3s ease !important;
     transform-style: preserve-3d !important;
     z-index: 1 !important;
+    flex-shrink: 0 !important;
+    margin-top: 2px !important;
 }
 
 .header-logo-icon::after {
@@ -80,10 +83,14 @@
 .company-info {
     display: flex !important;
     flex-direction: column !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    min-height: 40px !important;
+    padding-top: 2px !important;
 }
 
 .company-name {
-    font-size: 1.5rem !important;
+    font-size: 1.4rem !important;
     font-weight: 800 !important;
     background: linear-gradient(135deg, #ffffff, #e6f0ff) !important;
     -webkit-background-clip: text !important;
@@ -95,7 +102,8 @@
     transition: all 0.3s ease !important;
     display: inline-block !important;
     text-shadow: 0 2px 10px rgba(0, 102, 204, 0.2) !important;
-    margin-bottom: -12px;
+    margin-bottom: -2px !important;
+    line-height: 1.1 !important;
 }
 
 .header-logo:hover .company-name {
@@ -104,12 +112,13 @@
 }
 
 .company-tagline {
-    font-size: 0.95rem !important;
+    font-size: 0.85rem !important;
     font-weight: 500 !important;
     color: rgba(255, 255, 255, 0.85) !important;
     letter-spacing: 0.02em !important;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) !important;
-    margin-top: 2px !important;
+    margin-top: 0px !important;
+    line-height: 1.2 !important;
 }
 
 body.dark-mode .company-name {
@@ -119,22 +128,90 @@ body.dark-mode .company-name {
     text-shadow: 0 2px 10px rgba(51, 133, 214, 0.3) !important;
 }
 
+/* Light Mode Title Styling */
+body:not(.dark-mode) .company-name {
+    background: linear-gradient(135deg, #1e293b, #3b82f6) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    text-shadow: 0 2px 8px rgba(59, 130, 246, 0.2) !important;
+    font-weight: 800 !important;
+}
+
+body:not(.dark-mode) .header-logo:hover .company-name {
+    background: linear-gradient(135deg, #0f172a, #1d4ed8) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    text-shadow: 0 3px 12px rgba(29, 78, 216, 0.3) !important;
+    transform: translateY(-1px) !important;
+}
+
+body:not(.dark-mode) .company-tagline {
+    color: #64748b !important;
+    text-shadow: 0 1px 2px rgba(15, 23, 42, 0.1) !important;
+    font-weight: 500 !important;
+}
+
+/* Light Mode Header Logo Icon */
+body:not(.dark-mode) .header-logo-icon {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.3) !important;
+}
+
+body:not(.dark-mode) .header-logo:hover .header-logo-icon {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35) !important;
+}
+
 /* System status enhancements */
 .system-status {
     margin-left: var(--space-lg) !important;
     background: rgba(30, 41, 59, 0.5) !important;
     backdrop-filter: blur(12px) !important;
-    padding: var(--space-sm) var(--space-lg) !important;
-    border-radius: var(--radius-xl) !important;
+    padding: 0.75rem 1.25rem !important;
+    border-radius: 1rem !important;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(100, 116, 139, 0.3) !important;
     border: 1px solid rgba(100, 116, 139, 0.3) !important;
     transition: all 0.3s ease !important;
     color: #e2e8f0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    min-height: 2.5rem !important;
 }
 
 .system-status:hover {
     background: rgba(30, 41, 59, 0.7) !important;
     transform: translateY(-1px) !important;
+}
+
+/* Status indicator styling - High specificity to override all other styles */
+.header .system-status .status-indicator,
+.system-status .status-indicator {
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    background: #10b981 !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+    flex-shrink: 0 !important;
+    margin: 0 !important;
+    align-self: center !important;
+    animation: none !important;
+    position: static !important;
+    top: auto !important;
+    transform: none !important;
+}
+
+/* System status text styling - High specificity */
+.header .system-status span,
+.system-status span {
+    line-height: 1 !important;
+    align-self: center !important;
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+    display: inline-block !important;
 }
 
 /* Responsive adjustments */
@@ -143,6 +220,25 @@ body.dark-mode .company-name {
         flex-direction: row !important;
         flex-wrap: wrap !important;
         justify-content: center !important;
+    }
+    
+    .header-logo {
+        gap: var(--space-xs) !important;
+        padding-top: 2px !important;
+    }
+    
+    .header-logo-icon {
+        width: 36px !important;
+        height: 36px !important;
+        margin-top: 1px !important;
+    }
+    
+    .company-name {
+        font-size: 1.2rem !important;
+    }
+    
+    .company-tagline {
+        font-size: 0.8rem !important;
     }
     
     .system-status {

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Database - SecureAuth</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/header-enhancements.css' %}">
+    <link rel="stylesheet" href="{% static 'css/background-enhancements.css' %}">
+    <style>
+    .database-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .database-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .database-header h1 {
+        margin: 0;
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+    
+    .database-header p {
+        margin: 10px 0 0 0;
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+    
+    .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        border: 1px solid #e1e5e9;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #667eea;
+        margin-bottom: 10px;
+    }
+    
+    .stat-label {
+        color: #6c757d;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    
+    .users-table-container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        overflow: hidden;
+        border: 1px solid #e1e5e9;
+    }
+    
+    .table-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 20px 30px;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .table-header h2 {
+        margin: 0;
+        color: #495057;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+    
+    .users-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+    
+    .users-table th {
+        background: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+        padding: 15px 20px;
+        text-align: left;
+        border-bottom: 2px solid #dee2e6;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .users-table td {
+        padding: 15px 20px;
+        border-bottom: 1px solid #e9ecef;
+        vertical-align: middle;
+    }
+    
+    .users-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-right: 15px;
+    }
+    
+    .user-info {
+        display: flex;
+        align-items: center;
+    }
+    
+    .user-details h4 {
+        margin: 0 0 5px 0;
+        color: #495057;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    .user-details p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+    
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .status-active {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-inactive {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .status-staff {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+    
+    .status-superuser {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .mfa-status {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .mfa-enabled {
+        color: #28a745;
+    }
+    
+    .mfa-disabled {
+        color: #6c757d;
+    }
+    
+    .device-count {
+        background: #e9ecef;
+        color: #495057;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #6c757d;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background 0.3s ease;
+        margin-bottom: 20px;
+    }
+    
+    .back-button:hover {
+        background: #5a6268;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .no-data {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+    
+    .no-data i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+    
+    @media (max-width: 768px) {
+        .users-table-container {
+            overflow-x: auto;
+        }
+        
+        .users-table {
+            min-width: 800px;
+        }
+        
+        .database-header h1 {
+            font-size: 2rem;
+        }
+        
+        .stats-cards {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    // Add any JavaScript functionality here if needed
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-refresh every 30 seconds to keep data current
+        // setInterval(function() {
+        //     location.reload();
+        // }, 30000);
+    });
+</script>
+</style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="background-overlay"></div>
+    <div class="background-grid"></div>
+    <div class="circuit-lines"></div>
+    <div class="floating-element"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="header-logo">
+                <div class="header-logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="company-info">
+                    <div class="company-name">SecureAuth</div>
+                    <div class="company-tagline">Enterprise Access Portal</div>
+                </div>
+            </div>
+            <div class="system-status">
+                <div class="status-indicator"></div>
+                <span>System Online</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="utility-btn" id="themeToggle" title="Toggle Theme">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+                    <path d="M12 1V3M12 21V23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="database-container">
+            <a href="{% url 'authentication:home' %}" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+            
+            <div class="database-header">
+                <h1>User Database</h1>
+                <p>Manage and view all registered users in the system</p>
+            </div>
+            
+            <div class="database-content">
+                <div class="database-stats">
+                    <div class="stat-card">
+                        <h3>Total Users</h3>
+                        <span class="stat-number">{{ total_users }}</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Users</h3>
+                        <span class="stat-number">{{ active_users }}</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>New This Month</h3>
+                        <span class="stat-number">{{ new_users_this_month }}</span>
+                    </div>
+                </div>
+                
+                <div class="database-table-container">
+                    <div class="table-header">
+                        <h2>All Users</h2>
+                        <div class="table-actions">
+                            <input type="text" id="searchInput" placeholder="Search users..." class="search-input">
+                            <button class="refresh-btn" onclick="location.reload()">
+                                <i class="fas fa-sync-alt"></i>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-wrapper">
+                        <table class="database-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Full Name</th>
+                                    <th>Status</th>
+                                    <th>Last Login</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>{{ user.id }}</td>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.first_name }} {{ user.last_name }}</td>
+                                    <td>
+                                        <span class="status-badge {% if user.is_active %}active{% else %}inactive{% endif %}">
+                                            {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>{{ user.last_login|date:"M d, Y H:i"|default:"Never" }}</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn-action view-btn" onclick="viewUser({{ user.id }})" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn-action edit-btn" onclick="editUser({{ user.id }})" title="Edit User">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn-action delete-btn" onclick="deleteUser({{ user.id }})" title="Delete User">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="no-data">No users found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 SecureAuth. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Contact Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/login.js' %}"></script>
+    <script src="{% static 'js/footer.js' %}"></script>
+</body>
+</html>

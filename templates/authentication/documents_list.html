@@ -60,6 +60,108 @@
             background: rgba(30, 41, 59, 0.7) !important;
         }
 
+        /* Light Mode Styles for Documents List Page */
+        body:not(.dark-mode) {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+        }
+
+        body:not(.dark-mode) .header {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px) !important;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+        }
+
+        body:not(.dark-mode) .header .system-status {
+            background: rgba(59, 130, 246, 0.1) !important;
+            border: 1px solid rgba(59, 130, 246, 0.3) !important;
+            color: #1e40af !important;
+        }
+
+        body:not(.dark-mode) .header .system-status:hover {
+            background: rgba(59, 130, 246, 0.2) !important;
+        }
+
+        body:not(.dark-mode) .header .utility-btn {
+            background: rgba(59, 130, 246, 0.1) !important;
+            border: 1px solid rgba(59, 130, 246, 0.3) !important;
+            color: #1e40af !important;
+        }
+
+        body:not(.dark-mode) .header .utility-btn:hover {
+            background: rgba(59, 130, 246, 0.2) !important;
+        }
+
+        body:not(.dark-mode) .header .company-name {
+            color: #1e293b !important;
+        }
+
+        body:not(.dark-mode) .header .company-tagline {
+            color: #64748b !important;
+        }
+
+        /* Light Mode Document Cards */
+        body:not(.dark-mode) .document-card {
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        body:not(.dark-mode) .document-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: #3b82f6;
+        }
+
+        body:not(.dark-mode) .document-card h3 {
+            color: #1e293b;
+        }
+
+        body:not(.dark-mode) .document-card p {
+            color: #64748b;
+        }
+
+        body:not(.dark-mode) .document-meta {
+            color: #64748b;
+        }
+
+        /* Light Mode Buttons */
+        body:not(.dark-mode) .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+
+        body:not(.dark-mode) .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.4);
+        }
+
+        body:not(.dark-mode) .btn-secondary {
+            background: rgba(248, 250, 252, 0.8);
+            color: #1e293b;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        body:not(.dark-mode) .btn-secondary:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            color: #1d4ed8;
+        }
+
+        /* Light Mode Footer */
+        body:not(.dark-mode) .footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        body:not(.dark-mode) .footer p,
+        body:not(.dark-mode) .footer a {
+            color: #64748b;
+        }
+
+        body:not(.dark-mode) .footer a:hover {
+            color: #3b82f6;
+        }
+
         /* Main Content */
         .documents-content {
             max-width: 1400px;
@@ -939,6 +1041,7 @@
     </div>
 
     <script src="{% static 'js/login.js' %}"></script>
+    <script src="{% static 'js/footer.js' %}"></script>
     <script>
         // Initialize interactive elements when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
@@ -1029,12 +1132,13 @@
             toast.className = `toast toast-${type}`;
             toast.style.cssText = `
                 position: fixed;
-                top: 20px;
+                bottom: 20px;
                 right: 20px;
-                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
-                color: white;
+                background: white;
+                color: #374151;
                 padding: 1rem 1.5rem;
                 border-radius: 8px;
+                border: 1px solid #e5e7eb;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
                 z-index: 1000;
                 font-weight: 500;
@@ -1058,6 +1162,18 @@
             }, 3000);
         }
     </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 SecureAuth. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Contact Support</a>
+            </div>
+        </div>
+    </footer>
 
     {% csrf_token %}
 </body>

@@ -246,17 +246,18 @@
         }
 
         .system-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(30, 41, 59, 0.5);
-            backdrop-filter: blur(12px);
-            padding: 0.5rem 1rem;
-            border-radius: 0.75rem;
-            color: #e2e8f0;
-            font-size: 0.875rem;
-            font-weight: 500;
-            border: 1px solid rgba(100, 116, 139, 0.3);
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+            background: rgba(30, 41, 59, 0.5) !important;
+            backdrop-filter: blur(12px) !important;
+            padding: 0.75rem 1.25rem !important;
+            border-radius: 1rem !important;
+            color: #e2e8f0 !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            border: 1px solid rgba(100, 116, 139, 0.3) !important;
+            min-height: 2.5rem !important;
         }
 
         .status-indicator {
@@ -847,7 +848,12 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2024 SecureAuth. All rights reserved. | Secure Authentication System</p>
+            <p>&copy; 2025 SecureAuth. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Contact Support</a>
+            </div>
         </div>
     </footer>
 
@@ -978,5 +984,6 @@
             }
         });
     </script>
+    <script src="{% static 'js/footer.js' %}"></script>
 </body>
 </html>

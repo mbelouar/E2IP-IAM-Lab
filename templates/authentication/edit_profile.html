@@ -34,60 +34,23 @@
         .header .header-left { flex-shrink: 0 !important; }
         .header .utility-controls { display: flex !important; align-items: center !important; gap: 0.75rem !important; flex-shrink: 0 !important; }
         .header .system-status { 
-            background: rgba(255, 255, 255, 0.12) !important; 
-            border: 1px solid rgba(255, 255, 255, 0.2) !important; 
-            color: white !important;
-            backdrop-filter: blur(12px) !important;
-            padding: 0.5rem 1.5rem !important;
-            border-radius: 1rem !important;
-            font-size: 0.875rem !important;
-            font-weight: 500 !important;
+            background: rgba(30, 41, 59, 0.5) !important; 
+            border: 1px solid rgba(100, 116, 139, 0.3) !important; 
+            color: #e2e8f0 !important;
         }
         
-        /* Override header-enhancements.css system-status */
-        .system-status {
-            border-radius: 1rem !important;
+        .header .system-status:hover { 
+            background: rgba(30, 41, 59, 0.7) !important; 
         }
-        .header .system-status:hover { background: rgba(255, 255, 255, 0.2) !important; }
-        .header .utility-btn { background: rgba(30, 41, 59, 0.5) !important; border: 1px solid rgba(100, 116, 139, 0.3) !important; color: #e2e8f0 !important; }
-        .header .utility-btn:hover { background: rgba(30, 41, 59, 0.7) !important; }
-
-        /* Status indicator alignment fix */
-        .header .system-status {
-            display: flex !important;
-            align-items: center !important;
-            gap: 0.5rem !important;
+        
+        .header .utility-btn { 
+            background: rgba(30, 41, 59, 0.5) !important; 
+            border: 1px solid rgba(100, 116, 139, 0.3) !important; 
+            color: #e2e8f0 !important; 
         }
-
-        .header .status-indicator {
-            flex-shrink: 0 !important;
-            align-self: center !important;
-            margin: 0 !important;
-            position: relative !important;
-            top: 0 !important;
-            transform: none !important;
-        }
-
-        /* Force vertical alignment */
-        .header .system-status > * {
-            vertical-align: middle !important;
-        }
-
-        /* More specific status indicator positioning */
-        .header .system-status .status-indicator {
-            display: inline-block !important;
-            vertical-align: middle !important;
-            line-height: 1 !important;
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
-            position: relative !important;
-            top: -1px !important;
-        }
-
-        /* Ensure text alignment */
-        .header .system-status span {
-            vertical-align: middle !important;
-            line-height: 1.2 !important;
+        
+        .header .utility-btn:hover { 
+            background: rgba(30, 41, 59, 0.7) !important; 
         }
 
         /* Edit Profile Specific Styles */
@@ -107,8 +70,8 @@
 
         /* Light Mode Styles */
         body:not(.dark-mode) {
-            background: linear-gradient(135deg, #0066cc 0%, #1e3a8a 50%, #004499 100%);
-            color: #1f2937;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+            color: #1e293b;
         }
 
         /* Ensure proper background for the container */
@@ -117,8 +80,8 @@
         }
 
         body:not(.dark-mode) .edit-profile-title-section {
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(59, 130, 246, 0.2);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
         }
 
@@ -127,8 +90,8 @@
         }
 
         body:not(.dark-mode) .edit-profile-fields-section {
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(59, 130, 246, 0.2);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
         }
 
@@ -197,68 +160,55 @@
 
 
         body:not(.dark-mode) .form-input {
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            color: #1f2937;
+            background: rgba(248, 250, 252, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #1e293b;
         }
 
         body:not(.dark-mode) .form-input:focus {
             background: rgba(255, 255, 255, 0.95);
-            border-color: #0066cc;
+            border-color: #3b82f6;
             box-shadow: 
-                0 0 0 3px rgba(0, 102, 204, 0.1),
-                0 4px 15px rgba(0, 102, 204, 0.2);
+                0 0 0 3px rgba(59, 130, 246, 0.1),
+                0 4px 15px rgba(59, 130, 246, 0.2);
         }
 
         body:not(.dark-mode) .form-input:hover {
-            border-color: rgba(0, 0, 0, 0.2);
+            border-color: rgba(59, 130, 246, 0.5);
             background: rgba(255, 255, 255, 0.9);
         }
 
         body:not(.dark-mode) .btn-secondary {
-            background: rgba(0, 0, 0, 0.05);
-            color: #374151;
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: rgba(248, 250, 252, 0.8);
+            color: #1e293b;
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
         body:not(.dark-mode) .btn-secondary:hover {
-            background: rgba(0, 0, 0, 0.1);
-            border-color: rgba(0, 0, 0, 0.2);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            color: #1d4ed8;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
         }
 
         body:not(.dark-mode) .form-actions {
-            border-top: 2px solid rgba(0, 0, 0, 0.1);
+            border-top: 2px solid rgba(59, 130, 246, 0.2);
         }
 
         body:not(.dark-mode) .form-progress {
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(59, 130, 246, 0.1);
         }
 
         body:not(.dark-mode) .edit-profile-title {
-            color: #1f2937;
+            color: #1e293b;
         }
 
         body:not(.dark-mode) .edit-profile-subtitle {
-            color: #6b7280;
+            color: #64748b;
         }
 
         body:not(.dark-mode) .form-label {
-            color: #374151;
-        }
-
-        body:not(.dark-mode) .form-input {
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            color: #1f2937;
-        }
-
-        body:not(.dark-mode) .form-input:focus {
-            background: rgba(255, 255, 255, 0.95);
-            border-color: #0066cc;
-            box-shadow: 
-                0 0 0 3px rgba(0, 102, 204, 0.1),
-                0 4px 15px rgba(0, 102, 204, 0.2);
+            color: #1e293b;
         }
 
         body:not(.dark-mode) .form-input::placeholder {
@@ -266,55 +216,44 @@
         }
 
         body:not(.dark-mode) .form-input:disabled {
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(59, 130, 246, 0.05);
             color: #9ca3af;
-            border-color: rgba(0, 0, 0, 0.1);
-        }
-
-        body:not(.dark-mode) .btn-secondary {
-            background: rgba(0, 0, 0, 0.05);
-            color: #374151;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        body:not(.dark-mode) .btn-secondary:hover {
-            background: rgba(0, 0, 0, 0.1);
-            border-color: rgba(0, 0, 0, 0.2);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-color: rgba(59, 130, 246, 0.2);
         }
 
         body:not(.dark-mode) .alert {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #1e293b;
         }
 
         body:not(.dark-mode) .alert-success {
             background: rgba(16, 185, 129, 0.1);
-            border-color: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.3);
             color: #059669;
         }
 
         body:not(.dark-mode) .alert-error {
             background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.3);
             color: #dc2626;
         }
 
         body:not(.dark-mode) .alert-warning {
             background: rgba(245, 158, 11, 0.1);
-            border-color: rgba(245, 158, 11, 0.2);
+            border-color: rgba(245, 158, 11, 0.3);
             color: #d97706;
         }
 
         body:not(.dark-mode) .alert-info {
             background: rgba(59, 130, 246, 0.1);
-            border-color: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.3);
             color: #2563eb;
         }
 
         /* Background adjustments for light mode */
         body:not(.dark-mode) .background-overlay {
-            opacity: 0.3;
+            opacity: 0.1;
         }
 
         body:not(.dark-mode) .background-grid {
@@ -326,13 +265,13 @@
         }
 
         body:not(.dark-mode) .floating-element {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(29, 78, 216, 0.05) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
         }
 
         /* Small text adjustments for light mode */
         body:not(.dark-mode) small {
-            color: #6b7280 !important;
+            color: #64748b !important;
         }
 
         .edit-profile-content {
@@ -911,8 +850,15 @@
                     {% endif %}
 
                     <!-- Edit Profile Form -->
-                    <form method="post" class="edit-profile-form">
+                    <form method="post" class="edit-profile-form" action="{% url 'authentication:edit_profile' %}">
                     {% csrf_token %}
+                    
+                    <!-- Debug CSRF Token (remove in production) -->
+                    <div style="display: none;">
+                        <p>CSRF Token: {{ csrf_token }}</p>
+                        <p>Session Key: {{ request.session.session_key }}</p>
+                        <p><a href="{% url 'authentication:debug_csrf' %}" target="_blank">Debug CSRF</a></p>
+                    </div>
                     
 
 
@@ -1076,17 +1022,33 @@
             const displayName = document.getElementById('display_name').value.trim();
             const firstName = document.getElementById('first_name').value.trim();
             const lastName = document.getElementById('last_name').value.trim();
+            const email = document.getElementById('email').value.trim();
             const submitBtn = document.querySelector('.btn-primary');
             
-            if (!displayName || !firstName || !lastName) {
+            if (!displayName || !firstName || !lastName || !email) {
                 e.preventDefault();
-                showNotification('Please fill in all required fields: Display Name, First Name, and Last Name.', 'error');
+                showNotification('Please fill in all required fields: Display Name, First Name, Last Name, and Email.', 'error');
                 return false;
             }
+            
+        // Check if CSRF token exists
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (!csrfToken) {
+            e.preventDefault();
+            showNotification('Security token missing. Please refresh the page and try again.', 'error');
+            return false;
+        }
+        
+        // Log CSRF token for debugging (remove in production)
+        console.log('CSRF Token:', csrfToken.value);
+        console.log('Form action:', this.action);
             
             // Add loading state
             submitBtn.classList.add('loading');
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Saving...</span>';
+            
+            // Allow form to submit normally
+            return true;
         });
 
         // Enhanced input interactions with progress tracking
@@ -1156,5 +1118,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     </script>
+    <script src="{% static 'js/footer.js' %}"></script>
 </body>
 </html> 

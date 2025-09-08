@@ -60,6 +60,126 @@
             background: rgba(30, 41, 59, 0.7) !important;
         }
 
+        /* Light Mode Styles for Document Upload Page */
+        body:not(.dark-mode) {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+        }
+
+        body:not(.dark-mode) .header {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px) !important;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+        }
+
+        body:not(.dark-mode) .header .system-status {
+            background: rgba(59, 130, 246, 0.1) !important;
+            border: 1px solid rgba(59, 130, 246, 0.3) !important;
+            color: #1e40af !important;
+        }
+
+        body:not(.dark-mode) .header .system-status:hover {
+            background: rgba(59, 130, 246, 0.2) !important;
+        }
+
+        body:not(.dark-mode) .header .utility-btn {
+            background: rgba(59, 130, 246, 0.1) !important;
+            border: 1px solid rgba(59, 130, 246, 0.3) !important;
+            color: #1e40af !important;
+        }
+
+        body:not(.dark-mode) .header .utility-btn:hover {
+            background: rgba(59, 130, 246, 0.2) !important;
+        }
+
+        body:not(.dark-mode) .header .company-name {
+            color: #1e293b !important;
+        }
+
+        body:not(.dark-mode) .header .company-tagline {
+            color: #64748b !important;
+        }
+
+        /* Light Mode Upload Form */
+        body:not(.dark-mode) .upload-form {
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        body:not(.dark-mode) .upload-form:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: #3b82f6;
+        }
+
+        body:not(.dark-mode) .upload-form h2 {
+            color: #1e293b;
+        }
+
+        body:not(.dark-mode) .upload-form p {
+            color: #64748b;
+        }
+
+        /* Light Mode Form Elements */
+        body:not(.dark-mode) .form-input,
+        body:not(.dark-mode) input[type="text"],
+        body:not(.dark-mode) input[type="file"],
+        body:not(.dark-mode) textarea {
+            background: rgba(248, 250, 252, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #1e293b;
+        }
+
+        body:not(.dark-mode) .form-input:focus,
+        body:not(.dark-mode) input:focus,
+        body:not(.dark-mode) textarea:focus {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        body:not(.dark-mode) .form-label {
+            color: #1e293b;
+        }
+
+        /* Light Mode Buttons */
+        body:not(.dark-mode) .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+
+        body:not(.dark-mode) .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.4);
+        }
+
+        body:not(.dark-mode) .btn-secondary {
+            background: rgba(248, 250, 252, 0.8);
+            color: #1e293b;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        body:not(.dark-mode) .btn-secondary:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            color: #1d4ed8;
+        }
+
+        /* Light Mode Footer */
+        body:not(.dark-mode) .footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        body:not(.dark-mode) .footer p,
+        body:not(.dark-mode) .footer a {
+            color: #64748b;
+        }
+
+        body:not(.dark-mode) .footer a:hover {
+            color: #3b82f6;
+        }
+
         /* Main Content */
         .upload-content {
             max-width: 800px;
@@ -165,50 +285,25 @@
         /* File Upload Area */
         .file-upload-area {
             border: 2px dashed rgba(0, 102, 204, 0.3);
-            border-radius: 20px;
+            border-radius: 16px;
             padding: 3rem 2rem;
             text-align: center;
-            background: linear-gradient(135deg, rgba(0, 102, 204, 0.02), rgba(66, 133, 244, 0.05));
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(0, 102, 204, 0.02);
+            transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
             margin-bottom: 2rem;
-            overflow: hidden;
-        }
-
-        .file-upload-area::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .file-upload-area:hover::before {
-            left: 100%;
         }
 
         .file-upload-area:hover {
-            border-color: rgba(0, 102, 204, 0.6);
-            background: linear-gradient(135deg, rgba(0, 102, 204, 0.08), rgba(66, 133, 244, 0.12));
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 102, 204, 0.15);
+            border-color: rgba(0, 102, 204, 0.5);
+            background: rgba(0, 102, 204, 0.05);
         }
 
         .file-upload-area.dragover {
             border-color: #0066cc;
-            background: linear-gradient(135deg, rgba(0, 102, 204, 0.15), rgba(66, 133, 244, 0.2));
-            transform: scale(1.02) translateY(-4px);
-            box-shadow: 0 15px 40px rgba(0, 102, 204, 0.25);
-        }
-
-        .file-upload-area.uploading {
-            border-color: #10b981;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.15));
-            cursor: not-allowed;
+            background: rgba(0, 102, 204, 0.1);
+            transform: scale(1.02);
         }
 
         .file-upload-icon {
@@ -228,85 +323,6 @@
             font-size: 0.9rem;
             color: var(--gray-600);
             margin-bottom: 1rem;
-        }
-
-        /* Progress Bar */
-        .upload-progress {
-            display: none;
-            margin-top: 1rem;
-        }
-
-        .upload-progress.show {
-            display: block;
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            height: 8px;
-            background: rgba(0, 102, 204, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 0.5rem;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(135deg, #0066cc, #4285f4);
-            border-radius: 4px;
-            transition: width 0.3s ease;
-            position: relative;
-        }
-
-        .progress-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .progress-text {
-            font-size: 0.8rem;
-            color: var(--gray-600);
-            text-align: center;
-        }
-
-        /* Upload Status */
-        .upload-status {
-            display: none;
-            margin-top: 1rem;
-            padding: 1rem;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .upload-status.show {
-            display: block;
-        }
-
-        .upload-status.success {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: #059669;
-        }
-
-        .upload-status.error {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #dc2626;
-        }
-
-        .upload-status i {
-            font-size: 1.2rem;
-            margin-right: 0.5rem;
         }
 
         .file-upload-button {
@@ -334,91 +350,9 @@
             display: none;
         }
 
-        /* Bulk Upload */
-        .bulk-upload-area {
-            display: none;
-            border: 2px dashed rgba(0, 102, 204, 0.3);
-            border-radius: 20px;
-            padding: 2rem;
-            text-align: center;
-            background: linear-gradient(135deg, rgba(0, 102, 204, 0.02), rgba(66, 133, 244, 0.05));
-            margin-bottom: 2rem;
-        }
-
-        .bulk-upload-area.show {
-            display: block;
-        }
-
-        .bulk-upload-files {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .bulk-file-item {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(0, 102, 204, 0.2);
-            border-radius: 12px;
-            padding: 1rem;
-            text-align: center;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .bulk-file-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.15);
-        }
-
-        .bulk-file-item.error {
-            border-color: #ef4444;
-            background: rgba(239, 68, 68, 0.05);
-        }
-
-        .bulk-file-item.success {
-            border-color: #10b981;
-            background: rgba(16, 185, 129, 0.05);
-        }
-
-        .bulk-file-remove {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            background: rgba(239, 68, 68, 0.1);
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ef4444;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-
         /* Form Fields */
         .form-group {
             margin-bottom: 1.5rem;
-        }
-
-        .form-group.error .form-input,
-        .form-group.error .form-textarea,
-        .form-group.error .form-select {
-            border-color: #ef4444;
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-        }
-
-        .form-error {
-            color: #ef4444;
-            font-size: 0.8rem;
-            margin-top: 0.25rem;
-            display: none;
-        }
-
-        .form-group.error .form-error {
-            display: block;
         }
 
         .form-label {
@@ -486,39 +420,15 @@
         /* File Preview */
         .file-preview {
             display: none;
-            background: linear-gradient(135deg, rgba(0, 102, 204, 0.05), rgba(66, 133, 244, 0.08));
+            background: rgba(0, 102, 204, 0.05);
             border: 1px solid rgba(0, 102, 204, 0.2);
-            border-radius: 16px;
-            padding: 1.5rem;
+            border-radius: 12px;
+            padding: 1rem;
             margin-bottom: 1.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .file-preview::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(135deg, #0066cc, #4285f4);
         }
 
         .file-preview.show {
             display: block;
-            animation: slideInUp 0.4s ease-out;
-        }
-
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .file-preview-content {
@@ -528,41 +438,15 @@
         }
 
         .file-preview-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 16px;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             color: white;
             background: linear-gradient(135deg, #0066cc, #4285f4);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .file-preview-thumbnail {
-            width: 64px;
-            height: 64px;
-            border-radius: 16px;
-            object-fit: cover;
-            border: 2px solid rgba(0, 102, 204, 0.2);
-        }
-
-        .file-preview-icon::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-            animation: shine 2s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
         }
 
         .file-preview-info {
@@ -841,19 +725,7 @@
 
         <!-- Upload Form -->
         <form class="upload-form" id="uploadForm" enctype="multipart/form-data">
-            <!-- Upload Mode Toggle -->
-            <div class="upload-mode-toggle" style="margin-bottom: 2rem; text-align: center;">
-                <div class="toggle-buttons" style="display: inline-flex; background: rgba(0, 102, 204, 0.1); border-radius: 12px; padding: 4px;">
-                    <button type="button" class="toggle-btn active" data-mode="single" style="padding: 0.5rem 1rem; border: none; background: #0066cc; color: white; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                        <i class="fas fa-file-upload"></i> Single File
-                    </button>
-                    <button type="button" class="toggle-btn" data-mode="bulk" style="padding: 0.5rem 1rem; border: none; background: transparent; color: #0066cc; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                        <i class="fas fa-layer-group"></i> Multiple Files
-                    </button>
-                </div>
-            </div>
-
-            <!-- Single File Upload Area -->
+            <!-- File Upload Area -->
             <div class="file-upload-area" id="fileUploadArea">
                 <div class="file-upload-icon">
                     <i class="fas fa-cloud-upload-alt"></i>
@@ -868,39 +740,6 @@
                     Select File
                 </button>
                 <input type="file" id="fileInput" name="file" class="file-input" accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.xls,.xlsx,.ppt,.pptx,.csv,.zip,.rar,.7z,.tar,.gz">
-                
-                <!-- Progress Bar -->
-                <div class="upload-progress" id="uploadProgress">
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
-                    </div>
-                    <div class="progress-text" id="progressText">0%</div>
-                </div>
-
-                <!-- Upload Status -->
-                <div class="upload-status" id="uploadStatus">
-                    <i class="fas fa-check-circle"></i>
-                    <span id="statusText">Upload successful!</span>
-                </div>
-            </div>
-
-            <!-- Bulk Upload Area -->
-            <div class="bulk-upload-area" id="bulkUploadArea">
-                <div class="file-upload-icon">
-                    <i class="fas fa-layer-group"></i>
-                </div>
-                <div class="file-upload-text">Choose multiple files or drag them here</div>
-                <div class="file-upload-subtext">
-                    Select up to 10 files at once. Each file must be under 50MB.
-                </div>
-                <button type="button" class="file-upload-button" onclick="document.getElementById('bulkFileInput').click()">
-                    <i class="fas fa-plus"></i>
-                    Select Files
-                </button>
-                <input type="file" id="bulkFileInput" name="files" class="file-input" multiple accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.xls,.xlsx,.ppt,.pptx,.csv,.zip,.rar,.7z,.tar,.gz">
-                
-                <!-- Bulk Files Preview -->
-                <div class="bulk-upload-files" id="bulkFilesPreview"></div>
             </div>
 
             <!-- File Preview -->
@@ -908,12 +747,10 @@
                 <div class="file-preview-content">
                     <div class="file-preview-icon" id="filePreviewIcon">
                         <i class="fas fa-file"></i>
-                        <img class="file-preview-thumbnail" id="filePreviewThumbnail" style="display: none;">
                     </div>
                     <div class="file-preview-info">
                         <div class="file-preview-name" id="filePreviewName"></div>
                         <div class="file-preview-size" id="filePreviewSize"></div>
-                        <div class="file-preview-type" id="filePreviewType" style="font-size: 0.8rem; color: var(--gray-500); margin-top: 0.25rem;"></div>
                     </div>
                     <button type="button" class="file-preview-remove" id="filePreviewRemove">
                         <i class="fas fa-times"></i>
@@ -922,32 +759,28 @@
             </div>
 
             <!-- Form Fields -->
-            <div class="form-group" id="titleGroup">
+            <div class="form-group">
                 <label for="title" class="form-label">Document Title *</label>
                 <input type="text" id="title" name="title" class="form-input" placeholder="Enter a descriptive title for your document" required>
-                <div class="form-error" id="titleError">Title is required</div>
             </div>
 
-            <div class="form-group" id="descriptionGroup">
+            <div class="form-group">
                 <label for="description" class="form-label">Description</label>
-                <textarea id="description" name="description" class="form-textarea" placeholder="Optional description of the document" maxlength="500"></textarea>
-                <div class="form-error" id="descriptionError">Description cannot exceed 500 characters</div>
+                <textarea id="description" name="description" class="form-textarea" placeholder="Optional description of the document"></textarea>
             </div>
 
-            <div class="form-group" id="categoryGroup">
+            <div class="form-group">
                 <label for="category" class="form-label">Category</label>
                 <select id="category" name="category" class="form-select">
                     {% for value, label in category_choices %}
                         <option value="{{ value }}">{{ label }}</option>
                     {% endfor %}
                 </select>
-                <div class="form-error" id="categoryError">Please select a category</div>
             </div>
 
-            <div class="form-group" id="tagsGroup">
+            <div class="form-group">
                 <label for="tags" class="form-label">Tags</label>
-                <input type="text" id="tags" name="tags" class="form-input" placeholder="Enter tags separated by commas (e.g., important, work, project)" maxlength="200">
-                <div class="form-error" id="tagsError">Tags cannot exceed 200 characters</div>
+                <input type="text" id="tags" name="tags" class="form-input" placeholder="Enter tags separated by commas (e.g., important, work, project)">
             </div>
 
             <!-- Form Actions -->
@@ -971,13 +804,8 @@
     </div>
 
     <script src="{% static 'js/login.js' %}"></script>
+    <script src="{% static 'js/footer.js' %}"></script>
     <script>
-        // Global variables
-        let currentMode = 'single';
-        let selectedFiles = [];
-        let uploadQueue = [];
-        let isUploading = false;
-
         // Initialize interactive elements when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
             // Check if the initInteractiveElements function exists and call it
@@ -990,50 +818,24 @@
         });
 
         function initUploadForm() {
-            // Get elements
             const fileInput = document.getElementById('fileInput');
-            const bulkFileInput = document.getElementById('bulkFileInput');
             const fileUploadArea = document.getElementById('fileUploadArea');
-            const bulkUploadArea = document.getElementById('bulkUploadArea');
             const filePreview = document.getElementById('filePreview');
             const filePreviewIcon = document.getElementById('filePreviewIcon');
-            const filePreviewThumbnail = document.getElementById('filePreviewThumbnail');
             const filePreviewName = document.getElementById('filePreviewName');
             const filePreviewSize = document.getElementById('filePreviewSize');
-            const filePreviewType = document.getElementById('filePreviewType');
             const filePreviewRemove = document.getElementById('filePreviewRemove');
             const uploadForm = document.getElementById('uploadForm');
             const submitBtn = document.getElementById('submitBtn');
             const loadingState = document.getElementById('loadingState');
-            const uploadProgress = document.getElementById('uploadProgress');
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
-            const uploadStatus = document.getElementById('uploadStatus');
-            const statusText = document.getElementById('statusText');
-            const bulkFilesPreview = document.getElementById('bulkFilesPreview');
 
-            // Mode toggle handlers
-            const toggleButtons = document.querySelectorAll('.toggle-btn');
-            toggleButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const mode = this.dataset.mode;
-                    switchMode(mode);
-                });
-            });
+            // File input change handler
+            fileInput.addEventListener('change', handleFileSelect);
 
-            // File input change handlers
-            fileInput.addEventListener('change', handleSingleFileSelect);
-            bulkFileInput.addEventListener('change', handleBulkFileSelect);
-
-            // Drag and drop handlers for single file
+            // Drag and drop handlers
             fileUploadArea.addEventListener('dragover', handleDragOver);
             fileUploadArea.addEventListener('dragleave', handleDragLeave);
-            fileUploadArea.addEventListener('drop', handleSingleDrop);
-
-            // Drag and drop handlers for bulk upload
-            bulkUploadArea.addEventListener('dragover', handleDragOver);
-            bulkUploadArea.addEventListener('dragleave', handleDragLeave);
-            bulkUploadArea.addEventListener('drop', handleBulkDrop);
+            fileUploadArea.addEventListener('drop', handleDrop);
 
             // File preview remove handler
             filePreviewRemove.addEventListener('click', removeFile);
@@ -1041,124 +843,51 @@
             // Form submit handler
             uploadForm.addEventListener('submit', handleFormSubmit);
 
-            // Real-time validation
-            const titleInput = document.getElementById('title');
-            const descriptionInput = document.getElementById('description');
-            const tagsInput = document.getElementById('tags');
-
-            titleInput.addEventListener('input', () => validateField('title'));
-            descriptionInput.addEventListener('input', () => validateField('description'));
-            tagsInput.addEventListener('input', () => validateField('tags'));
-
-            function switchMode(mode) {
-                currentMode = mode;
-                
-                // Update toggle buttons
-                toggleButtons.forEach(btn => {
-                    if (btn.dataset.mode === mode) {
-                        btn.classList.add('active');
-                        btn.style.background = '#0066cc';
-                        btn.style.color = 'white';
-                    } else {
-                        btn.classList.remove('active');
-                        btn.style.background = 'transparent';
-                        btn.style.color = '#0066cc';
-                    }
-                });
-
-                // Show/hide appropriate areas
-                if (mode === 'single') {
-                    fileUploadArea.style.display = 'block';
-                    bulkUploadArea.style.display = 'none';
-                    filePreview.style.display = 'block';
-                } else {
-                    fileUploadArea.style.display = 'none';
-                    bulkUploadArea.style.display = 'block';
-                    filePreview.style.display = 'none';
-                }
-
-                // Clear previous selections
-                clearFileSelections();
-            }
-
-            function handleSingleFileSelect(event) {
+            function handleFileSelect(event) {
                 const file = event.target.files[0];
                 if (file) {
-                    selectedFiles = [file];
                     showFilePreview(file);
-                }
-            }
-
-            function handleBulkFileSelect(event) {
-                const files = Array.from(event.target.files);
-                if (files.length > 0) {
-                    selectedFiles = files.slice(0, 10); // Limit to 10 files
-                    showBulkFilePreview(files);
                 }
             }
 
             function handleDragOver(event) {
                 event.preventDefault();
-                event.currentTarget.classList.add('dragover');
+                fileUploadArea.classList.add('dragover');
             }
 
             function handleDragLeave(event) {
                 event.preventDefault();
-                event.currentTarget.classList.remove('dragover');
+                fileUploadArea.classList.remove('dragover');
             }
 
-            function handleSingleDrop(event) {
+            function handleDrop(event) {
                 event.preventDefault();
                 fileUploadArea.classList.remove('dragover');
                 
-                const files = Array.from(event.dataTransfer.files);
+                const files = event.dataTransfer.files;
                 if (files.length > 0) {
                     const file = files[0];
-                    fileInput.files = event.dataTransfer.files;
-                    selectedFiles = [file];
+                    fileInput.files = files;
                     showFilePreview(file);
                 }
             }
 
-            function handleBulkDrop(event) {
-                event.preventDefault();
-                bulkUploadArea.classList.remove('dragover');
-                
-                const files = Array.from(event.dataTransfer.files);
-                if (files.length > 0) {
-                    selectedFiles = files.slice(0, 10);
-                    bulkFileInput.files = event.dataTransfer.files;
-                    showBulkFilePreview(files);
-                }
-            }
-
             function showFilePreview(file) {
-                // Validate file
-                if (!validateFile(file)) return;
+                // Validate file size (50MB max)
+                const maxSize = 50 * 1024 * 1024;
+                if (file.size > maxSize) {
+                    showToast('File size too large. Maximum size is 50MB.', 'error');
+                    return;
+                }
 
-                // Get file info
+                // Get file icon
                 const extension = file.name.split('.').pop().toLowerCase();
                 const iconClass = getFileIcon(extension);
-                const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff'].includes(extension);
                 
                 // Update preview
-                if (isImage) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        filePreviewThumbnail.src = e.target.result;
-                        filePreviewThumbnail.style.display = 'block';
-                        filePreviewIcon.querySelector('i').style.display = 'none';
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    filePreviewThumbnail.style.display = 'none';
-                    filePreviewIcon.querySelector('i').style.display = 'block';
-                    filePreviewIcon.innerHTML = `<i class="${iconClass}"></i>`;
-                }
-
+                filePreviewIcon.innerHTML = `<i class="${iconClass}"></i>`;
                 filePreviewName.textContent = file.name;
                 filePreviewSize.textContent = formatFileSize(file.size);
-                filePreviewType.textContent = file.type || 'Unknown type';
                 
                 // Show preview
                 filePreview.classList.add('show');
@@ -1171,143 +900,9 @@
                 }
             }
 
-            function showBulkFilePreview(files) {
-                bulkFilesPreview.innerHTML = '';
-                
-                files.forEach((file, index) => {
-                    if (index >= 10) return; // Limit display
-                    
-                    const fileItem = document.createElement('div');
-                    fileItem.className = 'bulk-file-item';
-                    fileItem.dataset.fileIndex = index;
-                    
-                    const extension = file.name.split('.').pop().toLowerCase();
-                    const iconClass = getFileIcon(extension);
-                    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff'].includes(extension);
-                    
-                    let thumbnailHtml = '';
-                    if (isImage) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            const img = fileItem.querySelector('.bulk-file-thumbnail');
-                            if (img) img.src = e.target.result;
-                        };
-                        reader.readAsDataURL(file);
-                        thumbnailHtml = '<img class="bulk-file-thumbnail" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px; margin-bottom: 0.5rem;">';
-                    }
-                    
-                    fileItem.innerHTML = `
-                        ${thumbnailHtml}
-                        <div class="bulk-file-icon" style="font-size: 1.5rem; color: #0066cc; margin-bottom: 0.5rem;">
-                            <i class="${iconClass}"></i>
-                        </div>
-                        <div class="bulk-file-name" style="font-size: 0.8rem; font-weight: 600; margin-bottom: 0.25rem; word-break: break-word;">${file.name}</div>
-                        <div class="bulk-file-size" style="font-size: 0.7rem; color: var(--gray-600);">${formatFileSize(file.size)}</div>
-                        <button type="button" class="bulk-file-remove" onclick="removeBulkFile(${index})">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    `;
-                    
-                    bulkFilesPreview.appendChild(fileItem);
-                });
-            }
-
             function removeFile() {
                 fileInput.value = '';
-                selectedFiles = [];
                 filePreview.classList.remove('show');
-            }
-
-            function removeBulkFile(index) {
-                selectedFiles.splice(index, 1);
-                showBulkFilePreview(selectedFiles);
-            }
-
-            function validateFile(file) {
-                const maxSize = 50 * 1024 * 1024; // 50MB
-                const allowedTypes = [
-                    'pdf', 'doc', 'docx', 'txt', 'rtf', 'odt',
-                    'jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff',
-                    'xls', 'xlsx', 'ppt', 'pptx', 'csv',
-                    'zip', 'rar', '7z', 'tar', 'gz'
-                ];
-                
-                const extension = file.name.split('.').pop().toLowerCase();
-                
-                if (!allowedTypes.includes(extension)) {
-                    showToast('File type not supported', 'error');
-                    return false;
-                }
-                
-                if (file.size > maxSize) {
-                    showToast('File size too large. Maximum size is 50MB.', 'error');
-                    return false;
-                }
-                
-                return true;
-            }
-
-            function validateField(fieldName) {
-                const field = document.getElementById(fieldName);
-                const group = document.getElementById(fieldName + 'Group');
-                const error = document.getElementById(fieldName + 'Error');
-                
-                let isValid = true;
-                let errorMessage = '';
-                
-                switch (fieldName) {
-                    case 'title':
-                        if (!field.value.trim()) {
-                            isValid = false;
-                            errorMessage = 'Title is required';
-                        }
-                        break;
-                    case 'description':
-                        if (field.value.length > 500) {
-                            isValid = false;
-                            errorMessage = 'Description cannot exceed 500 characters';
-                        }
-                        break;
-                    case 'tags':
-                        if (field.value.length > 200) {
-                            isValid = false;
-                            errorMessage = 'Tags cannot exceed 200 characters';
-                        }
-                        break;
-                }
-                
-                if (isValid) {
-                    group.classList.remove('error');
-                } else {
-                    group.classList.add('error');
-                    error.textContent = errorMessage;
-                }
-                
-                return isValid;
-            }
-
-            function validateForm() {
-                let isValid = true;
-                
-                // Validate required fields
-                if (!validateField('title')) isValid = false;
-                if (!validateField('description')) isValid = false;
-                if (!validateField('tags')) isValid = false;
-                
-                // Validate files
-                if (selectedFiles.length === 0) {
-                    showToast('Please select at least one file', 'error');
-                    isValid = false;
-                }
-                
-                // Validate each file
-                selectedFiles.forEach(file => {
-                    if (!validateFile(file)) {
-                        isValid = false;
-                    }
-                });
-                
-                return isValid;
             }
 
             function getFileIcon(extension) {
@@ -1346,79 +941,17 @@
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
             }
 
-            function clearFileSelections() {
-                fileInput.value = '';
-                bulkFileInput.value = '';
-                selectedFiles = [];
-                filePreview.classList.remove('show');
-                bulkFilesPreview.innerHTML = '';
-                hideProgress();
-                hideStatus();
-            }
-
-            function showProgress() {
-                uploadProgress.classList.add('show');
-                uploadStatus.classList.remove('show');
-            }
-
-            function hideProgress() {
-                uploadProgress.classList.remove('show');
-            }
-
-            function updateProgress(percent) {
-                progressBar.style.width = percent + '%';
-                progressText.textContent = Math.round(percent) + '%';
-            }
-
-            function showStatus(message, type) {
-                uploadStatus.className = `upload-status show ${type}`;
-                statusText.textContent = message;
-                const icon = uploadStatus.querySelector('i');
-                icon.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
-            }
-
-            function hideStatus() {
-                uploadStatus.classList.remove('show');
-            }
-
             function handleFormSubmit(event) {
                 event.preventDefault();
                 
-                if (!validateForm()) return;
+                const formData = new FormData(uploadForm);
                 
-                if (isUploading) return;
-                
-                isUploading = true;
+                // Show loading state
+                uploadForm.style.display = 'none';
+                loadingState.classList.add('show');
                 submitBtn.disabled = true;
                 
-                if (currentMode === 'single') {
-                    uploadSingleFile();
-                } else {
-                    uploadBulkFiles();
-                }
-            }
-
-            function uploadSingleFile() {
-                const formData = new FormData();
-                const file = selectedFiles[0];
-                
-                formData.append('file', file);
-                formData.append('title', document.getElementById('title').value);
-                formData.append('description', document.getElementById('description').value);
-                formData.append('category', document.getElementById('category').value);
-                formData.append('tags', document.getElementById('tags').value);
-                
-                showProgress();
-                updateProgress(0);
-                
-                // Simulate progress
-                let progress = 0;
-                const progressInterval = setInterval(() => {
-                    progress += Math.random() * 30;
-                    if (progress > 90) progress = 90;
-                    updateProgress(progress);
-                }, 200);
-                
+                // Submit form
                 fetch('{% url "authentication:document_upload" %}', {
                     method: 'POST',
                     body: formData,
@@ -1428,35 +961,27 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    clearInterval(progressInterval);
-                    updateProgress(100);
-                    
                     if (data.success) {
-                        showStatus('Upload successful!', 'success');
+                        showToast(data.message, 'success');
                         setTimeout(() => {
                             window.location.href = '{% url "authentication:documents_list" %}';
                         }, 1500);
                     } else {
-                        showStatus(data.error || 'Upload failed', 'error');
-                        isUploading = false;
+                        showToast(data.error || 'Upload failed', 'error');
+                        // Hide loading state
+                        uploadForm.style.display = 'block';
+                        loadingState.classList.remove('show');
                         submitBtn.disabled = false;
                     }
                 })
                 .catch(error => {
-                    clearInterval(progressInterval);
                     console.error('Error:', error);
-                    showStatus('An error occurred while uploading', 'error');
-                    isUploading = false;
+                    showToast('An error occurred while uploading the document', 'error');
+                    // Hide loading state
+                    uploadForm.style.display = 'block';
+                    loadingState.classList.remove('show');
                     submitBtn.disabled = false;
                 });
-            }
-
-            function uploadBulkFiles() {
-                // For bulk upload, we'll upload files one by one
-                // In a real implementation, you might want to modify the backend to handle multiple files
-                showToast('Bulk upload feature coming soon! Please use single file upload for now.', 'info');
-                isUploading = false;
-                submitBtn.disabled = false;
             }
         }
 
@@ -1466,18 +991,18 @@
             toast.className = `toast toast-${type}`;
             toast.style.cssText = `
                 position: fixed;
-                top: 20px;
+                bottom: 20px;
                 right: 20px;
-                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
-                color: white;
+                background: white;
+                color: #374151;
                 padding: 1rem 1.5rem;
                 border-radius: 8px;
+                border: 1px solid #e5e7eb;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
                 z-index: 1000;
                 font-weight: 500;
                 max-width: 300px;
                 word-wrap: break-word;
-                animation: slideInRight 0.3s ease-out;
             `;
             toast.textContent = message;
             
@@ -1496,6 +1021,18 @@
             }, 3000);
         }
     </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 SecureAuth. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Contact Support</a>
+            </div>
+        </div>
+    </footer>
 
     {% csrf_token %}
 </body>

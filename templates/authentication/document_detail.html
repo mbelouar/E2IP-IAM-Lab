@@ -848,6 +848,7 @@
     </div>
 
     <script src="{% static 'js/login.js' %}"></script>
+    <script src="{% static 'js/footer.js' %}"></script>
     <script>
         // Initialize interactive elements when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
@@ -941,12 +942,13 @@
             toast.className = `toast toast-${type}`;
             toast.style.cssText = `
                 position: fixed;
-                top: 20px;
+                bottom: 20px;
                 right: 20px;
-                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
-                color: white;
+                background: white;
+                color: #374151;
                 padding: 1rem 1.5rem;
                 border-radius: 8px;
+                border: 1px solid #e5e7eb;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
                 z-index: 1000;
                 font-weight: 500;
@@ -978,6 +980,18 @@
             }
         });
     </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 SecureAuth. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Contact Support</a>
+            </div>
+        </div>
+    </footer>
 
     {% csrf_token %}
 </body>

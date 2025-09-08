@@ -526,23 +526,27 @@
     border: 1px solid rgba(71, 85, 105, 0.3);
 }
 
+/* Status indicator - consistent with header-enhancements.css */
 .status-indicator {
-    width: 0.75rem;
-    height: 0.75rem;
-    border-radius: 50%;
-    margin-right: 0.75rem;
-    flex-shrink: 0;
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+    background: #10b981 !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+    align-self: center !important;
 }
 
 .status-indicator.online {
-    background: #10b981;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    background: #10b981 !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
 }
 
 .status-indicator.warning {
-    background: #f59e0b;
-    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
-    animation: pulse 2s infinite;
+    background: #f59e0b !important;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2) !important;
+    animation: pulse 2s infinite !important;
 }
 
 .status-item span {
@@ -619,7 +623,7 @@
     min-width: 300px !important;
     max-width: 400px !important;
     border-left: 4px solid #0066cc !important;
-    transform: translateX(120%) !important;
+    transform: translateY(100%) !important;
     transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) !important;
     overflow: hidden !important;
     z-index: 9999 !important;
@@ -629,7 +633,7 @@
 }
 
 .toast.show {
-    transform: translateX(0) !important;
+    transform: translateY(0) !important;
 }
 
 .toast.success { border-left-color: #10b981; }
@@ -708,22 +712,22 @@ body.dark-mode .toast-close:hover {
 /* Animation */
 @keyframes slideIn {
     from {
-        transform: translateX(100%);
+        transform: translateY(100%);
         opacity: 0;
     }
     to {
-        transform: translateX(0);
+        transform: translateY(0);
         opacity: 1;
     }
 }
 
 @keyframes slideOut {
     from {
-        transform: translateX(0);
+        transform: translateY(0);
         opacity: 1;
     }
     to {
-        transform: translateX(100%);
+        transform: translateY(100%);
         opacity: 0;
     }
 }

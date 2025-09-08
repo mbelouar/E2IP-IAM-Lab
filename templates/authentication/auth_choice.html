@@ -27,8 +27,8 @@
 
         /* Light Mode Styles */
         body:not(.dark-mode) {
-            background: linear-gradient(135deg, #0066cc 0%, #1e3a8a 50%, #004499 100%);
-            color: #1f2937;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+            color: #1e293b;
         }
 
         /* Auth Choice Specific Styles */
@@ -62,8 +62,8 @@
         }
 
         body:not(.dark-mode) .auth-choice-card {
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(59, 130, 246, 0.2);
             box-shadow: 
                 0 25px 50px rgba(0, 0, 0, 0.1),
                 0 0 0 1px rgba(59, 130, 246, 0.2);
@@ -161,8 +161,8 @@
         }
 
         body:not(.dark-mode) .auth-option {
-            background: rgba(248, 250, 252, 0.8);
-            border: 2px solid rgba(59, 130, 246, 0.3);
+            background: rgba(248, 250, 252, 0.9);
+            border: 2px solid rgba(59, 130, 246, 0.2);
         }
 
         .auth-option::before {
@@ -287,11 +287,46 @@
             color: #3b82f6;
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            position: relative;
+            display: inline-block;
         }
 
         .auth-footer-link:hover {
             color: #60a5fa;
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .auth-footer-link::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .auth-footer-link:hover::before {
+            width: 100%;
+        }
+
+        body:not(.dark-mode) .auth-footer-link {
+            color: #1d4ed8;
+        }
+
+        body:not(.dark-mode) .auth-footer-link:hover {
+            color: #3b82f6;
+            background: rgba(29, 78, 216, 0.1);
+        }
+
+        body:not(.dark-mode) .auth-footer-link::before {
+            background: linear-gradient(90deg, #1d4ed8, #3b82f6);
         }
 
         /* Responsive Design */
@@ -480,8 +515,8 @@
 
             <div class="auth-footer">
                 <p class="auth-footer-text">
-                    Need help? <a href="#" class="auth-footer-link">Contact Support</a> or 
-                    <a href="#" class="auth-footer-link">View Documentation</a>
+                    Need help? <a href="#" class="auth-footer-link" onclick="openHelpModal('support')">Contact Support</a> or 
+                    <a href="#" class="auth-footer-link" onclick="openHelpModal('documentation')">View Documentation</a>
                 </p>
             </div>
         </div>
@@ -575,6 +610,136 @@
                 this.style.transform = 'translateY(0) scale(1)';
             });
         });
+
+        // Help modal functionality
+        function openHelpModal(type) {
+            event.preventDefault();
+            
+            // Remove existing modal if any
+            const existingModal = document.getElementById('helpModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            const content = getHelpContent(type);
+            
+            // Create modal HTML
+            const modalHTML = `
+                <div id="helpModal" class="footer-modal" style="display: block;">
+                    <div class="footer-modal-content">
+                        <div class="footer-modal-header">
+                            <h2 class="footer-modal-title">${content.title}</h2>
+                            <button class="footer-modal-close" onclick="closeHelpModal()">&times;</button>
+                        </div>
+                        <div class="footer-modal-body">
+                            ${content.body}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Add modal to page
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Add smooth animation
+            const modal = document.getElementById('helpModal');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.opacity = '1';
+            }, 10);
+        }
+
+        function closeHelpModal() {
+            const modal = document.getElementById('helpModal');
+            if (modal) {
+                modal.style.opacity = '0';
+                setTimeout(() => {
+                    modal.remove();
+                }, 300);
+            }
+        }
+
+        function getHelpContent(type) {
+            const content = {
+                'support': {
+                    title: 'Contact Support',
+                    body: `
+                        <p>We're here to help you with any authentication issues or questions!</p>
+                        
+                        <h3>Quick Support Options</h3>
+                        <ul>
+                            <li><strong>Email:</strong> support@secureauth.com</li>
+                            <li><strong>Phone:</strong> +1 (555) 123-4567</li>
+                            <li><strong>Hours:</strong> Monday - Friday, 9:00 AM - 6:00 PM EST</li>
+                        </ul>
+                        
+                        <h3>Common Authentication Issues</h3>
+                        <p><strong>Can't access Enterprise Login?</strong><br>
+                        Make sure you're connected to your organization's network and have valid AD credentials.</p>
+                        
+                        <p><strong>Standard Login not working?</strong><br>
+                        Check your username and password. Use the "Forgot Password" link if needed.</p>
+                        
+                        <p><strong>MFA Problems?</strong><br>
+                        Ensure your authenticator app is properly configured and time-synced.</p>
+                        
+                        <h3>Response Time</h3>
+                        <p>We typically respond to support requests within 24 hours during business days.</p>
+                    `
+                },
+                'documentation': {
+                    title: 'Documentation & Help',
+                    body: `
+                        <p>Find answers to common questions and learn how to use SecureAuth effectively.</p>
+                        
+                        <h3>Getting Started</h3>
+                        <ul>
+                            <li><strong>First Time Users:</strong> Choose "Standard Login" to create a new account</li>
+                            <li><strong>Enterprise Users:</strong> Use "Enterprise Login" with your AD credentials</li>
+                            <li><strong>MFA Setup:</strong> Enable two-factor authentication for enhanced security</li>
+                        </ul>
+                        
+                        <h3>Authentication Methods</h3>
+                        <p><strong>Enterprise Login (ADFS):</strong><br>
+                        Single sign-on integration with your organization's Active Directory. Provides seamless access without separate credentials.</p>
+                        
+                        <p><strong>Standard Login:</strong><br>
+                        Local account authentication with username and password. Includes MFA support and account management features.</p>
+                        
+                        <h3>Security Features</h3>
+                        <ul>
+                            <li>Multi-factor authentication (MFA)</li>
+                            <li>Secure password policies</li>
+                            <li>Session management</li>
+                            <li>Activity logging</li>
+                        </ul>
+                        
+                        <h3>Additional Resources</h3>
+                        <p>For detailed technical documentation, visit our knowledge base at docs.secureauth.com</p>
+                    `
+                }
+            };
+
+            return content[type] || {
+                title: 'Help',
+                body: '<p>This help section is coming soon. Please contact support for assistance.</p>'
+            };
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('footer-modal')) {
+                closeHelpModal();
+            }
+        });
+
+        // Close modal with escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeHelpModal();
+            }
+        });
     </script>
+    <script src="{% static 'js/footer.js' %}"></script>
 </body>
 </html>
