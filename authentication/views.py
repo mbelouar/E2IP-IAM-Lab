@@ -14,6 +14,7 @@ import json
 import base64
 import xml.etree.ElementTree as ET
 from datetime import timedelta
+import os
 
 # Set up logging first
 logger = logging.getLogger(__name__)
@@ -3569,3 +3570,118 @@ def user_database_view(request):
     }
     
     return render(request, 'authentication/user_database.html', context)
+
+
+@login_required
+def calendar_view(request):
+    """
+    Calendar view that integrates with Google Calendar
+    """
+    try:
+        # Get user email for Google Calendar integration
+        user_email = None
+        
+        # Try to get email from SAML attributes first
+        if hasattr(request, 'session') and 'saml_attributes' in request.session:
+            saml_attributes = request.session['saml_attributes']
+            email_keys = [
+                'mail',
+                'email', 
+                'userPrincipalName',
+                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress',
+                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name',
+                'http://schemas.microsoft.com/ws/2008/06/identity/claims/emailaddress',
+                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn',
+            ]
+            
+            for key in email_keys:
+                if key in saml_attributes and saml_attributes[key]:
+                    user_email = saml_attributes[key]
+                    if isinstance(user_email, list):
+                        user_email = user_email[0]
+                    break
+        
+        # Fallback to Django user email
+        if not user_email:
+            user_email = request.user.email
+        
+        # If still no email, use username with @gmail.com
+        if not user_email:
+            user_email = f"{request.user.username}@gmail.com"
+        
+        # Log activity
+        ActivityLog.objects.create(
+            user=request.user,
+            activity_type='calendar_access',
+            description='Accessed calendar application',
+            ip_address=request.META.get('REMOTE_ADDR', ''),
+            user_agent=request.META.get('HTTP_USER_AGENT', '')
+        )
+        
+        context = {
+            'user_email': user_email,
+            'user': request.user,
+        }
+        
+        return render(request, 'authentication/calendar.html', context)
+        
+    except Exception as e:
+        logger.error(f"Error in calendar view: {str(e)}")
+        messages.error(request, 'Error loading calendar. Please try again.')
+        return redirect('authentication:home')
+
+
+@login_required
+def google_calendar_redirect(request):
+    """
+    Redirect to Google Calendar with user's email
+    """
+    try:
+        # Get user email
+        user_email = None
+        
+        # Try to get email from SAML attributes first
+        if hasattr(request, 'session') and 'saml_attributes' in request.session:
+            saml_attributes = request.session['saml_attributes']
+            email_keys = [
+                'mail',
+                'email', 
+                'userPrincipalName',
+                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress',
+                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name',
+                'http://schemas.microsoft.com/ws/2008/06/identity/claims/emailaddress',
+                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn',
+            ]
+            
+            for key in email_keys:
+                if key in saml_attributes and saml_attributes[key]:
+                    user_email = saml_attributes[key]
+                    if isinstance(user_email, list):
+                        user_email = user_email[0]
+                    break
+        
+        # Fallback to Django user email
+        if not user_email:
+            user_email = request.user.email
+        
+        # If still no email, use username with @gmail.com
+        if not user_email:
+            user_email = f"{request.user.username}@gmail.com"
+        
+        # Log activity
+        ActivityLog.objects.create(
+            user=request.user,
+            activity_type='google_calendar_redirect',
+            description='Redirected to Google Calendar',
+            ip_address=request.META.get('REMOTE_ADDR', ''),
+            user_agent=request.META.get('HTTP_USER_AGENT', '')
+        )
+        
+        # Redirect to Google Calendar
+        google_calendar_url = "https://calendar.google.com/calendar/u/0/r"
+        return redirect(google_calendar_url)
+        
+    except Exception as e:
+        logger.error(f"Error redirecting to Google Calendar: {str(e)}")
+        messages.error(request, 'Error opening Google Calendar. Please try again.')
+        return redirect('authentication:home')

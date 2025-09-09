@@ -85,14 +85,21 @@ function initInteractiveElements() {
     const appItems = document.querySelectorAll('.app-item');
     appItems.forEach(item => {
         item.addEventListener('click', function(e) {
-            e.preventDefault();
             const appName = this.querySelector('span').textContent;
-            if (appName === 'Add App') {
-                showToast('Opening app store...', 'info');
+            const href = this.getAttribute('href');
+            
+            // Only prevent default for placeholder links
+            if (href === '#' || href === null) {
+                e.preventDefault();
+                if (appName === 'Add App') {
+                    showToast('Opening app store...', 'info');
+                } else {
+                    showToast(`Opening ${appName}...`, 'info');
+                }
             } else {
-                showToast(`Opening ${appName}...`, 'info');
+                // For real links, show a brief message and let the navigation proceed
+                showToast(`Opening ${appName}...`, 'success');
             }
-            // Add actual app opening logic here
         });
     });
 }

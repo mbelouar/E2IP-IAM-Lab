@@ -62,4 +62,8 @@ urlpatterns = [
     
     # Admin/Database Views
     path('admin/users/', views.user_database_view, name='user_database'),
+    
+    # Calendar Integration
+    path('calendar/', views.calendar_view, name='calendar'),
+    path('calendar/google/', views.google_calendar_redirect, name='google_calendar_redirect'),
 ]
