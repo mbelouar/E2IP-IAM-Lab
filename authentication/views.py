@@ -1505,7 +1505,7 @@ def custom_saml_acs(request):
 
 def show_saml_processing_page(request, saml_response, relay_state):
     """
-    Show a processing page with auto-submitting form
+    Show a professional processing page with auto-submitting form
     """
     html_content = f"""
     <!DOCTYPE html>
@@ -1513,16 +1513,17 @@ def show_saml_processing_page(request, saml_response, relay_state):
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Processing SAML Authentication - SecureAuth</title>
-        <meta name="description" content="Processing SAML authentication response">
+        <title>Processing SAML Authentication - SecureAuth Enterprise Portal</title>
+        <meta name="description" content="Securely processing SAML authentication response">
         <meta name="robots" content="noindex, nofollow">
+        <meta name="theme-color" content="#0066cc">
         <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%230066cc'/><stop offset='100%' stop-color='%233385d6'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23grad)'/><path d='M50 25c-8.284 0-15 6.716-15 15v5h-5c-2.761 0-5 2.239-5 5v25c0 2.761 2.239 5 5 5h40c2.761 0 5-2.239 5-5V50c0-2.761-2.239-5-5-5h-5v-5c0-8.284-6.716-15-15-15zm0 6c5.523 0 10 4.477 10 10v5H40v-5c0-5.523 4.477-10 10-10z' fill='white'/></svg>">
         <link rel="stylesheet" href="/static/css/login.css?v=3">
         <link rel="stylesheet" href="/static/css/login-enhancements.css?v=2">
         <link rel="stylesheet" href="/static/css/background-enhancements.css?v=2">
         <link rel="stylesheet" href="/static/css/header-enhancements.css?v=2">
         <link rel="stylesheet" href="/static/css/home-enhancements.css?v=3">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <style>
             :root {{
@@ -1927,20 +1928,79 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 color: var(--dark-text-secondary);
             }}
 
-            /* Processing Card */
+            /* Enhanced Header Icon Wrapper */
+            .header-icon-wrapper {{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }}
+
+            .header-icon {{
+                width: 60px;
+                height: 60px;
+                background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+                border-radius: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                box-shadow: 0 4px 20px rgba(0, 102, 204, 0.3);
+                animation: iconPulse 2s ease-in-out infinite;
+            }}
+
+            .security-badge {{
+                background: rgba(0, 168, 107, 0.1);
+                color: var(--success);
+                padding: 0.5rem 1rem;
+                border-radius: 50px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                border: 1px solid rgba(0, 168, 107, 0.2);
+            }}
+
+            @keyframes iconPulse {{
+                0%, 100% {{ 
+                    transform: scale(1);
+                    box-shadow: 0 4px 20px rgba(0, 102, 204, 0.3);
+                }}
+                50% {{ 
+                    transform: scale(1.05);
+                    box-shadow: 0 6px 25px rgba(0, 102, 204, 0.4);
+                }}
+            }}
+
+            /* Enhanced Processing Card */
             .processing-card {{
-                background: rgba(255, 255, 255, 0.9);
-                backdrop-filter: blur(20px);
-                border-radius: 20px;
-                padding: 2rem;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(25px);
+                border-radius: 24px;
+                padding: 2.5rem;
                 margin-bottom: 2rem;
-                border: 1px solid rgba(0, 102, 204, 0.1);
-                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-                transition: all 0.3s ease;
+                border: 1px solid rgba(0, 102, 204, 0.12);
+                box-shadow: 
+                    0 10px 40px rgba(0, 0, 0, 0.08),
+                    0 4px 12px rgba(0, 102, 204, 0.04);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 position: relative;
                 overflow: hidden;
-                animation: fadeIn 0.6s ease-out;
+                animation: slideInUp 0.8s ease-out;
                 text-align: center;
+            }}
+
+            @keyframes slideInUp {{
+                from {{ 
+                    opacity: 0; 
+                    transform: translateY(30px); 
+                }}
+                to {{ 
+                    opacity: 1; 
+                    transform: translateY(0); 
+                }}
             }}
 
             .processing-card::before {{
@@ -1963,20 +2023,157 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 border-color: rgba(0, 102, 204, 0.2);
             }}
 
-            /* Spinner */
-            .spinner {{
-                width: 64px;
-                height: 64px;
-                border: 4px solid var(--gray-200);
-                border-top: 4px solid var(--primary-blue);
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-                margin: 2rem auto;
+            /* Progress Ring */
+            .progress-wrapper {{
+                margin: 2rem 0;
+                display: flex;
+                justify-content: center;
             }}
 
-            body.dark-mode .spinner {{
-                border-color: var(--dark-border);
-                border-top-color: var(--primary-blue-light);
+            .progress-ring {{
+                position: relative;
+                width: 80px;
+                height: 80px;
+            }}
+
+            .progress-ring-svg {{
+                transform: rotate(-90deg);
+            }}
+
+            .progress-ring-circle-bg {{
+                stroke: var(--gray-200);
+                stroke-width: 4;
+                fill: transparent;
+            }}
+
+            .progress-ring-circle {{
+                stroke: var(--primary-blue);
+                stroke-width: 4;
+                stroke-linecap: round;
+                fill: transparent;
+                stroke-dasharray: 226;
+                stroke-dashoffset: 56;
+                animation: progressRing 3s ease-in-out forwards;
+            }}
+
+            body.dark-mode .progress-ring-circle-bg {{
+                stroke: var(--dark-border);
+            }}
+
+            body.dark-mode .progress-ring-circle {{
+                stroke: var(--primary-blue-light);
+            }}
+
+            .progress-percentage {{
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: var(--primary-blue);
+                transition: all 0.3s ease;
+            }}
+
+            body.dark-mode .progress-percentage {{
+                color: var(--primary-blue-light);
+            }}
+
+            @keyframes progressRing {{
+                0% {{ stroke-dashoffset: 226; }}
+                60% {{ stroke-dashoffset: 90; }}
+                80% {{ stroke-dashoffset: 45; }}
+                100% {{ stroke-dashoffset: 0; }}
+            }}
+
+            /* Status Steps */
+            .status-steps {{
+                margin: 2rem 0;
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                text-align: left;
+            }}
+
+            .status-step {{
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                padding: 1rem;
+                border-radius: 12px;
+                transition: all 0.3s ease;
+                position: relative;
+            }}
+
+            .status-step.completed {{
+                background: rgba(0, 168, 107, 0.05);
+                border: 1px solid rgba(0, 168, 107, 0.1);
+            }}
+
+            .status-step.active {{
+                background: rgba(0, 102, 204, 0.05);
+                border: 1px solid rgba(0, 102, 204, 0.1);
+                animation: statusPulse 2s ease-in-out infinite;
+            }}
+
+            @keyframes statusPulse {{
+                0%, 100% {{ border-color: rgba(0, 102, 204, 0.1); }}
+                50% {{ border-color: rgba(0, 102, 204, 0.2); }}
+            }}
+
+            .step-icon {{
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.9rem;
+                flex-shrink: 0;
+            }}
+
+            .status-step.completed .step-icon {{
+                background: var(--success);
+                color: white;
+            }}
+
+            .status-step.active .step-icon {{
+                background: var(--primary-blue);
+                color: white;
+            }}
+
+            .step-content {{
+                flex: 1;
+            }}
+
+            .step-title {{
+                font-weight: 600;
+                color: var(--gray-900);
+                font-size: 0.95rem;
+                margin-bottom: 0.25rem;
+            }}
+
+            .step-subtitle {{
+                font-size: 0.85rem;
+                color: var(--gray-600);
+            }}
+
+            body.dark-mode .step-title {{
+                color: var(--dark-text-primary);
+            }}
+
+            body.dark-mode .step-subtitle {{
+                color: var(--dark-text-secondary);
+            }}
+
+            /* Small Spinner for Active Step */
+            .spinner-small {{
+                width: 20px;
+                height: 20px;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                border-top: 2px solid white;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
             }}
 
             @keyframes spin {{
@@ -1984,22 +2181,123 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 100% {{ transform: rotate(360deg); }}
             }}
 
-            /* Status Message */
+            /* Enhanced Status Message */
             .status-message {{
-                background: rgba(0, 102, 204, 0.05);
+                background: rgba(0, 102, 204, 0.06);
                 border: 1px solid rgba(0, 102, 204, 0.15);
-                border-radius: 12px;
-                padding: 1rem;
-                margin: 1.5rem 0;
+                border-radius: 16px;
+                padding: 1.5rem;
+                margin: 2rem 0;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                text-align: left;
+            }}
+
+            .status-icon {{
+                width: 40px;
+                height: 40px;
+                background: var(--primary-blue);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 1.1rem;
+                flex-shrink: 0;
+            }}
+
+            .status-content {{
+                flex: 1;
+            }}
+
+            .status-title {{
+                font-weight: 600;
                 color: var(--primary-blue);
+                font-size: 1rem;
+                margin-bottom: 0.5rem;
+            }}
+
+            .status-description {{
                 font-size: 0.9rem;
-                font-weight: 500;
+                color: var(--gray-700);
+                line-height: 1.5;
             }}
 
             body.dark-mode .status-message {{
-                background: rgba(0, 102, 204, 0.1);
+                background: rgba(0, 102, 204, 0.08);
                 border-color: rgba(0, 102, 204, 0.2);
+            }}
+
+            body.dark-mode .status-icon {{
+                background: var(--primary-blue-light);
+            }}
+
+            body.dark-mode .status-title {{
                 color: var(--primary-blue-light);
+            }}
+
+            body.dark-mode .status-description {{
+                color: var(--dark-text-secondary);
+            }}
+
+            /* Enhanced Countdown */
+            .countdown-wrapper {{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 1.5rem 0;
+            }}
+
+            .countdown {{
+                font-size: 0.95rem;
+                color: var(--gray-600);
+                font-weight: 500;
+                margin: 0;
+                text-align: center;
+            }}
+
+            body.dark-mode .countdown {{
+                color: var(--dark-text-secondary);
+            }}
+
+            .countdown-number {{
+                color: var(--primary-blue);
+                font-weight: 700;
+                font-size: 1.1rem;
+            }}
+
+            body.dark-mode .countdown-number {{
+                color: var(--primary-blue-light);
+            }}
+
+            /* Loading Bar */
+            .loading-bar {{
+                width: 100%;
+                height: 4px;
+                background: var(--gray-200);
+                border-radius: 2px;
+                overflow: hidden;
+                margin-top: 2rem;
+            }}
+
+            .loading-progress {{
+                height: 100%;
+                background: linear-gradient(90deg, var(--primary-blue), var(--primary-blue-light));
+                border-radius: 2px;
+                width: 0%;
+                animation: loadingProgress 3s ease-in-out forwards;
+            }}
+
+            body.dark-mode .loading-bar {{
+                background: var(--dark-border);
+            }}
+
+            @keyframes loadingProgress {{
+                0% {{ width: 0%; }}
+                50% {{ width: 60%; }}
+                80% {{ width: 85%; }}
+                100% {{ width: 100%; }}
             }}
 
             .countdown {{
@@ -2069,25 +2367,151 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 100% {{ box-shadow: 0 0 0 0 rgba(0, 168, 107, 0); }}
             }}
 
-            /* Responsive Design */
+            /* Accessibility Improvements */
+            .sr-only {{
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                white-space: nowrap;
+                border: 0;
+            }}
+
+            /* Focus management */
+            *:focus {{
+                outline: 2px solid var(--primary-blue);
+                outline-offset: 2px;
+            }}
+
+            body.dark-mode *:focus {{
+                outline-color: var(--primary-blue-light);
+            }}
+
+            /* High contrast mode support */
+            @media (prefers-contrast: high) {{
+                .processing-card {{
+                    border: 2px solid var(--primary-blue);
+                    background: var(--white);
+                }}
+                
+                .status-step {{
+                    border: 2px solid var(--gray-400);
+                }}
+                
+                .status-step.completed {{
+                    border-color: var(--success);
+                }}
+                
+                .status-step.active {{
+                    border-color: var(--primary-blue);
+                }}
+            }}
+
+            /* Reduced motion support */
+            @media (prefers-reduced-motion: reduce) {{
+                * {{
+                    animation-duration: 0.01ms !important;
+                    animation-iteration-count: 1 !important;
+                    transition-duration: 0.01ms !important;
+                }}
+            }}
+
+            /* Enhanced Responsive Design */
+            @media (max-width: 768px) {{
+                .header-icon-wrapper {{
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }}
+                
+                .security-badge {{
+                    font-size: 0.75rem;
+                    padding: 0.4rem 0.8rem;
+                }}
+                
+                .status-steps {{
+                    gap: 0.75rem;
+                }}
+                
+                .status-step {{
+                    padding: 0.75rem;
+                }}
+                
+                .step-title {{
+                    font-size: 0.9rem;
+                }}
+                
+                .step-subtitle {{
+                    font-size: 0.8rem;
+                }}
+                
+                .status-message {{
+                    flex-direction: column;
+                    text-align: center;
+                    gap: 0.75rem;
+                }}
+                
+                .progress-ring {{
+                    width: 70px;
+                    height: 70px;
+                }}
+                
+                .progress-ring-svg {{
+                    width: 70px;
+                    height: 70px;
+                }}
+                
+                .countdown {{
+                    font-size: 0.9rem;
+                }}
+            }}
+
             @media (max-width: 640px) {{
                 .processing-container {{
                     padding: var(--space-xl);
                     margin: var(--space-md);
                 }}
                 
+                .processing-card {{
+                    padding: 2rem;
+                }}
+                
                 .processing-title {{
                     font-size: 1.5rem;
                 }}
                 
-                .spinner {{
-                    width: 48px;
-                    height: 48px;
+                .header-icon {{
+                    width: 50px;
+                    height: 50px;
                 }}
                 
-                .logo-icon {{
-                    width: 40px;
-                    height: 40px;
+                .header-icon svg {{
+                    width: 24px;
+                    height: 24px;
+                }}
+                
+                .progress-ring {{
+                    width: 60px;
+                    height: 60px;
+                }}
+                
+                .progress-ring-svg {{
+                    width: 60px;
+                    height: 60px;
+                }}
+                
+                .step-icon {{
+                    width: 35px;
+                    height: 35px;
+                    font-size: 0.8rem;
+                }}
+                
+                .status-icon {{
+                    width: 35px;
+                    height: 35px;
+                    font-size: 1rem;
                 }}
             }}
         </style>
@@ -2146,33 +2570,126 @@ def show_saml_processing_page(request, saml_response, relay_state):
 
         <!-- Main Content -->
         <div class="processing-container">
-            <!-- Compact Header -->
+            <!-- Enhanced Header -->
             <div class="processing-header">
+                <div class="header-icon-wrapper">
                 <div class="header-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
-                        <rect x="4" y="11" width="16" height="10" rx="2" ry="2"></rect>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 28px; height: 28px;">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            <circle cx="12" cy="16" r="1"></circle>
                     </svg>
                 </div>
-                <h1 class="processing-title">Processing Authentication</h1>
-                <p class="processing-subtitle">
-                    Validating your SAML credentials and establishing secure session
+                    <div class="security-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secured</span>
+                    </div>
+                </div>
+                <h1 class="processing-title" role="heading" aria-level="1">Authentication in Progress</h1>
+                <p class="processing-subtitle" aria-describedby="auth-description">
+                    Securely validating your SAML credentials and establishing encrypted session
                 </p>
+                <div id="auth-description" class="sr-only">
+                    SAML authentication is being processed securely using enterprise-grade encryption
+                </div>
             </div>
 
-            <!-- Processing Card -->
+            <!-- Enhanced Processing Card -->
             <div class="processing-card">
-                <!-- Spinner -->
-                <div class="spinner"></div>
-                
-                <!-- Status Message -->
-                <div class="status-message">
-                    <strong>🔐 Authentication Progress:</strong><br>
-                    SAML response validated • User attributes extracted • Creating secure session
+                <!-- Progress Indicator -->
+                <div class="progress-wrapper" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" aria-label="Authentication progress">
+                    <div class="progress-ring">
+                        <svg class="progress-ring-svg" width="80" height="80" aria-hidden="true">
+                            <circle class="progress-ring-circle-bg" cx="40" cy="40" r="36"></circle>
+                            <circle class="progress-ring-circle" cx="40" cy="40" r="36"></circle>
+                        </svg>
+                        <div class="progress-percentage">
+                            <span id="progress-text" aria-live="polite">75%</span>
+                        </div>
+                    </div>
                 </div>
                 
-                <p class="countdown">
-                    Redirecting in <span class="countdown-number" id="countdown">3</span> seconds...
+                <!-- Enhanced Status Steps -->
+                <div class="status-steps" role="list" aria-label="Authentication progress steps">
+                    <div class="status-step completed" role="listitem" aria-describedby="step1-desc">
+                        <div class="step-icon" aria-hidden="true">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-title">SAML Response Received</div>
+                            <div class="step-subtitle" id="step1-desc">Authentication data validated</div>
+                        </div>
+                    </div>
+                    <div class="status-step completed" role="listitem" aria-describedby="step2-desc">
+                        <div class="step-icon" aria-hidden="true">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-title">Credentials Verified</div>
+                            <div class="step-subtitle" id="step2-desc">User attributes extracted</div>
+                        </div>
+                    </div>
+                    <div class="status-step active" role="listitem" aria-describedby="step3-desc" aria-current="step">
+                        <div class="step-icon" aria-hidden="true">
+                            <div class="spinner-small"></div>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-title">Creating Secure Session</div>
+                            <div class="step-subtitle" id="step3-desc">Establishing encrypted connection</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Professional Status Message -->
+                <div class="status-message">
+                    <div class="status-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="status-content">
+                        <div class="status-title">Secure Authentication Protocol</div>
+                        <div class="status-description">
+                            Your credentials are being processed using enterprise-grade SAML 2.0 authentication
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Countdown -->
+                <div class="countdown-wrapper" role="timer" aria-live="polite" aria-atomic="true">
+                    <p class="countdown" id="countdown-status">
+                        Redirecting in <span class="countdown-number" id="countdown">3</span> <span id="countdown-text">seconds</span>
+                    </p>
+                </div>
+                
+                <!-- Loading bar -->
+                <div class="loading-bar" role="progressbar" aria-label="Overall authentication progress" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                    <div class="loading-progress" id="loading-progress"></div>
+                    <span class="sr-only">Authentication progress: 75% complete</span>
+                </div>
+            </div>
+            
+            <!-- Error fallback section (hidden by default) -->
+            <div id="error-fallback" class="processing-card" style="display: none;" role="alert" aria-live="assertive">
+                <div class="status-icon" style="background: var(--error); margin: 0 auto 1rem;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2 style="color: var(--error); margin-bottom: 1rem;">Authentication Taking Longer Than Expected</h2>
+                <p style="margin-bottom: 1.5rem; color: var(--gray-700);">
+                    If you're not automatically redirected within a few seconds, please click the button below.
+                </p>
+                <button id="manual-submit" type="button" style="
+                    background: var(--primary-blue);
+                    color: white;
+                    border: none;
+                    padding: 0.75rem 2rem;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: background 0.3s ease;
+                ">
+                    Continue Authentication
+                </button>
+                <p style="font-size: 0.85rem; color: var(--gray-600); margin-top: 1rem;">
+                    If problems persist, please contact your system administrator.
                 </p>
             </div>
             
@@ -2225,35 +2742,203 @@ def show_saml_processing_page(request, saml_response, relay_state):
             // Theme toggle event listener
             document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
 
-            // Countdown and form submission logic
+            // Enhanced countdown and form submission logic
             let countdown = 3;
+            let progress = 75;
             const countdownElement = document.getElementById('countdown');
             const countdownTextElement = document.getElementById('countdown-text');
+            const progressTextElement = document.getElementById('progress-text');
+            const loadingProgressElement = document.getElementById('loading-progress');
             const statusIndicator = document.querySelector('.status-indicator span');
             
+            // Initialize progress animations
+            if (progressTextElement) {{
+                let currentProgress = 75;
+                const progressInterval = setInterval(() => {{
+                    if (currentProgress < 100) {{
+                        // Smooth progression with decreasing increments as we approach 100%
+                        let increment = currentProgress < 90 ? 2 + Math.random() * 2 : 0.5 + Math.random() * 0.5;
+                        currentProgress += increment;
+                        currentProgress = Math.min(currentProgress, 100);
+                        progressTextElement.textContent = Math.round(currentProgress) + '%';
+                        updateProgressAria(Math.round(currentProgress));
+                    }} else {{
+                        clearInterval(progressInterval);
+                    }}
+                }}, 150);
+            }}
+            
+            // Enhanced countdown timer
             const timer = setInterval(() => {{
                 countdown--;
+                if (countdownElement) {{
                 countdownElement.textContent = countdown;
+                }}
                 
                 // Update singular/plural text
+                if (countdownTextElement) {{
                 countdownTextElement.textContent = countdown === 1 ? 'second' : 'seconds';
+                }}
+                
+                // Update progress smoothly during countdown (only if not already at 100%)
+                if (progress < 100) {{
+                    // Very small increments during countdown to avoid conflicts
+                    progress = Math.min(progress + 1, 100);
+                    if (progressTextElement) {{
+                        progressTextElement.textContent = progress + '%';
+                    }}
+                    updateProgressAria(progress);
+                }}
                 
                 if (countdown <= 0) {{
                     clearInterval(timer);
+                    if (countdownElement) {{
                     countdownElement.textContent = '0';
+                    }}
+                    if (countdownTextElement) {{
                     countdownTextElement.textContent = 'seconds';
-                    statusIndicator.textContent = 'Processing authentication...';
+                    }}
+                    if (progressTextElement) {{
+                        progressTextElement.textContent = '100%';
+                        progressTextElement.style.color = 'var(--success)';
+                        progressTextElement.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                        setTimeout(() => {{
+                            progressTextElement.style.transform = 'translate(-50%, -50%) scale(1)';
+                        }}, 300);
+                    }}
                     
-                    // Add a subtle fade effect before submit
-                    document.querySelector('.processing-container').style.opacity = '0.8';
+                    // Add completion effect to progress ring
+                    const progressRing = document.querySelector('.progress-ring-circle');
+                    if (progressRing) {{
+                        progressRing.style.stroke = 'var(--success)';
+                        progressRing.style.filter = 'drop-shadow(0 0 8px rgba(0, 168, 107, 0.5))';
+                    }}
+                    if (statusIndicator) {{
+                        statusIndicator.textContent = 'Completing authentication...';
+                    }}
+                    
+                    // Update final step
+                    const activeStep = document.querySelector('.status-step.active');
+                    if (activeStep) {{
+                        activeStep.classList.remove('active');
+                        activeStep.classList.add('completed');
+                        
+                        const stepIcon = activeStep.querySelector('.step-icon');
+                        if (stepIcon) {{
+                            stepIcon.innerHTML = '<i class="fas fa-check"></i>';
+                        }}
+                        
+                        const stepTitle = activeStep.querySelector('.step-title');
+                        if (stepTitle) {{
+                            stepTitle.textContent = 'Session Established';
+                        }}
+                        
+                        const stepSubtitle = activeStep.querySelector('.step-subtitle');
+                        if (stepSubtitle) {{
+                            stepSubtitle.textContent = 'Redirecting to secure portal';
+                        }}
+                    }}
+                    
+                    // Add subtle fade effect before submit
+                    const processingContainer = document.querySelector('.processing-container');
+                    if (processingContainer) {{
+                        processingContainer.style.transition = 'opacity 0.5s ease';
+                        processingContainer.style.opacity = '0.9';
+                    }}
+                    
+                    // Submit form
+                    setTimeout(() => {{
                     document.getElementById('samlForm').submit();
+                    }}, 500);
                 }}
             }}, 1000);
             
-            // Also submit after 3 seconds as backup
-            setTimeout(() => {{
+            // Enhanced error handling and fallback
+            let formSubmitted = false;
+            
+            const submitForm = () => {{
+                if (!formSubmitted) {{
+                    formSubmitted = true;
                 document.getElementById('samlForm').submit();
-            }}, 3000);
+                }}
+            }};
+            
+            // Backup form submission
+            setTimeout(() => {{
+                submitForm();
+            }}, 3500);
+            
+            // Show error fallback after extended delay
+            setTimeout(() => {{
+                if (!formSubmitted) {{
+                    document.querySelector('.processing-card:not(#error-fallback)').style.display = 'none';
+                    document.getElementById('error-fallback').style.display = 'block';
+                    announceProgress('Authentication is taking longer than expected. Manual action may be required.');
+                }}
+            }}, 7000);
+            
+            // Manual submit button handler
+            const manualSubmitBtn = document.getElementById('manual-submit');
+            if (manualSubmitBtn) {{
+                manualSubmitBtn.addEventListener('click', () => {{
+                    announceProgress('Manually continuing authentication.');
+                    submitForm();
+                }});
+                
+                // Hover effect
+                manualSubmitBtn.addEventListener('mouseenter', function() {{
+                    this.style.background = 'var(--primary-blue-dark)';
+                }});
+                manualSubmitBtn.addEventListener('mouseleave', function() {{
+                    this.style.background = 'var(--primary-blue)';
+                }});
+            }}
+            
+            // Add accessibility announcements
+            const announceProgress = (message) => {{
+                const announcement = document.createElement('div');
+                announcement.setAttribute('aria-live', 'polite');
+                announcement.setAttribute('aria-atomic', 'true');
+                announcement.className = 'sr-only';
+                announcement.textContent = message;
+                document.body.appendChild(announcement);
+                setTimeout(() => {{
+                    if (document.body.contains(announcement)) {{
+                        document.body.removeChild(announcement);
+                    }}
+                }}, 1000);
+            }};
+            
+            // Announce initial state
+            setTimeout(() => {{
+                announceProgress('Authentication in progress. Processing SAML credentials.');
+            }}, 500);
+            
+            // Update ARIA attributes dynamically
+            const updateProgressAria = (percentage) => {{
+                const progressWrapper = document.querySelector('.progress-wrapper');
+                const loadingBar = document.querySelector('.loading-bar');
+                if (progressWrapper) {{
+                    progressWrapper.setAttribute('aria-valuenow', percentage);
+                }}
+                if (loadingBar) {{
+                    loadingBar.setAttribute('aria-valuenow', percentage);
+                    const srText = loadingBar.querySelector('.sr-only');
+                    if (srText) {{
+                        srText.textContent = `Authentication progress: ${{percentage}}% complete`;
+                    }}
+                }}
+            }};
+            
+            // Focus management for accessibility
+            document.addEventListener('DOMContentLoaded', () => {{
+                // Set initial focus to main content
+                const mainTitle = document.querySelector('.processing-title');
+                if (mainTitle) {{
+                    mainTitle.setAttribute('tabindex', '-1');
+                    mainTitle.focus();
+                }}
+            }});
         </script>
     </body>
     </html>
