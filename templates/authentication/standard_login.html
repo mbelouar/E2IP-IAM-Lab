@@ -183,81 +183,83 @@
             50% { opacity: 0.04; }
         }
 
-        /* Header */
+        /* Header - Match other pages */
         .header {
-            position: relative;
-            z-index: 50;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .header-logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .header-logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #0066cc, #4285f4);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.25rem;
-            font-weight: bold;
-        }
-
-        .company-info {
-            color: white;
-        }
-
-        .company-name {
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin-bottom: 0.125rem;
-            letter-spacing: -0.025em;
-            background: linear-gradient(135deg, #0066cc, #4285f4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .company-tagline {
-            font-size: 0.875rem;
-            opacity: 0.9;
-            font-weight: 500;
-            letter-spacing: 0.01em;
-        }
-
-        .system-status {
             display: flex !important;
             align-items: center !important;
-            gap: 0.5rem !important;
+            justify-content: space-between !important;
+            padding: 1rem 2rem !important;
+            background: rgba(0, 0, 0, 0.1) !important;
+            backdrop-filter: blur(10px) !important;
+            position: relative !important;
+            z-index: 50 !important;
+        }
+
+        .header .header-left {
+            flex-shrink: 0 !important;
+        }
+
+        .header .utility-controls {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.75rem !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Header Background Color Fix - Override with high specificity */
+        .header .system-status {
             background: rgba(30, 41, 59, 0.5) !important;
-            backdrop-filter: blur(12px) !important;
-            padding: 0.75rem 1.25rem !important;
-            border-radius: 1rem !important;
-            color: #e2e8f0 !important;
-            font-size: 0.875rem !important;
-            font-weight: 500 !important;
             border: 1px solid rgba(100, 116, 139, 0.3) !important;
-            min-height: 2.5rem !important;
+            color: #e2e8f0 !important;
+        }
+
+        .header .system-status:hover {
+            background: rgba(30, 41, 59, 0.7) !important;
+        }
+
+        .header .utility-btn {
+            background: rgba(30, 41, 59, 0.5) !important;
+            border: 1px solid rgba(100, 116, 139, 0.3) !important;
+            color: #e2e8f0 !important;
+        }
+
+        .header .utility-btn:hover {
+            background: rgba(30, 41, 59, 0.7) !important;
+        }
+
+        /* Light Mode Styles for Header */
+        body:not(.dark-mode) .header {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px) !important;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+        }
+
+        body:not(.dark-mode) .header .system-status {
+            background: rgba(59, 130, 246, 0.1) !important;
+            border: 1px solid rgba(59, 130, 246, 0.3) !important;
+            color: #1e40af !important;
+        }
+
+        body:not(.dark-mode) .header .system-status:hover {
+            background: rgba(59, 130, 246, 0.2) !important;
+        }
+
+        body:not(.dark-mode) .header .utility-btn {
+            background: rgba(59, 130, 246, 0.1) !important;
+            border: 1px solid rgba(59, 130, 246, 0.3) !important;
+            color: #1e40af !important;
+        }
+
+        body:not(.dark-mode) .header .utility-btn:hover {
+            background: rgba(59, 130, 246, 0.2) !important;
+        }
+
+        body:not(.dark-mode) .header .company-name {
+            color: #1e293b !important;
+        }
+
+        body:not(.dark-mode) .header .company-tagline {
+            color: #64748b !important;
         }
 
         .status-indicator {
@@ -266,37 +268,6 @@
             border-radius: 50%;
             background: #00a86b;
             animation: pulse 2s infinite;
-        }
-
-        .utility-controls {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .utility-btn {
-            background: rgba(30, 41, 59, 0.5);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(100, 116, 139, 0.3);
-            border-radius: 0.75rem;
-            padding: 0.75rem;
-            color: #e2e8f0;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .utility-btn:hover {
-            background: rgba(30, 41, 59, 0.7);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .utility-btn:focus {
-            outline: 2px solid rgba(255, 255, 255, 0.5);
-            outline-offset: 2px;
         }
 
         /* Main Container */
@@ -698,17 +669,452 @@
                 flex-direction: column;
                 gap: 1rem;
                 text-align: center;
+                padding: 1rem !important;
             }
             
             .header-left {
                 flex-direction: column;
                 gap: 1rem;
             }
+
+            .utility-controls {
+                gap: 0.5rem;
+            }
+
+            .utility-btn {
+                padding: 0.5rem;
+            }
+
+            .system-status {
+                margin-left: 0 !important;
+                margin-top: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .standard-login-container {
+                padding: 0.5rem;
+            }
+            
+            .standard-login-card {
+                padding: 1.5rem;
+            }
+            
+            .standard-login-title {
+                font-size: 1.5rem;
+            }
+
+            .header {
+                padding: 0.75rem !important;
+            }
+
+            .header-logo-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
+
+            .company-name {
+                font-size: 1.25rem;
+            }
+
+            .company-tagline {
+                font-size: 0.8rem;
+            }
+
+            .utility-btn {
+                padding: 0.5rem;
+                font-size: 0.875rem;
+            }
+
+            .system-status {
+                padding: 0.5rem 1rem !important;
+                font-size: 0.8rem !important;
+            }
         }
 
         @keyframes pulse {
             0%, 100% { opacity: 0.3; transform: scale(1); }
             50% { opacity: 0.6; transform: scale(1.05); }
+        }
+
+        /* Help Modal Styles */
+        .help-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .help-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .help-modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 0;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .help-modal.show .help-modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        body.dark-mode .help-modal-content {
+            background: rgba(26, 32, 44, 0.95);
+            border: 1px solid rgba(100, 116, 139, 0.3);
+        }
+
+        .help-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 2rem 2rem 1rem 2rem;
+            border-bottom: 1px solid rgba(0, 102, 204, 0.1);
+        }
+
+        .help-modal-title {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .help-modal-title i {
+            color: #0066cc;
+        }
+
+        body.dark-mode .help-modal-title {
+            color: #f8fafc;
+        }
+
+        .help-modal-close {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .help-modal-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+        }
+
+        body.dark-mode .help-modal-close {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .help-modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f8fafc;
+        }
+
+        .help-modal-body {
+            padding: 2rem;
+        }
+
+        .help-section {
+            margin-bottom: 2rem;
+        }
+
+        .help-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .help-section h3 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .help-section h3 i {
+            color: #0066cc;
+        }
+
+        body.dark-mode .help-section h3 {
+            color: #f8fafc;
+        }
+
+        .help-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .help-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(0, 102, 204, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 102, 204, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .help-option:hover {
+            background: rgba(0, 102, 204, 0.1);
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode .help-option {
+            background: rgba(0, 102, 204, 0.1);
+            border-color: rgba(0, 102, 204, 0.2);
+        }
+
+        .help-option i {
+            font-size: 1.25rem;
+            color: #0066cc;
+            width: 24px;
+            text-align: center;
+        }
+
+        .help-option div strong {
+            display: block;
+            color: #1e293b;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .help-option div p {
+            margin: 0;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        body.dark-mode .help-option div strong {
+            color: #f8fafc;
+        }
+
+        body.dark-mode .help-option div p {
+            color: #94a3b8;
+        }
+
+        .help-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .help-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 102, 204, 0.05);
+            border-radius: 8px;
+            text-decoration: none;
+            color: #1e293b;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .help-link:hover {
+            background: rgba(0, 102, 204, 0.1);
+            transform: translateX(4px);
+        }
+
+        body.dark-mode .help-link {
+            background: rgba(0, 102, 204, 0.1);
+            color: #f8fafc;
+        }
+
+        .help-link i {
+            color: #0066cc;
+            width: 16px;
+            text-align: center;
+        }
+
+        .help-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .help-action-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .help-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+        }
+
+        /* Toast Notification Styles */
+        .toast {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1001;
+            max-width: 400px;
+            transform: translateX(100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.fade-out {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        body.dark-mode .toast {
+            background: rgba(26, 32, 44, 0.95);
+            border: 1px solid rgba(100, 116, 139, 0.3);
+        }
+
+        .toast-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .toast-content i {
+            font-size: 1.25rem;
+            margin-top: 0.125rem;
+            flex-shrink: 0;
+        }
+
+        .toast-success i {
+            color: #10b981;
+        }
+
+        .toast-error i {
+            color: #ef4444;
+        }
+
+        .toast-warning i {
+            color: #f59e0b;
+        }
+
+        .toast-info i {
+            color: #3b82f6;
+        }
+
+        .toast-content div strong {
+            display: block;
+            color: #1e293b;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-content div p {
+            margin: 0;
+            color: #64748b;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        body.dark-mode .toast-content div strong {
+            color: #f8fafc;
+        }
+
+        body.dark-mode .toast-content div p {
+            color: #94a3b8;
+        }
+
+        .toast-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .toast-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+        }
+
+        body.dark-mode .toast-close {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .toast-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f8fafc;
+        }
+
+        /* Responsive Design for Help Modal */
+        @media (max-width: 768px) {
+            .help-modal-content {
+                width: 95%;
+                margin: 1rem;
+            }
+
+            .help-modal-header,
+            .help-modal-body {
+                padding: 1.5rem;
+            }
+
+            .help-actions {
+                flex-direction: column;
+            }
+
+            .toast {
+                top: 1rem;
+                right: 1rem;
+                left: 1rem;
+                max-width: none;
+            }
         }
     </style>
 </head>
@@ -729,8 +1135,13 @@
     <!-- Header -->
     <header class="header">
         <div class="header-left">
-            <a href="{% url 'authentication:auth_choice' %}" class="header-logo">
-                <div class="header-logo-icon">S</div>
+            <a href="#" class="header-logo">
+                <div class="header-logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
                 <div class="company-info">
                     <div class="company-name">SecureAuth</div>
                     <div class="company-tagline">Enterprise Access Portal</div>
@@ -743,10 +1154,16 @@
         </div>
         <div class="utility-controls">
             <button id="themeToggle" class="utility-btn" aria-label="Toggle dark mode">
-                <i class="fas fa-moon"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
             </button>
             <button id="helpBtn" class="utility-btn" aria-label="Get help">
-                <i class="fas fa-question-circle"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
             </button>
         </div>
     </header>
@@ -853,21 +1270,25 @@
         body.classList.toggle('dark-mode', currentTheme === 'dark');
         updateThemeToggle();
         
-        themeToggle.addEventListener('click', function() {
-            body.classList.toggle('dark-mode');
-            const isDarkMode = body.classList.contains('dark-mode');
-            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-            updateThemeToggle();
-        });
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function() {
+                body.classList.toggle('dark-mode');
+                const isDarkMode = body.classList.contains('dark-mode');
+                localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+                updateThemeToggle();
+            });
+        }
         
         function updateThemeToggle() {
             const isDarkMode = body.classList.contains('dark-mode');
-            const icon = themeToggle.querySelector('i');
+            const icon = themeToggle ? themeToggle.querySelector('svg') : null;
             
-            if (isDarkMode) {
-                icon.className = 'fas fa-sun';
-            } else {
-                icon.className = 'fas fa-moon';
+            if (icon) {
+                if (isDarkMode) {
+                    icon.innerHTML = '<path d="M12 3v1m0 16v1m9-9h1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
+                } else {
+                    icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+                }
             }
         }
 
@@ -921,6 +1342,174 @@
                 return false;
             }
         });
+
+        // Help button functionality
+        const helpBtn = document.getElementById('helpBtn');
+        if (helpBtn) {
+            helpBtn.addEventListener('click', showHelp);
+        }
+
+        // Help modal functions
+        function showHelp() {
+            // Remove existing modal if any
+            const existingModal = document.getElementById('helpModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Create help modal content
+            const modalHTML = `
+                <div id="helpModal" class="help-modal" style="display: block;">
+                    <div class="help-modal-content">
+                        <div class="help-modal-header">
+                            <h2 class="help-modal-title">
+                                <i class="fas fa-question-circle"></i>
+                                Need Help?
+                            </h2>
+                            <button class="help-modal-close" onclick="closeHelpModal()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="help-modal-body">
+                            <div class="help-section">
+                                <h3><i class="fas fa-headset"></i> Contact Support</h3>
+                                <div class="help-options">
+                                    <div class="help-option">
+                                        <i class="fas fa-envelope"></i>
+                                        <div>
+                                            <strong>Email Support</strong>
+                                            <p>support@secureauth.com</p>
+                                        </div>
+                                    </div>
+                                    <div class="help-option">
+                                        <i class="fas fa-phone"></i>
+                                        <div>
+                                            <strong>Phone Support</strong>
+                                            <p>+1 (555) 123-4567</p>
+                                        </div>
+                                    </div>
+                                    <div class="help-option">
+                                        <i class="fas fa-clock"></i>
+                                        <div>
+                                            <strong>Support Hours</strong>
+                                            <p>Monday - Friday: 8:00 AM - 6:00 PM EST</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="help-section">
+                                <h3><i class="fas fa-book"></i> Documentation & Resources</h3>
+                                <div class="help-links">
+                                    <a href="#" class="help-link" onclick="showToast('Documentation', 'User guide and documentation coming soon!', 'info')">
+                                        <i class="fas fa-file-alt"></i>
+                                        User Guide
+                                    </a>
+                                    <a href="#" class="help-link" onclick="showToast('FAQ', 'Frequently Asked Questions coming soon!', 'info')">
+                                        <i class="fas fa-question"></i>
+                                        FAQ
+                                    </a>
+                                    <a href="#" class="help-link" onclick="showToast('Tutorials', 'Video tutorials coming soon!', 'info')">
+                                        <i class="fas fa-play-circle"></i>
+                                        Video Tutorials
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="help-section">
+                                <h3><i class="fas fa-tools"></i> Quick Actions</h3>
+                                <div class="help-actions">
+                                    <button class="help-action-btn" onclick="showPasswordResetHelp()">
+                                        <i class="fas fa-key"></i>
+                                        Reset Password
+                                    </button>
+                                    <button class="help-action-btn" onclick="showMFAHelp()">
+                                        <i class="fas fa-shield-alt"></i>
+                                        MFA Setup
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to page
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Add smooth animation
+            const modal = document.getElementById('helpModal');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                modal.classList.add('show');
+            }, 10);
+            
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeHelpModal();
+                }
+            });
+        }
+
+        function closeHelpModal() {
+            const modal = document.getElementById('helpModal');
+            if (modal) {
+                modal.style.opacity = '0';
+                setTimeout(() => {
+                    modal.remove();
+                }, 300);
+            }
+        }
+
+        function showPasswordResetHelp() {
+            closeHelpModal();
+            showToast('Password Reset', 'Use the "Forgot Password?" link on the login page to reset your password.', 'info');
+        }
+
+        function showMFAHelp() {
+            closeHelpModal();
+            showToast('MFA Setup', 'Multi-Factor Authentication can be set up after logging in. Go to your profile settings to enable MFA.', 'info');
+        }
+
+        function showToast(title, message, type = 'info') {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                    <div>
+                        <strong>${title}</strong>
+                        <p>${message}</p>
+                    </div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            // Add to page
+            document.body.appendChild(toast);
+            
+            // Show animation
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+            // Auto remove
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.add('fade-out');
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 300);
+                }
+            }, 5000);
+        }
     </script>
     <script src="{% static 'js/footer.js' %}"></script>
 </body>

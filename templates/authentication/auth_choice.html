@@ -19,10 +19,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
+        /* Header Override */
+        .header {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 1rem 2rem !important;
+            background: rgba(0, 0, 0, 0.1) !important;
+            backdrop-filter: blur(10px) !important;
+            position: relative !important;
+            z-index: 50 !important;
+        }
+
         /* Dark Mode Styles (Default) */
         body {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
             color: #f8fafc;
+            padding-bottom: 80px; /* Space for fixed footer */
         }
 
         /* Light Mode Styles */
@@ -31,17 +44,28 @@
             color: #1e293b;
         }
 
+        /* Light Mode Header Override */
+        body:not(.dark-mode) .header {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.98)) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2) !important;
+            box-shadow: 
+                0 1px 3px rgba(15, 23, 42, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+
         /* Auth Choice Specific Styles */
         .auth-choice-container {
-            min-height: calc(100vh - 200px);
+            min-height: calc(100vh - 120px); /* Account for header height */
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center;
             position: relative;
             z-index: 10;
-            padding: 2rem;
-            padding-top: 2rem;
+            padding: 2rem 1rem;
+            box-sizing: border-box;
         }
 
         .auth-choice-card {
@@ -59,6 +83,7 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            margin-top: -50px;
         }
 
         body:not(.dark-mode) .auth-choice-card {
@@ -333,10 +358,11 @@
         @media (max-width: 768px) {
             .auth-choice-container {
                 padding: 1rem;
+                min-height: calc(100vh - 140px); /* More space on mobile for header */
             }
             
             .auth-choice-card {
-                padding: 2rem;
+                padding: 1.5rem;
             }
             
             .auth-options {
@@ -353,16 +379,26 @@
                 height: 60px;
                 font-size: 1.5rem;
             }
+
+            .footer {
+                padding: 0.75rem 1rem;
+            }
+
+            body {
+                padding-bottom: 70px; /* Less space on mobile */
+            }
         }
 
         /* Footer */
         .footer {
-            position: relative;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
             z-index: 10;
             padding: 1rem 2rem;
             background: rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
-            margin-top: auto;
         }
 
         body.dark-mode .footer {
@@ -448,6 +484,10 @@
                     <div class="company-tagline">Enterprise Access Portal</div>
                 </div>
             </a>
+            <div class="system-status">
+                <div class="status-indicator"></div>
+                <span>All systems operational</span>
+            </div>
         </div>
         <div class="utility-controls">
             <button id="themeToggle" class="utility-btn" aria-label="Toggle dark mode">
@@ -538,6 +578,7 @@
     <script>
         // Theme toggle functionality
         const themeToggle = document.getElementById('themeToggle');
+        const helpBtn = document.getElementById('helpBtn');
         const icon = themeToggle.querySelector('svg');
         
         // Check for saved theme preference or default to dark
@@ -562,6 +603,11 @@
             
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             updateThemeIcon(isDark);
+        });
+
+        // Help button functionality
+        helpBtn.addEventListener('click', () => {
+            openHelpModal('support');
         });
         
         function updateThemeIcon(isDark) {
