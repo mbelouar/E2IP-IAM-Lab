@@ -70,4 +70,8 @@ urlpatterns = [
     # Maps Integration
     path('maps/', views.maps_view, name='maps'),
     path('maps/google/', views.google_maps_redirect, name='google_maps_redirect'),
+    
+    # Meet Integration
+    path('meet/', views.meet_view, name='meet'),
+    path('meet/google/', views.google_meet_redirect, name='google_meet_redirect'),
 ]

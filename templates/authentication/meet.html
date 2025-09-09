@@ -1,0 +1,626 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meet - SecureAuth Portal</title>
+    <meta name="description" content="Integrated video conferencing application with Google Meet">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%230066cc'/><stop offset='100%' stop-color='%233385d6'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23grad)'/><path d='M50 25c-8.284 0-15 6.716-15 15v5h-5c-2.761 0-5 2.239-5 5v25c0 2.761 2.239 5 5 5h40c2.761 0 5-2.239 5-5V50c0-2.761-2.239-5-5-5h-5v-5c0-8.284-6.716-15-15-15zm0 6c5.523 0 10 4.477 10 10v5H40v-5c0-5.523 4.477-10 10-10z' fill='white'/></svg>">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/login-enhancements.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/background-enhancements.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/header-enhancements.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/home-enhancements.css' %}?v=5">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Meet-specific styles */
+        .meet-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            position: relative;
+            z-index: 10;
+        }
+
+        .meet-header {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95));
+            backdrop-filter: blur(30px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 102, 204, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .meet-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #0066cc, #4285f4, #6366f1);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .meet-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0 0 1rem 0;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .meet-title i {
+            color: #0066cc;
+            font-size: 2rem;
+        }
+
+        .meet-subtitle {
+            font-size: 1.125rem;
+            color: #64748b;
+            margin: 0 0 2rem 0;
+        }
+
+        .meet-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .meet-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3);
+        }
+
+        .meet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.4);
+            color: white;
+        }
+
+        .meet-btn.secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #0066cc;
+            border: 1px solid rgba(0, 102, 204, 0.3);
+        }
+
+        .meet-btn.secondary:hover {
+            background: rgba(0, 102, 204, 0.1);
+            border-color: #0066cc;
+        }
+
+        .meet-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 0;
+            border: 1px solid rgba(0, 102, 204, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            min-height: 600px;
+        }
+
+        .meet-iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+            border-radius: 20px;
+        }
+
+        .meet-info {
+            background: rgba(0, 102, 204, 0.05);
+            border: 1px solid rgba(0, 102, 204, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .meet-info h3 {
+            margin: 0 0 1rem 0;
+            color: #1e293b;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .meet-info h3 i {
+            color: #0066cc;
+        }
+
+        .meet-info p {
+            margin: 0 0 0.5rem 0;
+            color: #64748b;
+        }
+
+        .user-email {
+            font-weight: 600;
+            color: #0066cc;
+        }
+
+        .meet-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 102, 204, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.1);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            margin: 0 auto 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-description {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .quick-meet-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-action-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 102, 204, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .quick-action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.1);
+            border-color: #0066cc;
+        }
+
+        .quick-action-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            margin: 0 auto 1rem;
+        }
+
+        .quick-action-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-action-description {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        /* Dark mode styles */
+        body.dark-mode .meet-header {
+            background: linear-gradient(135deg, rgba(26, 32, 44, 0.98), rgba(30, 41, 59, 0.95));
+            border-color: rgba(0, 102, 204, 0.2);
+        }
+
+        body.dark-mode .meet-title {
+            color: #f8fafc;
+        }
+
+        body.dark-mode .meet-subtitle {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .meet-content {
+            background: rgba(26, 32, 44, 0.95);
+            border-color: rgba(0, 102, 204, 0.2);
+        }
+
+        body.dark-mode .meet-info {
+            background: rgba(0, 102, 204, 0.1);
+            border-color: rgba(0, 102, 204, 0.2);
+        }
+
+        body.dark-mode .meet-info h3 {
+            color: #f8fafc;
+        }
+
+        body.dark-mode .meet-info p {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .meet-btn.secondary {
+            background: rgba(30, 41, 59, 0.9);
+            color: #60a5fa;
+            border-color: rgba(100, 116, 139, 0.3);
+        }
+
+        body.dark-mode .meet-btn.secondary:hover {
+            background: rgba(0, 102, 204, 0.2);
+            border-color: #60a5fa;
+        }
+
+        body.dark-mode .feature-card,
+        body.dark-mode .quick-action-card {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(0, 102, 204, 0.2);
+        }
+
+        body.dark-mode .feature-title,
+        body.dark-mode .quick-action-title {
+            color: #f8fafc;
+        }
+
+        body.dark-mode .feature-description,
+        body.dark-mode .quick-action-description {
+            color: #94a3b8;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .meet-container {
+                padding: 1rem;
+            }
+
+            .meet-header {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .meet-title {
+                font-size: 2rem;
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+
+            .meet-actions {
+                justify-content: center;
+            }
+
+            .meet-btn {
+                padding: 0.625rem 1.25rem;
+                font-size: 0.9rem;
+            }
+
+            .meet-iframe {
+                height: 500px;
+            }
+
+            .meet-features,
+            .quick-meet-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .meet-title {
+                font-size: 1.75rem;
+            }
+
+            .meet-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .meet-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .meet-iframe {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Enhanced Background -->
+    <div class="background-wrapper">
+        <div class="background-grid"></div>
+        <div class="background-overlay"></div>
+        <div class="circuit-lines"></div>
+        <div class="floating-elements">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <a href="{% url 'authentication:home' %}" class="header-logo">
+                <div class="header-logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <div class="company-info">
+                    <div class="company-name">SecureAuth</div>
+                    <div class="company-tagline">Meet Integration</div>
+                </div>
+            </a>
+            <div class="system-status">
+                <div class="status-indicator"></div>
+                <span>{{ user.first_name|default:user.username }}</span>
+            </div>
+        </div>
+        <div class="utility-controls">
+            <button id="themeToggle" class="utility-btn" aria-label="Toggle dark mode">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+            <a href="{% url 'authentication:home' %}" class="utility-btn" aria-label="Back to home">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                </svg>
+            </a>
+            <a href="{% url 'authentication:logout' %}" class="utility-btn" aria-label="Log out">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <path d="M16 17l5-5-5-5"></path>
+                    <path d="M21 12H9"></path>
+                </svg>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="meet-container">
+        <!-- Meet Header -->
+        <div class="meet-header">
+            <h1 class="meet-title">
+                <i class="fas fa-video"></i>
+                Meet
+            </h1>
+            <p class="meet-subtitle">
+                Connect with your team through secure video conferencing with Google Meet
+            </p>
+            
+            <div class="meet-actions">
+                <a href="{% url 'authentication:google_meet_redirect' %}" class="meet-btn" target="_blank">
+                    <i class="fab fa-google"></i>
+                    Open Google Meet
+                </a>
+                <a href="{% url 'authentication:home' %}" class="meet-btn secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Meet Actions -->
+        <div class="quick-meet-actions">
+            <div class="quick-action-card" onclick="createNewMeeting()">
+                <div class="quick-action-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <h3 class="quick-action-title">New Meeting</h3>
+                <p class="quick-action-description">Start an instant meeting</p>
+            </div>
+            <div class="quick-action-card" onclick="joinWithCode()">
+                <div class="quick-action-icon">
+                    <i class="fas fa-key"></i>
+                </div>
+                <h3 class="quick-action-title">Join with Code</h3>
+                <p class="quick-action-description">Enter meeting code</p>
+            </div>
+            <div class="quick-action-card" onclick="scheduleMeeting()">
+                <div class="quick-action-icon">
+                    <i class="fas fa-calendar-plus"></i>
+                </div>
+                <h3 class="quick-action-title">Schedule Meeting</h3>
+                <p class="quick-action-description">Plan future meetings</p>
+            </div>
+            <div class="quick-action-card" onclick="viewRecordings()">
+                <div class="quick-action-icon">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+                <h3 class="quick-action-title">View Recordings</h3>
+                <p class="quick-action-description">Access meeting recordings</p>
+            </div>
+        </div>
+
+
+        <!-- Meet Information -->
+        <div class="meet-info">
+            <h3><i class="fas fa-info-circle"></i> Meet Integration</h3>
+            <p><strong>User Email:</strong> <span class="user-email">{{ user_email }}</span></p>
+            <p>This meet application is integrated with Google Meet. Click "Open Google Meet" to access the full Google Meet experience with all features including video calls, screen sharing, and meeting scheduling.</p>
+            <p>Your meetings are secure and protected by your enterprise authentication system.</p>
+        </div>
+
+        <!-- Meet Content -->
+        <div class="meet-content">
+            <iframe 
+                src="https://meet.google.com/" 
+                class="meet-iframe"
+                frameborder="0"
+                scrolling="no"
+                allowfullscreen
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Google Meet">
+            </iframe>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 SecureAuth. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Contact Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/login.js' %}"></script>
+    <script>
+        // Initialize theme toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function() {
+                    document.body.classList.toggle('dark-mode');
+                    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+                });
+
+                // Load saved theme
+                if (localStorage.getItem('darkMode') === 'true') {
+                    document.body.classList.add('dark-mode');
+                }
+            }
+
+            // Add loading state to meet iframe
+            const meetIframe = document.querySelector('.meet-iframe');
+            if (meetIframe) {
+                meetIframe.addEventListener('load', function() {
+                    console.log('Meet loaded successfully');
+                });
+
+                meetIframe.addEventListener('error', function() {
+                    console.error('Error loading meet');
+                    // Show fallback message
+                    const meetContent = document.querySelector('.meet-content');
+                    if (meetContent) {
+                        meetContent.innerHTML = `
+                            <div style="padding: 2rem; text-align: center; color: #64748b;">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem; color: #f59e0b;"></i>
+                                <h3>Unable to load Meet</h3>
+                                <p>Please try opening Google Meet directly or check your internet connection.</p>
+                                <a href="{% url 'authentication:google_meet_redirect' %}" class="meet-btn" target="_blank" style="margin-top: 1rem; display: inline-block;">
+                                    <i class="fab fa-google"></i>
+                                    Open Google Meet
+                                </a>
+                            </div>
+                        `;
+                    }
+                });
+            }
+        });
+
+        // Quick action functions
+        function createNewMeeting() {
+            showToast('Creating new meeting...', 'info');
+            // Redirect to Google Meet with new meeting
+            window.open('https://meet.google.com/new', '_blank');
+        }
+
+        function joinWithCode() {
+            const code = prompt('Enter meeting code:');
+            if (code) {
+                showToast(`Joining meeting: ${code}`, 'info');
+                window.open(`https://meet.google.com/${code}`, '_blank');
+            }
+        }
+
+        function scheduleMeeting() {
+            showToast('Opening Google Calendar to schedule meeting...', 'info');
+            window.open('https://calendar.google.com/calendar/u/0/r/event', '_blank');
+        }
+
+        function viewRecordings() {
+            showToast('Opening Google Drive to view recordings...', 'info');
+            window.open('https://drive.google.com/drive/my-drive', '_blank');
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Trigger the show animation
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.add('fade-out');
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 300);
+                }
+            }, 5000);
+        }
+    </script>
+    
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+</body>
+</html>
