@@ -3685,3 +3685,118 @@ def google_calendar_redirect(request):
         logger.error(f"Error redirecting to Google Calendar: {str(e)}")
         messages.error(request, 'Error opening Google Calendar. Please try again.')
         return redirect('authentication:home')
+
+
+@login_required
+def maps_view(request):
+    """
+    Maps view that integrates with Google Maps
+    """
+    try:
+        # Get user email for Google Maps integration
+        user_email = None
+        
+        # Try to get email from SAML attributes first
+        if hasattr(request, 'session') and 'saml_attributes' in request.session:
+            saml_attributes = request.session['saml_attributes']
+            email_keys = [
+                'mail',
+                'email', 
+                'userPrincipalName',
+                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress',
+                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name',
+                'http://schemas.microsoft.com/ws/2008/06/identity/claims/emailaddress',
+                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn',
+            ]
+            
+            for key in email_keys:
+                if key in saml_attributes and saml_attributes[key]:
+                    user_email = saml_attributes[key]
+                    if isinstance(user_email, list):
+                        user_email = user_email[0]
+                    break
+        
+        # Fallback to Django user email
+        if not user_email:
+            user_email = request.user.email
+        
+        # If still no email, use username with @gmail.com
+        if not user_email:
+            user_email = f"{request.user.username}@gmail.com"
+        
+        # Log activity
+        ActivityLog.objects.create(
+            user=request.user,
+            activity_type='maps_access',
+            description='Accessed maps application',
+            ip_address=request.META.get('REMOTE_ADDR', ''),
+            user_agent=request.META.get('HTTP_USER_AGENT', '')
+        )
+        
+        context = {
+            'user_email': user_email,
+            'user': request.user,
+        }
+        
+        return render(request, 'authentication/maps.html', context)
+        
+    except Exception as e:
+        logger.error(f"Error in maps view: {str(e)}")
+        messages.error(request, 'Error loading maps. Please try again.')
+        return redirect('authentication:home')
+
+
+@login_required
+def google_maps_redirect(request):
+    """
+    Redirect to Google Maps with user's email
+    """
+    try:
+        # Get user email
+        user_email = None
+        
+        # Try to get email from SAML attributes first
+        if hasattr(request, 'session') and 'saml_attributes' in request.session:
+            saml_attributes = request.session['saml_attributes']
+            email_keys = [
+                'mail',
+                'email', 
+                'userPrincipalName',
+                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress',
+                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name',
+                'http://schemas.microsoft.com/ws/2008/06/identity/claims/emailaddress',
+                'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn',
+            ]
+            
+            for key in email_keys:
+                if key in saml_attributes and saml_attributes[key]:
+                    user_email = saml_attributes[key]
+                    if isinstance(user_email, list):
+                        user_email = user_email[0]
+                    break
+        
+        # Fallback to Django user email
+        if not user_email:
+            user_email = request.user.email
+        
+        # If still no email, use username with @gmail.com
+        if not user_email:
+            user_email = f"{request.user.username}@gmail.com"
+        
+        # Log activity
+        ActivityLog.objects.create(
+            user=request.user,
+            activity_type='google_maps_redirect',
+            description='Redirected to Google Maps',
+            ip_address=request.META.get('REMOTE_ADDR', ''),
+            user_agent=request.META.get('HTTP_USER_AGENT', '')
+        )
+        
+        # Redirect to Google Maps
+        google_maps_url = "https://maps.google.com/"
+        return redirect(google_maps_url)
+        
+    except Exception as e:
+        logger.error(f"Error redirecting to Google Maps: {str(e)}")
+        messages.error(request, 'Error opening Google Maps. Please try again.')
+        return redirect('authentication:home')

@@ -66,4 +66,8 @@ urlpatterns = [
     # Calendar Integration
     path('calendar/', views.calendar_view, name='calendar'),
     path('calendar/google/', views.google_calendar_redirect, name='google_calendar_redirect'),
+    
+    # Maps Integration
+    path('maps/', views.maps_view, name='maps'),
+    path('maps/google/', views.google_maps_redirect, name='google_maps_redirect'),
 ]
