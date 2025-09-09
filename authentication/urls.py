@@ -78,4 +78,7 @@ urlpatterns = [
     # Translate Integration
     path('translate/', views.translate_view, name='translate'),
     path('translate/google/', views.google_translate_redirect, name='google_translate_redirect'),
+    
+    # Google Drive Integration
+    path('drive/google/', views.google_drive_redirect, name='google_drive_redirect'),
 ]

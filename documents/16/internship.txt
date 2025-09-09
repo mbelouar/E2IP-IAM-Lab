@@ -1,0 +1,14 @@
+Company: AUTOMATIONHUB TECHNOLOGIES Location: Casablanca, Morocco Work Mode: Hybrid (2 days per week on-site) Position Type: Free Internship
+Project Title: Multi-Cloud Infrastructure Automation & CI/CD Pipeline Orchestration
+Project Description: This project centers on building and managing a robust multi-cloud infrastructure that spans AWS, Azure, and GCP environments while implementing comprehensive CI/CD pipelines for microservices deployment. You'll be responsible for designing Infrastructure as Code (IaC) templates, automating deployment processes, and establishing monitoring and alerting systems across distributed environments. This isn't just about deploying applications—it's about creating resilient, self-healing infrastructure, implementing security best practices, and ensuring zero-downtime deployments at scale. You'll work with containerization, orchestration, and service mesh technologies while building automated testing and rollback mechanisms. This project offers hands-on experience with enterprise-level DevOps practices.
+Technical Stack:
+* Infrastructure as Code: Terraform, Pulumi, CloudFormation
+* Container Orchestration: Kubernetes, Docker, Helm Charts
+* CI/CD Tools: Jenkins, GitLab CI, GitHub Actions, ArgoCD
+* Cloud Platforms: AWS (EKS, EC2, RDS), Azure (AKS, VMs), GCP (GKE, Compute Engine)
+* Monitoring & Observability: Prometheus, Grafana, ELK Stack, Jaeger, DataDog
+* Configuration Management: Ansible, Chef, Puppet
+* Security & Compliance: Vault, SOPS, Falco, OPA Gatekeeper
+* Service Mesh: Istio, Linkerd
+* Scripting & Automation: Python, Bash, PowerShell, Go
+* Version Control & Collaboration: Git, GitOps workflows

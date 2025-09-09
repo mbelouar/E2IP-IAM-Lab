@@ -325,3 +325,4 @@ except ImportError:
 MFA_BACKUP_CODE_LENGTH = 10  # Length of backup codes
 MFA_BACKUP_CODE_COUNT = 8    # Number of backup codes to generate
 MFA_CHALLENGE_TIMEOUT = 300  # MFA challenge timeout in seconds (5 minutes)
+

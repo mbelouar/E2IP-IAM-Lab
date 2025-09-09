@@ -162,34 +162,29 @@
             color: #3b82f6;
         }
 
-        /* Main Content */
-        .documents-content {
+        /* Documents-specific styles */
+        .documents-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 2rem 1rem;
+            min-height: 100vh;
             position: relative;
             z-index: 10;
-            min-height: 100vh;
-            box-sizing: border-box;
         }
 
-        /* Page Header */
-        .page-header {
+        .documents-header {
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95));
             backdrop-filter: blur(30px);
             border-radius: 20px;
             padding: 2rem;
             margin-bottom: 2rem;
-            border: 1px solid rgba(0, 102, 204, 0.08);
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.08),
-                0 0 0 1px rgba(255, 255, 255, 0.8),
-                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 102, 204, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             position: relative;
             overflow: hidden;
         }
 
-        .page-header::before {
+        .documents-header::before {
             content: '';
             position: absolute;
             top: 0;
@@ -200,52 +195,152 @@
             border-radius: 20px 20px 0 0;
         }
 
-        .page-title {
+        .documents-title {
             font-size: 2.5rem;
             font-weight: 800;
-            margin: 0 0 0.5rem 0;
-            color: var(--gray-900);
-            line-height: 1.1;
-            letter-spacing: -0.02em;
+            margin: 0 0 1rem 0;
+            color: #1e293b;
             display: flex;
             align-items: center;
             gap: 1rem;
         }
 
-        .page-title i {
+        .documents-title i {
             color: #0066cc;
             font-size: 2rem;
         }
 
-        .page-subtitle {
-            font-size: 1.1rem;
-            color: var(--gray-600);
-            margin: 0;
-            line-height: 1.6;
+        .documents-subtitle {
+            font-size: 1.125rem;
+            color: #64748b;
+            margin: 0 0 2rem 0;
+        }
+
+        .documents-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .documents-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #0066cc, #4285f4);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3);
+        }
+
+        .documents-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.4);
+            color: white;
+        }
+
+        .documents-btn.secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #0066cc;
+            border: 1px solid rgba(0, 102, 204, 0.3);
+        }
+
+        .documents-btn.secondary:hover {
+            background: rgba(0, 102, 204, 0.1);
+            border-color: #0066cc;
         }
 
         /* Dark mode styles */
-        body.dark-mode .page-header {
+        body.dark-mode .documents-header {
             background: linear-gradient(135deg, rgba(26, 32, 44, 0.98), rgba(30, 41, 59, 0.95));
-            border-color: rgba(0, 102, 204, 0.15);
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.2),
-                0 0 0 1px rgba(0, 102, 204, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            border-color: rgba(0, 102, 204, 0.2);
         }
 
-        body.dark-mode .page-title {
-            color: var(--dark-text-primary);
+        body.dark-mode .documents-title {
+            color: #f8fafc;
         }
 
-        body.dark-mode .page-subtitle {
-            color: var(--dark-text-secondary);
+        body.dark-mode .documents-subtitle {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .documents-btn.secondary {
+            background: rgba(30, 41, 59, 0.9);
+            color: #60a5fa;
+            border-color: rgba(100, 116, 139, 0.3);
+        }
+
+        body.dark-mode .documents-btn.secondary:hover {
+            background: rgba(0, 102, 204, 0.2);
+            border-color: #60a5fa;
+        }
+
+        .documents-info {
+            background: rgba(0, 102, 204, 0.05);
+            border: 1px solid rgba(0, 102, 204, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .documents-info h3 {
+            margin: 0 0 1rem 0;
+            color: #1e293b;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .documents-info h3 i {
+            color: #0066cc;
+        }
+
+        .documents-info p {
+            margin: 0 0 0.5rem 0;
+            color: #64748b;
+        }
+
+        .user-email {
+            font-weight: 600;
+            color: #0066cc;
+        }
+
+        body.dark-mode .documents-info {
+            background: rgba(0, 102, 204, 0.1);
+            border-color: rgba(0, 102, 204, 0.2);
+        }
+
+        body.dark-mode .documents-info h3 {
+            color: #f8fafc;
+        }
+
+        body.dark-mode .documents-info p {
+            color: #94a3b8;
+        }
+
+        .documents-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 102, 204, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        body.dark-mode .documents-content {
+            background: rgba(26, 32, 44, 0.95);
+            border-color: rgba(0, 102, 204, 0.2);
         }
 
         /* Controls Bar */
         .controls-bar {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
             margin-bottom: 2rem;
             gap: 1rem;
@@ -774,16 +869,29 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .documents-content {
+            .documents-container {
                 padding: 1rem;
             }
 
-            .page-header {
+            .documents-header {
                 padding: 1.5rem;
+                margin-bottom: 1.5rem;
             }
 
-            .page-title {
+            .documents-title {
                 font-size: 2rem;
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+
+            .documents-actions {
+                justify-content: center;
+            }
+
+            .documents-btn {
+                padding: 0.625rem 1.25rem;
+                font-size: 0.9rem;
             }
 
             .controls-bar {
@@ -791,8 +899,7 @@
                 align-items: stretch;
             }
 
-            .controls-left,
-            .controls-right {
+            .controls-left {
                 justify-content: center;
             }
 
@@ -841,6 +948,22 @@
             .empty-state .upload-btn {
                 padding: 0.875rem 1.5rem;
                 font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .documents-title {
+                font-size: 1.75rem;
+            }
+
+            .documents-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .documents-btn {
+                width: 100%;
+                justify-content: center;
             }
         }
 
@@ -931,20 +1054,45 @@
     </header>
 
     <!-- Main Content -->
-    <div class="documents-content">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1 class="page-title">
+    <div class="documents-container">
+        <!-- Documents Header -->
+        <div class="documents-header">
+            <h1 class="documents-title">
                 <i class="fas fa-file-alt"></i>
-                My Documents
+                Documents
             </h1>
-            <p class="page-subtitle">
-                Manage your private documents securely. All files are encrypted and only accessible by you.
+            <p class="documents-subtitle">
+                Manage your private documents securely with enterprise-grade encryption
             </p>
+            
+            <div class="documents-actions">
+                <a href="{% url 'authentication:document_upload' %}" class="documents-btn">
+                    <i class="fas fa-plus"></i>
+                    Upload Document
+                </a>
+                <a href="{% url 'authentication:google_drive_redirect' %}" class="documents-btn" target="_blank">
+                    <i class="fab fa-google-drive"></i>
+                    Google Drive
+                </a>
+                <a href="{% url 'authentication:home' %}" class="documents-btn secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+            </div>
         </div>
 
-        <!-- Controls Bar -->
-        <div class="controls-bar">
+        <!-- Documents Information -->
+        <div class="documents-info">
+            <h3><i class="fas fa-info-circle"></i> Document Management</h3>
+            <p><strong>User:</strong> <span class="user-email">{{ user.username }}</span></p>
+            <p>Securely store and manage your private documents with enterprise-grade encryption. All files are encrypted at rest and in transit, accessible only by you.</p>
+            <p>Supported formats: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, and images (JPG, PNG, GIF).</p>
+        </div>
+
+        <!-- Documents Content -->
+        <div class="documents-content">
+            <!-- Controls Bar -->
+            <div class="controls-bar">
             <div class="controls-left">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
@@ -964,12 +1112,6 @@
                     <option value="-file_size" {% if current_sort == '-file_size' %}selected{% endif %}>Largest First</option>
                     <option value="file_size" {% if current_sort == 'file_size' %}selected{% endif %}>Smallest First</option>
                 </select>
-            </div>
-            <div class="controls-right">
-                <a href="{% url 'authentication:document_upload' %}" class="upload-btn">
-                    <i class="fas fa-plus"></i>
-                    Upload Document
-                </a>
             </div>
         </div>
 
@@ -1045,6 +1187,7 @@
                 </a>
             </div>
         {% endif %}
+        </div>
     </div>
 
     <script src="{% static 'js/login.js' %}"></script>

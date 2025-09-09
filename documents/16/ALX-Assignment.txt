@@ -1,0 +1,71 @@
+## Task 1: Data Analysis and Visualisation
+
+### Question 1: Work Plan/Task List
+
+#### Daily Tasks:
+- Review and clean incoming data from various sources
+- Monitor key performance indicators through dashboards
+- Respond to ad-hoc data requests from team members
+- Document findings and update tracking systems
+- Participate in daily stand-up meetings
+- Manage and prioritize assigned tasks in project management tools
+
+#### Weekly/Monthly Tasks:
+- Prepare and present weekly data insights reports
+- Collaborate with cross-functional teams on data needs
+- Conduct deeper analysis on specific project metrics
+- Create and update data visualizations for stakeholder meetings
+- Review and optimize data collection methodologies
+- Learn and practice new analysis techniques
+- Participate in professional development sessions
+
+#### Annual Tasks:
+- Contribute to annual performance reviews and goal setting
+- Help prepare year-end reports and analysis
+- Participate in strategic planning for data initiatives
+- Review and update documentation of data systems
+- Suggest improvements to data collection and analysis processes
+- Complete required compliance and security training
+- Set personal development goals related to data science skills
+
+## Task 2: Event Planning
+
+### Question 1: Draft Email and Social Media Notice
+
+#### Email to Students and Fellows:
+
+Subject: Exclusive Masterclass: Transform Your Career with Industry Leader [Speaker Name]
+
+Dear ALX Fellow,
+
+Ready to accelerate your professional journey? Join us for an exclusive 75-minute Masterclass with [Speaker Name], [Brief impressive credential].
+
+[Speaker] will share insider strategies on [specific topic] that most professionals discover only after years in the field. You'll walk away with actionable insights to immediately implement in your career or startup.
+
+Space is limited for this high-impact session happening on [Date] at [Time]. Reserve your spot now: [Registration link]
+
+Your future self will thank you!
+
+The ALX Community Team
+
+#### Social Media Notice:
+
+📣 MASTERCLASS ALERT! Join [Speaker Name] ([brief credential]) for exclusive insights on [topic]. Transform your [career/business] in 75 minutes! [Date], [Time]. Register: [link] #ALXMasterclass #CareerGrowth
+
+### Question 2: Addressing Low Attendance
+
+#### Methods to Identify Reasons:
+1. **Post-event surveys** - Send short questionnaires to both attendees and non-attendees to understand their experience or reasons for not attending
+2. **Direct interviews** - Speak with a sample of fellows to gain deeper insights into their preferences and constraints
+3. **Attendance pattern analysis** - Review data from past events to identify trends (topics, speakers, timing that drew higher attendance)
+4. **Social media engagement metrics** - Analyze which event promotions received most engagement to understand what resonates
+5. **Focus groups** - Organize small discussion groups with diverse fellows to gather qualitative feedback
+
+#### Measures to Improve Attendance:
+1. **Relevance enhancement** - Carefully select topics and speakers based on current fellow interests and career goals
+2. **Incentive program** - Offer certificates, exclusive networking opportunities, or follow-up resources to attendees
+3. **Scheduling optimization** - Vary event times or offer recordings to accommodate different schedules
+4. **Peer ambassadors** - Recruit enthusiastic fellows to promote events within their networks
+5. **Improved marketing** - Create more compelling promotional content highlighting specific benefits and outcomes
+6. **Interactive format** - Redesign events to include more Q&A, breakout discussions, or hands-on components
+7. **Follow-up system** - Develop a structured approach to share event highlights, maintaining engagement with non-attendees

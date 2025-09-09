@@ -4030,3 +4030,22 @@ def google_translate_redirect(request):
         logger.error(f"Error redirecting to Google Translate: {str(e)}")
         messages.error(request, 'Error opening Google Translate. Please try again.')
         return redirect('authentication:home')
+
+
+# Google Drive Integration - Simple redirect
+@login_required
+def google_drive_redirect(request):
+    """
+    Redirect directly to Google Drive
+    """
+    try:
+        # Redirect directly to Google Drive
+        google_drive_url = "https://drive.google.com/drive/my-drive"
+        
+        logger.info(f"Redirecting user {request.user.username} to Google Drive")
+        return redirect(google_drive_url)
+        
+    except Exception as e:
+        logger.error(f"Error redirecting to Google Drive: {str(e)}")
+        messages.error(request, 'Error opening Google Drive. Please try again.')
+        return redirect('authentication:documents_list')

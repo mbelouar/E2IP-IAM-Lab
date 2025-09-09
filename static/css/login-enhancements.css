@@ -176,7 +176,6 @@ input[type="text"],
 input[type="password"],
 input[type="email"] {
     width: 100% !important;
-    padding: var(--space-lg) var(--space-lg) var(--space-lg) calc(var(--space-lg) * 2 + 18px) !important;
     background-color: var(--gray-100) !important;
     border: 2px solid transparent !important;
     border-radius: var(--radius-lg) !important;
