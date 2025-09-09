@@ -74,4 +74,8 @@ urlpatterns = [
     # Meet Integration
     path('meet/', views.meet_view, name='meet'),
     path('meet/google/', views.google_meet_redirect, name='google_meet_redirect'),
+    
+    # Translate Integration
+    path('translate/', views.translate_view, name='translate'),
+    path('translate/google/', views.google_translate_redirect, name='google_translate_redirect'),
 ]
