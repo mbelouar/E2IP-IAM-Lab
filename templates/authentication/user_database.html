@@ -294,7 +294,7 @@
             </div>
             <div class="system-status">
                 <div class="status-indicator"></div>
-                <span>System Online</span>
+                <span>{{ user.get_full_name|default:user.username }}</span>
             </div>
         </div>
         <div class="header-right">

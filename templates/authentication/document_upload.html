@@ -65,39 +65,7 @@
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
         }
 
-        body:not(.dark-mode) .header {
-            background: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(10px) !important;
-            border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
-        }
-
-        body:not(.dark-mode) .header .system-status {
-            background: rgba(59, 130, 246, 0.1) !important;
-            border: 1px solid rgba(59, 130, 246, 0.3) !important;
-            color: #1e40af !important;
-        }
-
-        body:not(.dark-mode) .header .system-status:hover {
-            background: rgba(59, 130, 246, 0.2) !important;
-        }
-
-        body:not(.dark-mode) .header .utility-btn {
-            background: rgba(59, 130, 246, 0.1) !important;
-            border: 1px solid rgba(59, 130, 246, 0.3) !important;
-            color: #1e40af !important;
-        }
-
-        body:not(.dark-mode) .header .utility-btn:hover {
-            background: rgba(59, 130, 246, 0.2) !important;
-        }
-
-        body:not(.dark-mode) .header .company-name {
-            color: #1e293b !important;
-        }
-
-        body:not(.dark-mode) .header .company-tagline {
-            color: #64748b !important;
-        }
+        /* Header styles now centralized in header-enhancements.css */
 
         /* Light Mode Upload Form */
         body:not(.dark-mode) .upload-form {
@@ -685,7 +653,7 @@
             </a>
             <div class="system-status">
                 <div class="status-indicator"></div>
-                <span>User: {{ user.username }}</span>
+                <span>{{ user.get_full_name|default:user.username }}</span>
             </div>
         </div>
         <div class="utility-controls">

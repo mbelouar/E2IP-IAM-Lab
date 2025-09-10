@@ -675,7 +675,7 @@
             </a>
             <div class="system-status">
                 <div class="status-indicator"></div>
-                <span>User: {{ user.username }}</span>
+                <span>{{ user.get_full_name|default:user.username }}</span>
             </div>
         </div>
         <div class="utility-controls">

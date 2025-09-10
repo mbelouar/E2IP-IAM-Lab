@@ -40,6 +40,21 @@
             --glass-border: rgba(71, 85, 105, 0.3);
         }
 
+        /* Header Override */
+        .header {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 1rem 2rem !important;
+            background: rgba(0, 0, 0, 0.1) !important;
+            backdrop-filter: blur(10px) !important;
+            position: relative !important;
+            z-index: 50 !important;
+        }
+
+        /* Light Mode Header Override */
+        /* Header styles now centralized in header-enhancements.css */
+
         /* Main Container */
         .activities-page {
             min-height: 100vh;
@@ -634,6 +649,10 @@
                     <div class="company-tagline">Enterprise Access Portal</div>
                 </div>
             </a>
+            <div class="system-status">
+                <div class="status-indicator"></div>
+                <span>{{ user.get_full_name|default:user.username }}</span>
+            </div>
         </div>
         <div class="utility-controls">
             <button id="themeToggle" class="utility-btn" aria-label="Toggle dark mode">

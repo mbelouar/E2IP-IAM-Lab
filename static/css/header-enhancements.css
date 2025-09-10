@@ -214,6 +214,76 @@ body:not(.dark-mode) .header-logo:hover .header-logo-icon {
     display: inline-block !important;
 }
 
+/* Comprehensive Light Mode Header Styles */
+body:not(.dark-mode) .header {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.98)) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2) !important;
+    box-shadow: 
+        0 1px 3px rgba(15, 23, 42, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Light Mode System Status */
+body:not(.dark-mode) .header .system-status {
+    background: rgba(59, 130, 246, 0.1) !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
+    color: #1e40af !important;
+    backdrop-filter: blur(12px) !important;
+}
+
+body:not(.dark-mode) .header .system-status:hover {
+    background: rgba(59, 130, 246, 0.2) !important;
+    border-color: rgba(59, 130, 246, 0.4) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Light Mode Utility Buttons */
+body:not(.dark-mode) .header .utility-btn {
+    background: rgba(59, 130, 246, 0.1) !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
+    color: #1e40af !important;
+    backdrop-filter: blur(12px) !important;
+}
+
+body:not(.dark-mode) .header .utility-btn:hover {
+    background: rgba(59, 130, 246, 0.2) !important;
+    border-color: rgba(59, 130, 246, 0.4) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Light Mode Status Indicator - Ensure visibility */
+body:not(.dark-mode) .header .system-status .status-indicator,
+body:not(.dark-mode) .system-status .status-indicator {
+    background: #10b981 !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Light Mode Breadcrumb Navigation */
+body:not(.dark-mode) .breadcrumb-nav {
+    background: none !important;
+}
+
+body:not(.dark-mode) .breadcrumb-link {
+    color: rgba(30, 41, 59, 0.8) !important;
+}
+
+body:not(.dark-mode) .breadcrumb-link:hover {
+    background: rgba(59, 130, 246, 0.1) !important;
+    color: #1e40af !important;
+}
+
+body:not(.dark-mode) .breadcrumb-separator {
+    color: rgba(100, 116, 139, 0.6) !important;
+}
+
+body:not(.dark-mode) .breadcrumb-current {
+    color: #1e40af !important;
+    font-weight: 600 !important;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .header-left {
@@ -244,5 +314,10 @@ body:not(.dark-mode) .header-logo:hover .header-logo-icon {
     .system-status {
         margin-left: 0 !important;
         margin-top: var(--space-md) !important;
+    }
+    
+    /* Light mode mobile adjustments */
+    body:not(.dark-mode) .header {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.99)) !important;
     }
 }

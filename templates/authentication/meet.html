@@ -16,6 +16,34 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* Header Override */
+        .header {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 1rem 2rem !important;
+            background: rgba(0, 0, 0, 0.1) !important;
+            backdrop-filter: blur(10px) !important;
+            position: relative !important;
+            z-index: 50 !important;
+        }
+
+        /* Light Mode Header Override */
+        /* Header styles now centralized in header-enhancements.css */
+
+        /* Light Mode Blue Elements - Ensure White Text */
+        body:not(.dark-mode) .btn-primary,
+        body:not(.dark-mode) .meet-btn {
+            background: linear-gradient(135deg, #0066cc, #4285f4) !important;
+            color: white !important;
+        }
+
+        body:not(.dark-mode) .btn-primary:hover,
+        body:not(.dark-mode) .meet-btn:hover {
+            background: linear-gradient(135deg, #1d4ed8, #3b82f6) !important;
+            color: white !important;
+        }
+
         /* Meet-specific styles */
         .meet-container {
             max-width: 1400px;
@@ -398,7 +426,7 @@
             </a>
             <div class="system-status">
                 <div class="status-indicator"></div>
-                <span>{{ user.first_name|default:user.username }}</span>
+                <span>{{ user.get_full_name|default:user.username }}</span>
             </div>
         </div>
         <div class="utility-controls">

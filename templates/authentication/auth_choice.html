@@ -44,16 +44,7 @@
             color: #1e293b;
         }
 
-        /* Light Mode Header Override */
-        body:not(.dark-mode) .header {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.98)) !important;
-            backdrop-filter: blur(20px) !important;
-            -webkit-backdrop-filter: blur(20px) !important;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.2) !important;
-            box-shadow: 
-                0 1px 3px rgba(15, 23, 42, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
-        }
+        /* Light Mode Header Override - Now centralized in header-enhancements.css */
 
         /* Auth Choice Specific Styles */
         .auth-choice-container {
@@ -352,6 +343,22 @@
 
         body:not(.dark-mode) .auth-footer-link::before {
             background: linear-gradient(90deg, #1d4ed8, #3b82f6);
+        }
+
+        /* Light Mode Blue Elements - Ensure White Text */
+        body:not(.dark-mode) .auth-option-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+            color: white !important;
+        }
+
+        body:not(.dark-mode) .auth-option-btn:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+            color: white !important;
+        }
+
+        body:not(.dark-mode) .auth-option-icon {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6) !important;
+            color: white !important;
         }
 
         /* Responsive Design */

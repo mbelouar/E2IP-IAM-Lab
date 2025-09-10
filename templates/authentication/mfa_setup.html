@@ -1991,7 +1991,7 @@
             </a>
             <div class="system-status">
                 <div class="status-indicator"></div>
-                <span>User: {{ ad_display_name|default:request.user.username }} ({{ ad_email|default:request.user.username }})</span>
+                <span>{{ user.get_full_name|default:user.username }}</span>
             </div>
         </div>
         
