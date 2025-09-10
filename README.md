@@ -1,220 +1,370 @@
-# Django Authentication System with ADFS Integration
+# Enterprise Authentication Portal with Google Integrations
 
-A streamlined authentication system built with Django, focusing exclusively on ADFS (Active Directory Federation Services) Single Sign-On integration for enterprise authentication.
+A comprehensive enterprise authentication and productivity portal built with Django, featuring ADFS/SAML integration, Multi-Factor Authentication (MFA), document management, and seamless Google Workspace integrations.
 
-## Features
+## 🚀 Features
 
-- **Enterprise Authentication**
+### 🔐 Enterprise Authentication
 
-  - Dedicated ADFS Single Sign-On integration
-  - Logout capability
-  - Protected routes requiring authentication
+- **ADFS/SAML Integration**: Complete Single Sign-On (SSO) with Active Directory Federation Services
+- **Standard Authentication**: Username/password authentication with password reset
+- **Multi-Factor Authentication (MFA)**:
+  - WebAuthn/FIDO2 support for YubiKey and security keys
+  - TOTP authenticator apps (Google Authenticator, Authy, etc.)
+  - Backup codes for account recovery
+- **Session Management**: Secure session handling with logout capabilities
 
-- **Modern UI/UX**
+### 🛡️ Security Features
 
-  - Clean, responsive design with red and white color scheme
-  - CSS animations and transitions
-  - Interactive elements with JavaScript
-  - Auto-dismissing notifications
+- **CSRF Protection**: Django's built-in CSRF protection
+- **Activity Logging**: Comprehensive audit trail for all user actions
+- **IP Tracking**: Monitor user access patterns and locations
+- **Password Security**: Secure password reset with token-based validation
+- **MFA Enforcement**: Optional MFA requirements for enhanced security
 
-- **Security Features**
-  - CSRF protection
-  - Enterprise-grade authentication via ADFS
-  - Django's built-in security features
+### 📁 Document Management
 
-## Project Structure
+- **Private Document Storage**: Secure file upload and storage
+- **Multiple File Types**: Support for PDF, Word, Excel, PowerPoint, images, and more
+- **Document Organization**: Categories, tags, and search functionality
+- **File Security**: Private user-specific storage with access controls
+- **Document Actions**: Upload, download, update, and delete documents
+
+### 🌐 Google Workspace Integrations
+
+- **Google Calendar**: Embedded calendar view with full functionality
+- **Google Maps**: Interactive maps with navigation and location services
+- **Google Meet**: Video conferencing with meeting management
+- **Google Translate**: Multi-language translation with 100+ language support
+- **Google Drive**: Document storage and collaboration
+
+### 👤 User Management
+
+- **Profile Management**: Edit user profiles and personal information
+- **User Database**: Admin view of all registered users
+- **Activity Monitoring**: Track user activities and system usage
+- **Password Management**: Change passwords with security validation
+
+### 🎨 Modern UI/UX
+
+- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
+- **Dark Mode Support**: Consistent theming across all applications
+- **Interactive Elements**: Smooth animations and transitions
+- **Intuitive Navigation**: Easy-to-use interface with clear app organization
+- **Real-time Notifications**: Auto-dismissing alerts and status messages
+
+## 🏗️ Project Structure
 
 ```
-auth_project/               # Main Django project directory
-authentication/             # Django app for authentication features
-docker/                     # Docker configuration files
-  ├── Dockerfile.linux      # Linux container configuration
-  ├── Dockerfile.windows    # Windows container configuration
-  ├── docker-compose.yaml   # Docker Compose configuration
-  └── README.md             # Docker-specific documentation
-static/
-  ├── css/                  # Stylesheet files
-  │   ├── background-enhancements.css
-  │   ├── header-enhancements.css
-  │   ├── login-enhancements.css
-  │   └── login.css
-  └── js/                   # JavaScript files
-      ├── login-enhancements.js
-      └── login.js
-templates/
-  └── authentication/       # Authentication-specific templates
-      ├── home.html         # Dashboard/home page (protected)
-      └── login.html        # ADFS login page
-Makefile                    # Utility commands for Docker operations
-requirements.txt            # Python dependencies
+E2IP-IAM-Lab/
+├── auth_project/               # Main Django project
+│   ├── settings.py            # Django configuration
+│   ├── urls.py               # Main URL routing
+│   └── wsgi.py               # WSGI configuration
+├── authentication/            # Core authentication app
+│   ├── models.py             # Database models (MFA, Documents, Activity)
+│   ├── views.py              # View functions (60+ endpoints)
+│   ├── urls.py               # App URL patterns
+│   └── admin.py              # Django admin configuration
+├── templates/authentication/  # HTML templates
+│   ├── home.html             # Main dashboard
+│   ├── login.html            # ADFS login page
+│   ├── standard_login.html   # Standard authentication
+│   ├── mfa_*.html            # MFA setup and challenge pages
+│   ├── documents_*.html      # Document management pages
+│   ├── calendar.html         # Google Calendar integration
+│   ├── maps.html             # Google Maps integration
+│   ├── meet.html             # Google Meet integration
+│   └── translate.html        # Google Translate integration
+├── static/                   # Static assets
+│   ├── css/                  # Stylesheets
+│   └── js/                   # JavaScript files
+├── documents/                # User document storage
+├── saml_metadata/            # SAML configuration files
+├── docker/                   # Docker configuration
+└── requirements.txt          # Python dependencies
 ```
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Docker and Docker Compose
-- Make (optional, for using the provided Makefile)
+- Python 3.9+
+- Docker and Docker Compose (recommended)
+- Make (optional, for using Makefile commands)
 
 ### Docker Installation (Recommended)
 
-1. Clone the repository
+1. **Clone the repository**
 
-   ```
+   ```bash
    git clone <repository-url>
    cd E2IP-IAM-Lab
    ```
 
-2. Create a `.env` file with basic settings
+2. **Create environment file**
 
-   ```
-   DEBUG=True
-   SECRET_KEY=your_secret_key_here
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
    ```
 
-3. Build and run with Docker
+3. **Build and run with Docker**
 
-   ```
+   ```bash
    cd docker
    docker-compose up --build
    ```
 
-   Or with Make from the project root:
+   Or use Make from project root:
 
-   ```
+   ```bash
    make rebuild
    ```
 
-4. Access the application at http://192.168.64.1:8000/
+4. **Access the application**
+   - Main Portal: http://192.168.64.1:8000/
+   - Admin Panel: http://192.168.64.1:8000/admin/
 
-### Manual Installation (Alternative)
+### Manual Installation
 
-1. Clone the repository
+1. **Clone and setup virtual environment**
 
-   ```
+   ```bash
    git clone <repository-url>
    cd E2IP-IAM-Lab
-   ```
-
-2. Create and activate a virtual environment
-
-   ```
    python3 -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-3. Install dependencies
+2. **Install dependencies**
 
-   ```
+   ```bash
    pip install -r requirements.txt
    ```
 
-4. Run migrations
+3. **Configure database and run migrations**
 
-   ```
+   ```bash
    python manage.py migrate
-   ```
-
-5. Create a superuser (for admin access)
-
-   ```
    python manage.py createsuperuser
    ```
 
-6. Start the development server
-
-   ```
+4. **Start development server**
+   ```bash
    python manage.py runserver
    ```
 
-7. Access the application at http://192.168.64.1:8000/
+## 📖 Usage Guide
 
-## Usage
+### Authentication Options
 
-- **ADFS Login**: Visit http://192.168.64.1:8000/login/
-- **Dashboard**: After login, access http://192.168.64.1:8000/
-- **Admin Panel**: Visit http://192.168.64.1:8000/admin/
+1. **ADFS/SAML Login**: `/login/` - Enterprise SSO integration
+2. **Standard Login**: `/standard/login/` - Username/password authentication
+3. **Registration**: `/standard/register/` - Create new user accounts
 
-## ADFS Integration (Planned)
+### Main Applications
 
-This project is now focused exclusively on integrating with Active Directory Federation Services (ADFS) for enterprise Single Sign-On capabilities:
+#### 🏠 Dashboard (`/home/`)
 
-### What is prepared:
+- Overview of all available applications
+- Quick access to recent activities
+- User profile information
+- System status and notifications
 
-- Dedicated UI for ADFS login
-- Route structure for ADFS authentication flow
-- Configuration file with settings to be updated
-- View function placeholder for handling ADFS authentication
+#### 📅 Calendar (`/calendar/`)
 
-### Implementation steps (to be completed):
+- Embedded Google Calendar view
+- Direct access to Google Calendar
+- Meeting scheduling and management
+- Event creation and editing
 
-1. **ADFS Server Configuration:**
+#### 🗺️ Maps (`/maps/`)
 
-   - Register the application as a Relying Party Trust in ADFS
-   - Configure claim rules for username, email, and other required user attributes
-   - Set up the proper redirect URIs
+- Interactive Google Maps integration
+- Navigation and location services
+- Search for places and businesses
+- Route planning and traffic updates
 
-2. **Application Configuration:**
+#### 🎥 Meet (`/meet/`)
 
-   - Update `adfs_settings.py` with your ADFS server information
-   - Implement token validation and user creation/authentication logic
-   - Set up proper error handling and logging
+- Google Meet video conferencing
+- Instant meeting creation
+- Meeting code joining
+- Screen sharing and recording
 
-3. **Testing and Security:**
-   - Test the authentication flow in a development environment
-   - Implement security best practices for token handling
-   - Validate SSL/TLS certificates
+#### 🌍 Translate (`/translate/`)
 
-## Extending the Project
+- Google Translate integration
+- Text, document, and website translation
+- Support for 100+ languages
+- Image translation with OCR
 
-Some ideas for extending this project:
+#### 📁 Documents (`/documents/`)
 
-1. Complete the ADFS integration using OAuth 2.0 or SAML protocols
-2. Implement Multi-Factor Authentication (MFA)
-3. Create user profiles with additional information
-4. Implement audit logging for authentication events
-5. Add role-based access control
+- Private document storage
+- File upload and organization
+- Document sharing and collaboration
+- Search and categorization
 
-## Docker Development Environment
+### Multi-Factor Authentication
 
-The project is configured for Docker-based development with the following features:
+#### Setup MFA (`/mfa/setup/`)
 
-### Docker Setup
+1. **WebAuthn/FIDO2**: Register security keys (YubiKey, etc.)
+2. **TOTP Apps**: Setup authenticator apps (Google Authenticator, Authy)
+3. **Backup Codes**: Generate recovery codes for account access
 
-- **Dockerfile**: Defines a Python 3.9 environment for running the Django application
-- **docker-compose.yaml**: Configures the service with proper volume mounts for development
-- **Makefile**: Provides convenient commands for Docker operations
+#### MFA Challenge (`/mfa/challenge/`)
 
-### Makefile Commands
+- Authenticate using registered devices
+- TOTP code verification
+- Backup code usage
+- Security key authentication
 
+## 🔧 Configuration
+
+### ADFS/SAML Setup
+
+1. **Configure ADFS Server**:
+
+   - Register application as Relying Party Trust
+   - Set up claim rules for user attributes
+   - Configure redirect URIs
+
+2. **Update SAML Settings**:
+   - Modify `saml_metadata/adfs_metadata.xml`
+   - Update `auth_project/settings.py` with ADFS configuration
+   - Configure user attribute mapping
+
+### Google Integrations
+
+The portal integrates with Google services using embedded iframes and redirects. No additional API keys are required for basic functionality.
+
+### Environment Variables
+
+Create a `.env` file with:
+
+```env
+DEBUG=True
+SECRET_KEY=your_secret_key_here
+DATABASE_URL=sqlite:///db.sqlite3
 ```
-make build        # Build the Docker image
-make run          # Run the container
-make stop         # Stop and remove the container
-make rebuild      # Stop, build, and run (clean restart)
-make logs         # Show container logs
-make clean        # Remove container, image, and volumes
-make bash         # Get a shell in the container
+
+## 🛠️ Development
+
+### Available Make Commands
+
+```bash
+make build        # Build Docker image
+make run          # Run container
+make stop         # Stop container
+make rebuild      # Clean restart
+make logs         # View container logs
+make clean        # Remove containers and images
+make bash         # Access container shell
 ```
 
-### Static Files Configuration
+### Database Models
 
-Static files are configured for development mode using Django's built-in static file serving:
+- **UserMFAPreference**: MFA settings and preferences
+- **WebAuthnCredential**: FIDO2/WebAuthn security keys
+- **TOTPDevice**: Authenticator app devices
+- **MFABackupCode**: Recovery codes
+- **ActivityLog**: User activity tracking
+- **Document**: File storage and management
 
-- Static files are stored in the `static/` directory
-- The project uses `STATIC_URL = '/static/'` without `STATIC_ROOT`
-- Static files are mounted directly into the Docker container with a dedicated volume
-- Templates use the `{% static %}` template tag to reference static files
+### Key Dependencies
 
-## Technologies Used
+- **Django 4.2+**: Web framework
+- **djangosaml2**: SAML authentication
+- **webauthn**: FIDO2/WebAuthn support
+- **pyotp**: TOTP authenticator support
+- **google-api-python-client**: Google integrations
+- **ldap3**: Active Directory integration
 
-- **Backend**: Django 4.2.x, Python 3.9
-- **Frontend**: HTML5, CSS3, JavaScript
-- **Database**: SQLite (default)
-- **Authentication**: Django's authentication system with ADFS integration
-- **Containerization**: Docker, Docker Compose
-- **Development Workflow**: Make
+## 🔒 Security Features
 
-## License
+### Authentication Security
+
+- CSRF protection on all forms
+- Secure session management
+- Password hashing with Django's built-in system
+- MFA enforcement for sensitive operations
+
+### Data Protection
+
+- Private document storage per user
+- Encrypted MFA credentials
+- Secure token generation for password resets
+- IP address and user agent tracking
+
+### Audit and Monitoring
+
+- Comprehensive activity logging
+- Failed authentication attempt tracking
+- MFA usage monitoring
+- Document access logging
+
+## 🚀 Deployment
+
+### Production Considerations
+
+1. **Database**: Use PostgreSQL or MySQL for production
+2. **Static Files**: Configure proper static file serving
+3. **SSL/TLS**: Enable HTTPS for all communications
+4. **SAML Certificates**: Use proper SSL certificates for SAML
+5. **Environment Variables**: Secure configuration management
+
+### Docker Production
+
+```bash
+# Build production image
+docker build -f docker/Dockerfile.linux -t enterprise-portal .
+
+# Run with production settings
+docker run -d -p 8000:8000 \
+  -e DEBUG=False \
+  -e SECRET_KEY=your_production_secret \
+  enterprise-portal
+```
+
+## 📚 Documentation
+
+- [Calendar Integration](CALENDAR_INTEGRATION.md)
+- [Maps Integration](MAPS_INTEGRATION.md)
+- [Meet Integration](MEET_INTEGRATION.md)
+- [Translate Integration](TRANSLATE_INTEGRATION.md)
+- [ADFS Setup Guide](ADFS_SETUP_GUIDE.md)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🆘 Support
+
+For technical support or questions:
+
+1. Check the activity logs for error details
+2. Review the integration documentation
+3. Verify configuration settings
+4. Contact the system administrator
+
+## 🔮 Future Enhancements
+
+- **Advanced Analytics**: User behavior and system usage analytics
+- **Custom Integrations**: Additional third-party service integrations
+- **Mobile App**: Native mobile application
+- **API Development**: RESTful API for external integrations
+- **Advanced MFA**: Biometric authentication support
+- **Workflow Automation**: Automated business processes
+- **Advanced Document Features**: Version control and collaboration
+- **Real-time Notifications**: WebSocket-based notifications
