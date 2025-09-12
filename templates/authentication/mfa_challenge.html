@@ -23,7 +23,7 @@
             position: relative;
         }
 
-        /* Header Layout */
+        /* Header Layout - Match standard header styling */
         .header {
             display: flex !important;
             align-items: center !important;
@@ -150,7 +150,7 @@
             transform: translateX(-3px);
         }
 
-        /* Compact Header */
+        /* Compact Header - Use design system colors */
         .mfa-header {
             text-align: center;
             margin-bottom: 2rem;
@@ -161,6 +161,7 @@
             position: relative;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(20px);
         }
 
         .mfa-header::before {
@@ -170,19 +171,22 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(135deg, #0066cc, #4285f4);
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
             border-radius: 16px 16px 0 0;
         }
 
         body.dark-mode .mfa-header {
-            background: linear-gradient(135deg, rgba(0, 102, 204, 0.1), rgba(66, 133, 244, 0.15));
+            background: linear-gradient(135deg, var(--dark-surface), var(--dark-surface-elevated));
             border-color: rgba(0, 102, 204, 0.2);
+            box-shadow: 
+                0 4px 15px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
         }
 
         .header-icon {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #0066cc, #4285f4);
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -198,7 +202,7 @@
             content: '';
             position: absolute;
             inset: -3px;
-            background: linear-gradient(135deg, #0066cc, #4285f4);
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
             border-radius: 50%;
             z-index: -1;
             opacity: 0.3;
@@ -208,12 +212,19 @@
         .mfa-title {
             font-size: 1.75rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #0066cc, #4285f4);
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 0.5rem;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .mfa-title {
+            background: linear-gradient(135deg, var(--primary-blue-light), #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .mfa-subtitle {
@@ -241,12 +252,13 @@
             gap: 0.5rem;
             font-weight: 500;
             font-size: 0.875rem;
-            color: #0066cc;
+            color: var(--primary-blue);
         }
 
         body.dark-mode .user-info {
             background: rgba(0, 102, 204, 0.15);
             color: var(--primary-blue-light);
+            border-color: rgba(0, 102, 204, 0.25);
         }
 
         /* Progress Steps */
@@ -288,17 +300,24 @@
             font-weight: 600;
             font-size: 0.875rem;
             color: var(--gray-600);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .step-number {
+            color: var(--dark-text-secondary);
+            background: rgba(66, 133, 244, 0.15);
+            border-color: rgba(66, 133, 244, 0.25);
         }
 
         .progress-step.active .step-number {
-            background: linear-gradient(135deg, #0066cc, #4285f4);
-            border-color: #0066cc;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+            border-color: var(--primary-blue);
             color: white;
         }
 
         .progress-step.completed .step-number {
-            background: #10b981;
-            border-color: #10b981;
+            background: var(--success);
+            border-color: var(--success);
             color: white;
         }
 
@@ -306,17 +325,25 @@
             font-size: 0.75rem;
             font-weight: 500;
             color: var(--gray-600);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .progress-step span {
+            color: var(--dark-text-secondary);
         }
 
         .progress-step.active span {
-            color: #0066cc;
+            color: var(--primary-blue);
             font-weight: 600;
+        }
+
+        body.dark-mode .progress-step.active span {
+            color: var(--primary-blue-light);
         }
 
         /* Enhanced Messages */
         .messages-container {
             margin-bottom: 2rem;
-            space-y: 1rem;
         }
 
         .alert {
@@ -418,7 +445,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(135deg, #0066cc, #4285f4);
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
         }
 
         .mfa-card:hover {
@@ -427,8 +454,17 @@
         }
 
         body.dark-mode .mfa-card {
-            background: rgba(26, 32, 44, 0.9);
+            background: var(--dark-surface);
             border-color: rgba(0, 102, 204, 0.2);
+            box-shadow: 
+                0 8px 30px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .mfa-card:hover {
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(0, 102, 204, 0.2);
         }
 
         .auth-methods {
@@ -468,10 +504,12 @@
         body.dark-mode .auth-method:hover {
             border-color: var(--primary-blue);
             background: var(--dark-surface-elevated);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
         body.dark-mode .auth-method.active {
-            background: rgba(0, 102, 204, 0.1);
+            background: rgba(0, 102, 204, 0.15);
+            border-color: var(--primary-blue-light);
         }
 
         .method-header {
@@ -529,6 +567,10 @@
             margin: 1.5rem 0;
         }
 
+        body.dark-mode .webauthn-prompt {
+            background: rgba(0, 102, 204, 0.1);
+        }
+
         .webauthn-prompt.active {
             display: block;
         }
@@ -538,6 +580,10 @@
             color: var(--primary-blue);
             margin-bottom: 1rem;
             animation: pulse 2s infinite;
+        }
+
+        body.dark-mode .webauthn-animation {
+            color: var(--primary-blue-light);
         }
 
         .webauthn-instruction {
@@ -625,7 +671,7 @@
         .totp-icon {
             width: 48px;
             height: 48px;
-            background: linear-gradient(135deg, #0066cc, #4285f4);
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -716,6 +762,10 @@
             padding: 1.5rem;
         }
 
+        body.dark-mode .credentials-list {
+            background: rgba(0, 102, 204, 0.1);
+        }
+
         .credential-item {
             display: flex;
             align-items: center;
@@ -741,6 +791,10 @@
         body.dark-mode .credential-item {
             background: var(--dark-surface-elevated);
             border-color: var(--dark-border);
+        }
+
+        body.dark-mode .credential-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         .credential-icon {
@@ -804,7 +858,7 @@
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.4);
+            box-shadow: 0 8px 25px rgba(var(--primary-blue), 0.4);
         }
 
         .btn-primary:disabled {
@@ -834,6 +888,7 @@
 
         body.dark-mode .btn-secondary:hover {
             background: var(--dark-surface-elevated);
+            border-color: rgba(0, 102, 204, 0.3);
         }
 
         .loading {
@@ -899,6 +954,14 @@
 
         body.dark-mode .help-item {
             color: var(--dark-text-secondary);
+        }
+
+        body.dark-mode .help-title {
+            color: var(--primary-blue-light);
+        }
+
+        body.dark-mode .help-item i {
+            color: var(--primary-blue-light);
         }
 
 
@@ -981,6 +1044,9 @@
     </style>
 </head>
 <body>
+    <!-- CSRF Token -->
+    {% csrf_token %}
+    
     <!-- Background Elements -->
     <div class="background-wrapper">
         <div class="background-grid"></div>

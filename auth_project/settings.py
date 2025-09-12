@@ -39,7 +39,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '192.168.64.1,127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '192.168.64.1,127.0.0.1,localhost,secureauth.local').split(',')
 
 
 # Application definition
@@ -298,7 +298,9 @@ SESSION_COOKIE_SAMESITE = os.getenv('SESSION_COOKIE_SAMESITE', 'Lax' if DEBUG_MO
 CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'False' if DEBUG_MODE else 'True').lower() == 'true'
 CSRF_COOKIE_SAMESITE = os.getenv('CSRF_COOKIE_SAMESITE', 'Lax' if DEBUG_MODE else 'None')
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript access for debugging
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000'] if DEBUG_MODE else []
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000', 'https://secureauth.local:8000', 'https://localhost:8000'] if DEBUG_MODE else []
+CSRF_USE_SESSIONS = True  # Use session-based CSRF tokens
+CSRF_COOKIE_AGE = 31449600  # 1 year
 
 # Additional security settings for production
 SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'False').lower() == 'true'

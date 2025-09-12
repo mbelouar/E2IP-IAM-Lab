@@ -1767,8 +1767,8 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 animation: pulse 2s infinite;
             }}
 
-            /* Main Container */
-            .processing-container {{
+            /* Login Container - Consistent with other pages */
+            .login-container {{
                 max-width: 900px;
                 margin: 0 auto;
                 padding: 2rem 1rem;
@@ -1786,8 +1786,8 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 }}
             }}
 
-            /* Compact Header */
-            .processing-header {{
+            /* Compact Header - Consistent with login page */
+            .login-header {{
                 text-align: center;
                 margin-bottom: 2rem;
                 padding: 1.5rem 1.5rem 1rem;
@@ -1799,7 +1799,7 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             }}
 
-            .processing-header::before {{
+            .login-header::before {{
                 content: '';
                 position: absolute;
                 top: 0;
@@ -1810,7 +1810,7 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 border-radius: 16px 16px 0 0;
             }}
 
-            body.dark-mode .processing-header {{
+            body.dark-mode .login-header {{
                 background: linear-gradient(135deg, rgba(0, 102, 204, 0.1), rgba(66, 133, 244, 0.15));
                 border-color: rgba(0, 102, 204, 0.2);
             }}
@@ -1841,7 +1841,7 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 animation: pulse 2s infinite;
             }}
 
-            .processing-title {{
+            .login-title {{
                 font-size: 1.75rem;
                 font-weight: 700;
                 background: linear-gradient(135deg, #0066cc, #4285f4);
@@ -1852,15 +1852,15 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }}
 
-            .processing-subtitle {{
+            .login-subtitle {{
                 font-size: 0.95rem;
                 color: var(--gray-600);
                 max-width: 500px;
                 margin: 0 auto;
                 line-height: 1.5;
             }}
-
-            body.dark-mode .processing-subtitle {{
+            
+            body.dark-mode .login-subtitle {{
                 color: var(--dark-text-secondary);
             }}
 
@@ -1928,40 +1928,6 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 color: var(--dark-text-secondary);
             }}
 
-            /* Enhanced Header Icon Wrapper */
-            .header-icon-wrapper {{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 1rem;
-                margin-bottom: 1rem;
-            }}
-
-            .header-icon {{
-                width: 60px;
-                height: 60px;
-                background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
-                border-radius: 16px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                box-shadow: 0 4px 20px rgba(0, 102, 204, 0.3);
-                animation: iconPulse 2s ease-in-out infinite;
-            }}
-
-            .security-badge {{
-                background: rgba(0, 168, 107, 0.1);
-                color: var(--success);
-                padding: 0.5rem 1rem;
-                border-radius: 50px;
-                font-size: 0.8rem;
-                font-weight: 600;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                border: 1px solid rgba(0, 168, 107, 0.2);
-            }}
 
             @keyframes iconPulse {{
                 0%, 100% {{ 
@@ -1979,12 +1945,14 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 background: rgba(255, 255, 255, 0.95);
                 backdrop-filter: blur(25px);
                 border-radius: 24px;
-                padding: 2.5rem;
-                margin-bottom: 2rem;
-                border: 1px solid rgba(0, 102, 204, 0.12);
+                padding: 3rem;
+                margin: 2rem auto 0 auto;
+                max-width: 900px;
+                border: 1px solid rgba(0, 102, 204, 0.15);
                 box-shadow: 
-                    0 10px 40px rgba(0, 0, 0, 0.08),
-                    0 4px 12px rgba(0, 102, 204, 0.04);
+                    0 20px 60px rgba(0, 0, 0, 0.08),
+                    0 0 0 1px rgba(255, 255, 255, 0.6),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.9);
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 position: relative;
                 overflow: hidden;
@@ -2019,8 +1987,12 @@ def show_saml_processing_page(request, saml_response, relay_state):
             }}
 
             body.dark-mode .processing-card {{
-                background: rgba(26, 32, 44, 0.9);
-                border-color: rgba(0, 102, 204, 0.2);
+                background: rgba(26, 32, 44, 0.95);
+                border-color: rgba(0, 102, 204, 0.25);
+                box-shadow: 
+                    0 20px 60px rgba(0, 0, 0, 0.4),
+                    0 0 0 1px rgba(255, 255, 255, 0.05),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
             }}
 
             /* Progress Ring */
@@ -2419,16 +2391,28 @@ def show_saml_processing_page(request, saml_response, relay_state):
                 }}
             }}
 
-            /* Enhanced Responsive Design */
+            /* Responsive Design - Consistent with login page */
             @media (max-width: 768px) {{
-                .header-icon-wrapper {{
-                    flex-direction: column;
-                    gap: 0.5rem;
+                .login-container {{
+                    padding: 1rem;
                 }}
                 
-                .security-badge {{
-                    font-size: 0.75rem;
-                    padding: 0.4rem 0.8rem;
+                .login-header {{
+                    padding: 1rem;
+                    margin-bottom: 1.5rem;
+                }}
+                
+                .login-title {{
+                    font-size: 1.5rem;
+                }}
+                
+                .login-subtitle {{
+                    font-size: 0.875rem;
+                }}
+                
+                .processing-card {{
+                    padding: 2rem;
+                    margin-top: 0;
                 }}
                 
                 .status-steps {{
@@ -2569,24 +2553,18 @@ def show_saml_processing_page(request, saml_response, relay_state):
         </header>
 
         <!-- Main Content -->
-        <div class="processing-container">
-            <!-- Enhanced Header -->
-            <div class="processing-header">
-                <div class="header-icon-wrapper">
+        <div class="login-container">
+            <!-- Compact Header -->
+            <div class="login-header">
                 <div class="header-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 28px; height: 28px;">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            <circle cx="12" cy="16" r="1"></circle>
+                        <circle cx="12" cy="16" r="1"></circle>
                     </svg>
                 </div>
-                    <div class="security-badge">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>Secured</span>
-                    </div>
-                </div>
-                <h1 class="processing-title" role="heading" aria-level="1">Authentication in Progress</h1>
-                <p class="processing-subtitle" aria-describedby="auth-description">
+                <h1 class="login-title" role="heading" aria-level="1">Authentication in Progress</h1>
+                <p class="login-subtitle" aria-describedby="auth-description">
                     Securely validating your SAML credentials and establishing encrypted session
                 </p>
                 <div id="auth-description" class="sr-only">
