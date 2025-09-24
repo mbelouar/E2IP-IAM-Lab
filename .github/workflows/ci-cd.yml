@@ -105,3 +105,5 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/secureauth:windows
 
           docker manifest push ${{ secrets.DOCKER_USERNAME }}/secureauth:latest
+
+          
