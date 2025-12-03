@@ -29,10 +29,45 @@ bash:
 
 # Local development commands
 runserver:
-	./venv/bin/python3 manage.py runserver localhost:$(PORT)
+	./venv/bin/python3 manage.py runserver 192.168.64.1:$(PORT)
 
 runserver-ssl:
-	./venv/bin/python3 manage.py runserver_plus --cert-file ssl/cert.pem --key-file ssl/key.pem 0.0.0.0:$(PORT)
+	@echo "Starting Django with SSL on https://secureauth.local:$(PORT)/"
+	@echo "Note: You may see a browser warning about self-signed certificate - this is normal for development"
+	@echo ""
+	./venv/bin/python3 manage.py runserver_plus --cert-file ssl/cert.pem --key-file ssl/key.pem 192.168.64.1:$(PORT)
+
+# Server management commands
+stop-server:
+	@echo "Stopping Django development server..."
+	@pkill -f "manage.py runserver" || echo "No server running"
+	@echo "Server stopped"
+
+status:
+	@echo "=== Django Server Status ==="
+	@echo ""
+	@if lsof -nP -iTCP:$(PORT) -sTCP:LISTEN 2>/dev/null | grep -q Python; then \
+		echo "Status: 🟢 RUNNING"; \
+		echo ""; \
+		echo "Process Details:"; \
+		lsof -nP -iTCP:$(PORT) -sTCP:LISTEN | grep Python || true; \
+		echo ""; \
+		echo "Access URLs:"; \
+		echo "  - HTTPS: https://secureauth.local:$(PORT)/"; \
+		echo "  - HTTP:  http://192.168.64.1:$(PORT)/"; \
+	else \
+		echo "Status: 🔴 NOT RUNNING"; \
+		echo ""; \
+		echo "To start the server, run:"; \
+		echo "  make runserver-ssl  (HTTPS - recommended)"; \
+		echo "  make runserver      (HTTP)"; \
+	fi
+	@echo ""
+
+view-logs:
+	@echo "Viewing server logs (Ctrl+C to exit)..."
+	@echo ""
+	@tail -f /tmp/django_ssl_server.log 2>/dev/null || tail -f /tmp/django_server.log 2>/dev/null || echo "No log file found"
 
 # Build individual Docker images
 build-linux:

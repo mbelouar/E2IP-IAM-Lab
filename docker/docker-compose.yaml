@@ -10,5 +10,3 @@ services:
       - ../static:/app/static
     env_file:
       - ../.env
-
-

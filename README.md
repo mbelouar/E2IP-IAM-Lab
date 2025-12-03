@@ -53,6 +53,90 @@ A comprehensive enterprise authentication and productivity portal built with Dja
 - **Intuitive Navigation**: Easy-to-use interface with clear app organization
 - **Real-time Notifications**: Auto-dismissing alerts and status messages
 
+## 💼 RESPONSIBILITIES
+
+During my internship, I had the opportunity to actively participate in several projects and missions. Among these:
+
+| Mission                                  | Objective                                                              | Result                                                                                                                                                     |
+| ---------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Enterprise SSO Integration**           | Implement ADFS/SAML Single Sign-On authentication for enterprise users | Successfully integrated ADFS/SAML SSO with metadata configuration and secure session management                                                            |
+| **Multi-Factor Authentication System**   | Develop MFA solution with WebAuthn/FIDO2, TOTP apps, and backup codes  | Implemented MFA system supporting YubiKey, authenticator apps, and backup codes with secure credential storage                                             |
+| **Document Management Platform**         | Create secure document storage with upload and access control          | Built document management system supporting multiple file types with user-specific storage and secure operations                                           |
+| **Google Workspace Integration**         | Integrate Google Calendar, Maps, Meet, and Translate services          | Successfully integrated four Google services with embedded interfaces accessible from the main portal                                                      |
+| **Activity Logging & Monitoring System** | Implement activity tracking and audit logging for security monitoring  | Developed activity logging system tracking user actions with IP address and user agent monitoring                                                          |
+| **DevOps & CI/CD Pipeline**              | Set up DevOps infrastructure with containerization and CI/CD pipelines | Created Docker containerization with multi-platform support, Docker Compose, Makefile automation, and CI/CD pipelines for automated testing and deployment |
+| **User Management & Profile System**     | Build user registration, profile management, and password reset        | Implemented user management with secure registration, profile editing, password features, and admin views                                                  |
+
+These missions allowed me to explore different aspects of the profession while putting into practice the skills acquired during my training.
+
+## 📋 Work Methodology
+
+### Development Approach
+
+The project followed an **iterative and incremental development methodology**, allowing for continuous improvement and adaptation throughout the development lifecycle. Each feature was developed, tested, and integrated incrementally.
+
+### Version Control & Collaboration
+
+- **Git Version Control**: Used Git for source code management with feature branch workflow
+- **Branching Strategy**: Feature branches for new developments, main branch for stable releases
+- **Commit Practices**: Descriptive commit messages following conventional commit standards
+- **Code Review**: Peer review process for quality assurance before merging
+
+### CI/CD Pipeline
+
+- **Automated Testing**: GitHub Actions workflow triggers on every push and pull request
+- **Test Execution**: Automated Django test suite execution in isolated environments
+- **Multi-Platform Builds**: Automated Docker image builds for Linux (AMD64/ARM64) and Windows platforms
+- **Container Registry**: Automated push to Docker Hub with multi-platform manifest creation
+- **Deployment Automation**: Streamlined deployment process with Makefile commands
+
+### Development Workflow
+
+1. **Planning**: Feature analysis and requirement gathering
+2. **Development**: Implementation following Django best practices and security standards
+3. **Testing**: Unit testing and integration testing before commits
+4. **Code Review**: Peer review and feedback integration
+5. **CI/CD**: Automated testing and build verification
+6. **Deployment**: Containerized deployment using Docker and Docker Compose
+7. **Monitoring**: Activity logging and system monitoring for production environments
+
+### Testing Strategy
+
+- **Unit Testing**: Django test framework for individual component testing
+- **Integration Testing**: End-to-end testing of authentication flows and API integrations
+- **Security Testing**: Validation of authentication mechanisms, CSRF protection, and MFA implementations
+- **Automated Test Execution**: CI/CD pipeline ensures tests run on every code change
+
+### Development Tools & Technologies
+
+- **IDE/Editor**: Modern development environment with code completion and debugging
+- **Docker**: Containerization for consistent development and deployment environments
+- **Makefile**: Automation scripts for common development tasks
+- **GitHub Actions**: CI/CD pipeline automation
+- **Django Framework**: Rapid development with built-in security features
+- **Virtual Environments**: Isolated Python environments for dependency management
+
+### Documentation Practices
+
+- **Code Documentation**: Inline comments and docstrings for complex logic
+- **README Documentation**: Comprehensive setup and usage guides
+- **API Documentation**: Clear endpoint descriptions and usage examples
+- **Configuration Guides**: Detailed setup instructions for ADFS/SAML and integrations
+
+### Security-First Development
+
+- **Security Reviews**: Security considerations integrated into every development phase
+- **Best Practices**: Following OWASP guidelines and Django security recommendations
+- **Audit Logging**: Comprehensive activity tracking for security monitoring
+- **Secure Coding**: Input validation, CSRF protection, and secure session management
+
+### Agile Practices
+
+- **Sprint Planning**: Regular planning sessions for feature prioritization
+- **Daily Progress**: Continuous development with regular checkpoints
+- **Iterative Refinement**: Continuous improvement based on testing and feedback
+- **Flexible Adaptation**: Ability to adjust priorities based on requirements and constraints
+
 ## 🏗️ Project Structure
 
 ```

@@ -39,7 +39,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '192.168.64.1,127.0.0.1,localhost,secureauth.local').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '192.168.64.1,127.0.0.1,localhost,secureauth.local,192.168.64.3').split(',')
 
 
 # Application definition
